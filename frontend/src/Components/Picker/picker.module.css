@@ -2,6 +2,10 @@
   margin-left: 300px;
 }
 
+.redText {
+  color: red;
+}
+
 ul {
   list-style-type: none;
 }
