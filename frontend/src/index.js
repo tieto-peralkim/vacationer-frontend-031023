@@ -3,8 +3,8 @@ import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
 import App from "./App";
-import Picker from "./Components/Picker/Picker";
-import Heat from "./Components/Heat/Heat";
+import Picker from "./Pages/Picker/Picker";
+import Heat from "./Pages/Heat/Heat";
 import reportWebVitals from "./reportWebVitals";
 
 ReactDOM.render(

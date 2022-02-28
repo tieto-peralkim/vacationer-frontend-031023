@@ -1,0 +1,25 @@
+.date-picker {
+  margin-left: 300px;
+}
+
+.redText {
+  color: red;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.ListItem {
+  border-color: red;
+  border-width: 2px;
+}
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.box {
+  background-color: white;
+  padding: 5%;
+}
