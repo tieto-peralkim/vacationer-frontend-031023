@@ -1,5 +1,5 @@
 const express = require('express');
-var app = express();
+const app = express();
 app.use(express.json());
 const logger = require('morgan');
 const Vacationer = require("./models/vacationer")
@@ -9,7 +9,6 @@ const cors = require('cors')
 app.use(cors())
 app.use(logger('dev'));
 app.use(express.urlencoded({extended: false}));
-//app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
