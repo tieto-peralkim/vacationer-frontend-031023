@@ -1,21 +1,15 @@
 const mongoose = require('mongoose')
-require('dotenv').config();
-const url = process.env.MONGODB_URI
-
-console.log("connecting to MongoDB")
-
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log('connected to MongoDB')
-    })
-    .catch((error) => {
-        console.log('error connecting to MongoDB:', error.message)
-    })
+mongoose.set('useFindAndModify', false)
 
 const vacationerSchema = new mongoose.Schema({
-    initials: String,
+    name: {
+        type: String,
+        minlength: 3,
+        required: true
+    },
     vacations: [
         {
+            comment: String,
             start: Date,
             end: Date
         }

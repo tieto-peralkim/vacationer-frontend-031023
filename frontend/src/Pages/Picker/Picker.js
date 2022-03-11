@@ -12,18 +12,24 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Divider, MenuItem,
-    Modal, Select,
+    Divider,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Modal,
+    Select,
     TextField
 } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import VacationerNumber from "../Heat/Components/VacationerNumber";
+import Apitester from "./Components/Apitester";
 
 registerLocale("fi", fi);
 
 export default function Picker() {
-    const [initials, setInitials] = useState("");
-    const [holidayers, setHolidayers] = useState([]);
+    const [name, setName] = useState("");
+    const [comment, setComment] = useState("");
+    const [vacationers, setVacationers] = useState([]);
     const [dateErrorMessage, setDateErrorMessage] = useState(false);
     const [overlapErrorMessage, setOverlapErrorMessage] = useState(false);
 
@@ -34,9 +40,18 @@ export default function Picker() {
     const [endDate, setEndDate] = useState(null);
     const [openCalendar, setOpenCalendar] = useState(false);
     const [openAlert, setOpenAlert] = useState(false);
-    const [holidayToDelete, setHolidayToDelete] = useState(new Date())
+    const [indexToDelete, setIndexToDelete] = useState()
+    const [indexToEdit, setIndexToEdit] = useState()
+
+    const [chosenVacationer, setChosenVacationer] = useState("")
+    const [chosenId, setChosenId] = useState("")
+    const [editingSpace, setEditingSpace] = useState(false);
+
+    const [holidays, setHolidays] = useState([]);
+    // const [datepickerHolidays, setDatepickerHolidays] = useState([]);
 
     const handleOpenCalendar = () => {
+        console.log("holid", holidays)
         setOpenCalendar(true);
     };
     const handleCloseCalendar = () => {
@@ -52,10 +67,8 @@ export default function Picker() {
         resetDates();
     };
     const handleDeletion = () => {
-        setHolidays(
-            holidays.filter((holiday) =>
-                holiday.end !== holidayToDelete
-            )
+        setHolidays((holidays) =>
+            holidays.filter((_, i) => i !== indexToDelete)
         )
         handleCloseAlert();
     };
@@ -72,37 +85,39 @@ export default function Picker() {
     nextSunday.setUTCDate(nextSunday.getUTCDate() + 6);
     nextSunday.setUTCHours(23, 59, 59, 999);
 
-    const [holidays, setHolidays] = useState([]);
-    // const [datepickerHolidays, setDatepickerHolidays] = useState([]);
 
     useEffect(() => {
         axios.get("http://localhost:3001/vacationers").then((response) => {
-            setHolidayers(response.data);
+            setVacationers(response.data);
         });
     }, []);
 
 
-    const createVacation = (e) => {
+    const updateVacation = (e) => {
         e.preventDefault();
-        if (validateForm()) {
+        if (chosenId !== "") {
             const newVacation = {
-                initials: initials,
+                name: name,
                 vacations: holidays,
             };
             console.log("NV", newVacation);
+            console.log("Chosen", chosenId)
 
             axios
-                .post("http://localhost:3001/vacationers", newVacation)
+                .put(`http://localhost:3001/vacationers/${chosenId}`, newVacation)
                 .then((response) => console.log(response))
                 .catch((error) => {
-                    console.error("There was a post error!", error);
+                    console.error("There was a put error!", error);
                 });
             resetDates();
             setHolidays([]);
-            setInitials("");
+            setName("");
+            setChosenVacationer("")
+            setChosenId("")
         } else {
             console.log("Not valid, check!");
         }
+
     };
 
     const resetDates = () => {
@@ -118,18 +133,6 @@ export default function Picker() {
         setEndDate(end);
     };
 
-    const initialsError =
-        initials === "" || initials.length > 3 || initials.length < 2;
-
-    const validateForm = () => {
-        if (initialsError) {
-            return false;
-        } else if (holidays.length === 0) {
-            return false;
-        } else {
-            return true;
-        }
-    };
 
     const calendarDatesOverlap = () => {
         for (let i = 0; i < holidays.length; i++) {
@@ -157,6 +160,7 @@ export default function Picker() {
             let newHoliday = {
                 start: startDate,
                 end: endDate,
+                comment: comment
             };
             setHolidays((oldHolidays) => [...oldHolidays, newHoliday]);
 
@@ -174,22 +178,78 @@ export default function Picker() {
             handleCloseCalendar()
             console.log(holidays)
         }
+    }
+
+    const addHolidayEditSpace = () => {
+        if (validateCalendar()) {
+            let editedHoliday = {
+                start: startDate,
+                end: endDate,
+                comment: comment
+            };
+            const copyHolidays = holidays.slice()
+            copyHolidays[indexToEdit] = editedHoliday
+            setHolidays(copyHolidays);
+
+            // // Fix for datepicker date exclusion
+            // let dayBack = JSON.parse(JSON.stringify(startDate));
+            // dayBack = new Date(dayBack);
+            //
+            // dayBack.setDate(dayBack.getDate() -1)
+            // let newDPHoliday = {
+            //     start: dayBack,
+            //     end: endDate,
+            // };
+            // setDatepickerHolidays((oldDPHolidays) => [...oldDPHolidays, newDPHoliday]);
+            // console.log(newDPHoliday)
+            handleCloseCalendar()
+            setEditingSpace(false)
+            console.log(holidays)
+        }
     };
 
 
-    const deleteHoliday = (end) => {
-        setHolidayToDelete(end);
+    const deleteHoliday = (index) => {
+        setIndexToDelete(index);
+        console.log("indexi", index)
         handleOpenAlert()
     };
 
-    // const searchWithName = (e) => {
-    //     for (let i = 0; i < holidayers.length; i++){
-    //         if (holidayers[i].initials === e.target.value ){
-    //             console.log("löytyyy", holidayers[i].initials)
-    //         }
-    //     }
-    // }
+    const editHoliday = (index) => {
+        setIndexToEdit(index)
+        console.log("iiii",holidays[index])
+        setComment(holidays[index].comment)
+        setStartDate(holidays[index].start)
+        setEndDate(holidays[index].end)
+        setOpenCalendar(true)
+        setEditingSpace(true)
+    }
 
+    const setExcludedDates = (vacations) => {
+        let pureVacations = [];
+        for (let i = 0; i < vacations.length; i++) {
+            let holidayObject = new Object()
+            holidayObject.start = new Date(vacations[i].start)
+            holidayObject.end = new Date(vacations[i].end)
+            holidayObject.comment = vacations[i].comment
+            pureVacations.push(holidayObject);
+        }
+        setHolidays(pureVacations)
+        console.log("PV", pureVacations)
+    }
+
+    const selectVacationer = (name) => {
+        console.log("vacationers", vacationers)
+        for (let i = 0; i < vacationers.length; i++) {
+            if (vacationers[i].name === name) {
+                setChosenVacationer(vacationers[i])
+                setChosenId(vacationers[i].id)
+                console.log("vvv", vacationers[i].vacations)
+                setExcludedDates(vacationers[i].vacations)
+                setName(vacationers[i].name);
+            }
+        }
+    };
 
     return (
         <div>
@@ -200,31 +260,27 @@ export default function Picker() {
             <h4>
                 Next week {nextMonday.toISOString()} - {nextSunday.toISOString()}
             </h4>
-            On vacation {nextMonday.getUTCDate()}.{nextMonday.getUTCMonth() + 1}.
+
+            <Divider/>
+            API test On vacation {nextMonday.getUTCDate()}.{nextMonday.getUTCMonth() + 1}.
             {nextMonday.getUTCFullYear()} - {nextSunday.getUTCDate()}.
             {nextSunday.getUTCMonth() + 1}.{nextSunday.getUTCFullYear()}
-            : <VacationerNumber vacationers={holidayers} startDate={nextMonday} endDate={nextSunday}/> colleague(s)
-            <Divider variant="middle"/>
-
+            : <Apitester start={nextMonday.toISOString()} end={nextSunday.toISOString()}/> colleague(s)
+            <Divider/>
+            <br/>
             <div>
-                <form onSubmit={createVacation} className={styles.form}>
+                <form onSubmit={updateVacation} className={styles.form}>
+                    <FormControl fullWidth>
+                        <InputLabel>Choose your name</InputLabel>
+                        <Select value="" onChange={e => selectVacationer(e.target.value)}>
+                            {vacationers.map((h) => (
+                                    <MenuItem key={h.id} value={h.name}>{h.name}</MenuItem>
+                                )
+                            )}
 
-                    {/*<Select>*/}
-                    {/*    {holidayers.map((holidayer, index) => (*/}
-                    {/*        <MenuItem value={holidayer.initials} onChange={(e) => searchWithName(e.target.value)}>{holidayer.initials}</MenuItem>*/}
-                    {/*        )*/}
-                    {/*    )}*/}
-                    {/*        </Select>*/}
-                    <TextField
-                        className={styles.extraMargin}
-                        required
-                        label="Your initials"
-                        variant="outlined"
-                        error={initialsError}
-                        value={initials}
-                        helperText={initialsError && "Initials must be 2 or 3 characters"}
-                        onChange={(e) => setInitials(e.target.value)}
-                    />
+                        </Select>
+                    </FormControl>
+                    YOU ARE {chosenVacationer.name}
                     <Button className={styles.extraMargin} variant="contained" color="primary"
                             onClick={handleOpenCalendar}>
                         Add a holiday
@@ -235,7 +291,9 @@ export default function Picker() {
                                 {startDate && <>{startDate.getUTCDate()}.{startDate.getUTCMonth() + 1}.{startDate.getUTCFullYear()}</>}
                                 {"  "} - {endDate && <>{endDate.getUTCDate()}.{endDate.getUTCMonth() + 1}.{endDate.getUTCFullYear()}</>}
                             </h3>
-                            <h5><VacationerNumber vacationers={holidayers} startDate={startDate} endDate={endDate}/> colleague(s) on holiday too</h5>
+                            <h5><VacationerNumber vacationers={vacationers} startDate={startDate}
+                                                  endDate={endDate}/> colleague(s) on holiday too</h5>
+                            {/*<h6><Apitester start={startDate} end={endDate}/> APIn mukaan lomalla</h6>*/}
                             <DatePicker
                                 locale="fi"
                                 selected={startDate}
@@ -250,9 +308,18 @@ export default function Picker() {
                                 showWeekNumbers
                                 inline
                             />
-                            <Button className={styles.addHoliday} onClick={addHoliday} variant="contained">
+                            <TextField className={styles.extraMargin}
+                                       label="Comment about the holiday"
+                                       variant="outlined"
+                                       defaultValue={comment}
+                                       value={comment}
+                                       onChange={(e) => setComment(e.target.value)}/>
+                            {editingSpace ? <Button className={styles.addHoliday} onClick={addHolidayEditSpace} variant="contained">
+                                    Edit a holiday
+                                </Button> :
+                                <Button className={styles.addHoliday} onClick={addHoliday} variant="contained">
                                 Add a holiday
-                            </Button>
+                            </Button>}
                             <div>{dateErrorMessage && "Choose the end date!"}</div>
                             <div>{overlapErrorMessage && "Dates overlap!"}</div>
                         </Box>
@@ -260,19 +327,22 @@ export default function Picker() {
                     {holidays.length > 0 && (
                         <div>
                             <div className={styles.holidays}>
-                            {holidays.map((holidays, index) => (
-                                <ButtonGroup size="large" variant="outlined" key={index}
-                                >
-                                    <Button className={styles.dates}>
-                                        {holidays.start.getUTCDate()}.{holidays.start.getUTCMonth() + 1}.{holidays.start.getUTCFullYear()} -{" "}
-                                        {holidays.end.getUTCDate()}.{holidays.end.getUTCMonth() + 1}.{holidays.end.getUTCFullYear()}</Button>
-                                    <Button onClick={() => deleteHoliday(holidays.end)}
-                                            endIcon={<ClearIcon/>}>Delete</Button>
-                                </ButtonGroup>
-                            ))}
+                                {holidays.map((holidays, index) => (
+                                    <ButtonGroup size="large" variant="outlined" key={index}
+                                    >
+                                        <Button onClick={() => editHoliday(index)}
+                                                className={styles.dates}>
+                                            {new Date(holidays.start).getUTCDate()}.{new Date(holidays.start).getUTCMonth() + 1}.{new Date(holidays.start).getUTCFullYear()} -{" "}
+                                            {new Date(holidays.end).getUTCDate()}.{new Date(holidays.end).getUTCMonth() + 1}.{new Date(holidays.end).getUTCFullYear()}
+                                        </Button>
+                                        <Button onClick={() => deleteHoliday(index)}
+                                                endIcon={<ClearIcon/>}>Delete</Button>
+                                    </ButtonGroup>
+                                ))}
                             </div>
                         </div>
                     )}
+                    {chosenVacationer !== "" && holidays.length === 0 && <p>No vacation yet...</p>}
                     <Dialog open={openAlert} onClose={handleCloseAlert}>
                         <DialogTitle>
                             Delete holiday
@@ -285,7 +355,7 @@ export default function Picker() {
                             <Button onClick={handleDeletion}>Yes delete</Button>
                         </DialogActions>
                     </Dialog>
-                    <Button className={styles.extraMargin} disabled={holidays.length === 0} type="submit"
+                    <Button className={styles.extraMargin} type="submit"
                             variant="contained">
                         Save
                     </Button>
@@ -293,10 +363,10 @@ export default function Picker() {
             </div>
             <div>
                 <ul>
-                    {holidayers.map((holidayer) => (
+                    {vacationers.map((holidayer) => (
                         <li key={holidayer.id}>
-                            {holidayer.initials ? (
-                                <b>{holidayer.initials}</b>
+                            {holidayer.name ? (
+                                <b>{holidayer.name}</b>
                             ) : (
                                 <b>No name</b>
                             )}
@@ -314,5 +384,6 @@ export default function Picker() {
                 </ul>
             </div>
         </div>
-    );
+    )
+        ;
 }

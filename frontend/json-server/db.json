@@ -2,7 +2,7 @@
   "holidayers": [
     {
       "id": 0,
-      "initials": "KP",
+      "name": "KP",
       "vacations": [
         {
           "start": "2022-03-03T12:00:00.000Z",
@@ -15,7 +15,7 @@
       ]
     },
     {
-      "initials": "HH",
+      "name": "HH",
       "vacations": [
         {
           "start": "2022-02-25T12:00:00.000Z",
@@ -25,7 +25,7 @@
       "id": 2
     },
     {
-      "initials": "PP",
+      "name": "PP",
       "vacations": [
         {
           "start": "2022-04-01T12:00:00.000Z",
@@ -35,7 +35,7 @@
       "id": 3
     },
     {
-      "initials": "PP",
+      "name": "PP",
       "vacations": [
         {
           "start": "2022-03-06T12:00:00.000Z",

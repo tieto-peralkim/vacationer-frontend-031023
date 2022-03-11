@@ -7,12 +7,10 @@ export default function VacationerNumber(props) {
     const endDate = props.endDate
     const [numberOfVacationers, setNumberOfVacationers] = useState(0);
 
-    console.log("Täällä", vacationers, startDate, endDate)
-
     useEffect(() => {
         setNumberOfVacationers(0);
         for (let i = 0; i < vacationers.length; i++) {
-            console.log(vacationers[i].initials);
+            console.log(vacationers[i].name);
             checkOverlaps(vacationers[i].vacations);
         }
     }, [vacationers, startDate, endDate]);

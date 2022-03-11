@@ -38,7 +38,7 @@ export default function Heat() {
                 {holidayerData.map((holidayer, index) => (
                     <li key={index}>
                         <ul>
-                            {holidayer.initials}
+                            {holidayer.name}
                             {holidayer.vacations.map((vacations, index) => (
                                 <li key={index}>
                                     {vacations.start} - {vacations.end}
