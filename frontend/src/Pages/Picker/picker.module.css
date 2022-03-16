@@ -3,10 +3,6 @@ body {
   padding: 20px;
 }
 
-.date-picker {
-  margin-left: 300px;
-}
-
 .redText {
   color: red;
 }
@@ -25,16 +21,20 @@ ul {
   align-content: center;
   padding: 20px;
 }
-
+.sliderBox{
+  width: 400px;
+}
+.slider{
+  margin-bottom: 1%;
+}
 .form {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 .dates {
-  width: 300px;
+  width: 400px;
 }
-
 .holidays {
   display: flex;
   flex-direction: column;

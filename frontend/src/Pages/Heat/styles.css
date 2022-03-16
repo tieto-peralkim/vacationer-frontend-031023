@@ -1,0 +1,46 @@
+.react-datepicker__day--highlighted-custom-1b {
+    color: chartreuse;
+}
+.react-datepicker__day--highlighted-custom-2b{
+    color: orange;
+}
+.react-datepicker__day--highlighted-custom-3{
+    color: darkred;
+}
+.react-datepicker__day--highlighted-custom-4{
+    color: red;
+}
+.react-datepicker__day--highlighted-custom-5{
+    color: gainsboro;
+}
+/* CSS style from https://github.com/Hacker0x01/react-datepicker/issues/624*/
+.react-datepicker {
+    font-size: 2em;
+}
+.react-datepicker__header {
+    padding-top: 0.8em;
+}
+.react-datepicker__month {
+    margin: 0.4em 1em;
+}
+.react-datepicker__day-name, .react-datepicker__day {
+    width: 1.9em;
+    line-height: 1.9em;
+    margin: 0.166em;
+}
+.react-datepicker__current-month {
+    font-size: 1em;
+}
+.react-datepicker__navigation {
+    top: 1em;
+    line-height: 1.7em;
+    border: 0.45em solid transparent;
+}
+.react-datepicker__navigation--previous {
+    border-right-color: #ccc;
+    left: 1em;
+}
+.react-datepicker__navigation--next {
+    border-left-color: #ccc;
+    right: 1em;
+}
