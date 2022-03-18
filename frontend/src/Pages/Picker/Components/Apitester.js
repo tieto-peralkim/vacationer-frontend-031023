@@ -9,7 +9,7 @@ export default function Apitester(props) {
         axios.get(`http://localhost:3001/timespan?start=${props.start}&end=${props.end}`).then((response) => {
             setNumberOfPeople(response.data.length);
         });
-    }, []);
+    }, [props.end]);
 
     return (
         <>

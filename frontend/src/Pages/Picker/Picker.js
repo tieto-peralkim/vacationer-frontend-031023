@@ -41,8 +41,8 @@ export default function Picker() {
         today.getUTCDate() + ((1 + 7 - today.getUTCDay()) % 7 || 7)
     );
     nextMonday.setUTCHours(0, 0, 0, 0);
-    const nextSunday = new Date(nextMonday);
-    nextSunday.setUTCDate(nextSunday.getUTCDate() + 6);
+    const nextSunday = new Date();
+    nextSunday.setUTCDate(nextMonday.getUTCDate() + 6);
     nextSunday.setUTCHours(23, 59, 59, 999);
     const [startDate, setStartDate] = useState(new Date());
     startDate.setUTCHours(12, 0, 0, 0);
@@ -53,6 +53,7 @@ export default function Picker() {
     const [vacationers, setVacationers] = useState([]);
     const [dateErrorMessage, setDateErrorMessage] = useState(false);
     const [overlapErrorMessage, setOverlapErrorMessage] = useState(false);
+    const [daysInPastErrorMessage, setDaysInPastErrorMessage] = useState(false);
     const [showAllVacations, setShowAllVacations] = useState(false);
 
     const [openCalendar, setOpenCalendar] = useState(false);
@@ -64,9 +65,12 @@ export default function Picker() {
     // Represent that a user has been chosen, does not change
     const [chosenVacationer, setChosenVacationer] = useState("")
     const [editingSpace, setEditingSpace] = useState(false);
+    const [changingStartedSpace, setChangingStartedSpace] = useState(false);
 
     // Represents the holidays which can change
     const [holidays, setHolidays] = useState([]);
+    const [calendarDaysExcluded, setCalendarDaysExcluded] = useState([]);
+
     const [dayAmount, setDayAmount] = useState(0);
 
     const [holidaySeason, setHolidaySeason] = useState(2022);
@@ -75,12 +79,15 @@ export default function Picker() {
 
     const handleOpenCalendar = () => {
         setOpenCalendar(true);
+        updateExcludedDates(0)
     };
     const handleCloseCalendar = () => {
         setOpenCalendar(false);
         setEditingSpace(false);
+        setChangingStartedSpace(false);
         setDateErrorMessage(false);
         setOverlapErrorMessage(false);
+        setDaysInPastErrorMessage(false);
         resetDates();
     };
 
@@ -116,6 +123,7 @@ export default function Picker() {
             amountOfDays += daysInDateRange(holidays[i].start, holidays[i].end)
         }
         setDayAmount(amountOfDays);
+        setCalendarDaysExcluded(holidays)
     }, [holidays]);
 
     const updateVacation = (e) => {
@@ -150,6 +158,7 @@ export default function Picker() {
     const onChange = (dates) => {
         setDateErrorMessage(false);
         setOverlapErrorMessage(false);
+        setDaysInPastErrorMessage(false)
         const [start, end] = dates;
         setStartDate(start);
         setEndDate(end);
@@ -157,8 +166,8 @@ export default function Picker() {
 
 
     const calendarDatesOverlap = () => {
-        for (let i = 0; i < holidays.length; i++) {
-            if (startDate <= holidays[i].start && endDate >= holidays[i].end) {
+        for (let i = 0; i < calendarDaysExcluded.length; i++) {
+            if (startDate <= calendarDaysExcluded[i].start && endDate >= calendarDaysExcluded[i].end) {
                 return true;
             }
         }
@@ -169,7 +178,7 @@ export default function Picker() {
         if (endDate === null) {
             setDateErrorMessage(true);
             return false;
-        } else if (!editingSpace && calendarDatesOverlap()) {
+        } else if (calendarDatesOverlap()) {
             setOverlapErrorMessage(true);
             return false;
         } else {
@@ -193,18 +202,6 @@ export default function Picker() {
             }
             console.log("NHD", newHoliday)
             setHolidays((oldHolidays) => [...oldHolidays, newHoliday]);
-
-            // // Fix for datepicker date exclusion
-            // let dayBack = JSON.parse(JSON.stringify(startDate));
-            // dayBack = new Date(dayBack);
-            //
-            // dayBack.setDate(dayBack.getDate() -1)
-            // let newDPHoliday = {
-            //     start: dayBack,
-            //     end: endDate,
-            // };
-            // setDatepickerHolidays((oldDPHolidays) => [...oldDPHolidays, newDPHoliday]);
-            // console.log(newDPHoliday)
             handleCloseCalendar()
         }
     }
@@ -217,11 +214,13 @@ export default function Picker() {
                 comment: comment,
                 id: idToEdit
             };
-            console.log("ajat on", editedHoliday.start, editedHoliday.end);
+            console.log("ajat on", editedHoliday.start, editedHoliday.end, today);
             if (editedHoliday.start >= today || editedHoliday.end >= today) {
                 editedHoliday.upcoming = true;
             } else {
                 editedHoliday.upcoming = false;
+                setDaysInPastErrorMessage(true);
+                return;
             }
             let vacationIndex = holidays.findIndex((holiday) => holiday.id === idToEdit)
             console.log("YYY", holidays[vacationIndex], editedHoliday)
@@ -246,16 +245,43 @@ export default function Picker() {
                 editedItem = holidays[i]
             }
         }
-        console.log("editedItem", editedItem)
+        console.log("nämä", holidays, calendarDaysExcluded)
+
+        updateExcludedDates(id)
         setComment(editedItem.comment)
         setStartDate(editedItem.start)
         setEndDate(editedItem.end)
         setIdToEdit(id)
-        setOpenCalendar(true)
+
+        if (editedItem.start < today && editedItem.end >= today) {
+            setChangingStartedSpace(true)
+        }
         setEditingSpace(true)
+        setOpenCalendar(true)
         console.log("CVVVV", chosenVacationer)
     }
 
+    // UI Method for adding the extra day before holiday. Because Datepicker exclusion does not include the 1st day of date range
+    const updateExcludedDates = (id) => {
+        let copyHolidays = JSON.parse(JSON.stringify(holidays))
+        setCalendarDaysExcluded(copyHolidays)
+
+        for (let i=0; i<copyHolidays.length; i++){
+            let previousDate = new Date(copyHolidays[i].start);
+            previousDate.setDate(previousDate.getDate() - 1)
+            copyHolidays[i].start = previousDate
+            copyHolidays[i].end = new Date(copyHolidays[i].end)
+        }
+        if(id !== 0) {
+            setCalendarDaysExcluded((copyHolidays) =>
+                copyHolidays.filter((holidays) => holidays.id !== id)
+            )
+        } else {
+            setCalendarDaysExcluded(copyHolidays)
+        }
+    }
+
+    // Method for converting the date Strings to Dates
     const setExcludedDates = (vacations) => {
         let pureVacations = [];
         for (let i = 0; i < vacations.length; i++) {
@@ -272,7 +298,6 @@ export default function Picker() {
             pureVacations.push(holidayObject);
         }
         setHolidays(pureVacations)
-        console.log("PV", pureVacations)
     }
 
     const calculateUpcomingHolidays = () => {
@@ -364,7 +389,8 @@ export default function Picker() {
                             COMING<br/>
                             HOLIDAYS LEFT {annualAmount - dayAmount}
                         </>}
-                    <Button className={styles.extraMargin} variant="contained" color="primary" disabled={!chosenVacationer}
+                    <Button className={styles.extraMargin} variant="contained" color="primary"
+                            disabled={!chosenVacationer}
                             onClick={handleOpenCalendar}>
                         Add a holiday
                     </Button>
@@ -377,36 +403,29 @@ export default function Picker() {
                             </h3>
                             <h5><VacationerNumber vacationers={vacationers} startDate={startDate}
                                                   endDate={endDate}/> colleague(s) on holiday too</h5>
-                            {/*<h6><Apitester start={startDate} end={endDate}/> APIn mukaan lomalla</h6>*/}
-                            {editingSpace ? <DatePicker
-                                    locale="en"
-                                    selected={startDate}
-                                    onChange={onChange}
-                                    selectsRange
-                                    startDate={startDate}
-                                    endDate={endDate}
-                                    minDate={today}
-                                    dateFormat="dd.MM.yyyy"
-                                    calendarStartDay={1}
-                                    showWeekNumbers
-                                    disabledKeyboardNavigation
-                                    inline
-                                /> :
-                                <DatePicker
-                                    locale="en"
-                                    selected={startDate}
-                                    onChange={onChange}
-                                    selectsRange
-                                    excludeDateIntervals={holidays}
-                                    startDate={startDate}
-                                    endDate={endDate}
-                                    minDate={today}
-                                    dateFormat="dd.MM.yyyy"
-                                    calendarStartDay={1}
-                                    showWeekNumbers
-                                    disabledKeyboardNavigation
-                                    inline
-                                />}
+                            <h5> API says on holiday: {endDate ? <Apitester start={startDate.toISOString()} end={endDate.toISOString()}/> : 0} colleagues</h5>
+                            <DatePicker
+                                style={{
+                                    backgroundColor: "aliceblue",
+                                    height: "24px",
+                                    borderRadius: "8px",
+                                    fontSize: "14px",
+                                    padding: "3px 10px"
+                                }}
+                                locale="en"
+                                selected={startDate}
+                                onChange={onChange}
+                                selectsRange
+                                excludeDateIntervals={!changingStartedSpace && calendarDaysExcluded}
+                                startDate={startDate}
+                                endDate={endDate}
+                                minDate={!changingStartedSpace && today}
+                                dateFormat="dd.MM.yyyy"
+                                calendarStartDay={1}
+                                showWeekNumbers
+                                disabledKeyboardNavigation
+                                inline
+                            />
                             <TextField className={styles.extraMargin}
                                        label="Comment about the holiday"
                                        variant="outlined"
@@ -421,6 +440,7 @@ export default function Picker() {
                                 </Button>}
                             <div>{dateErrorMessage && "Choose the end date!"}</div>
                             <div>{overlapErrorMessage && "Dates overlap!"}</div>
+                            <div>{daysInPastErrorMessage && "Dates are in the past! At least end date must be upcoming."}</div>
                         </Box>
                     </Modal>
                     {holidays.length > 0 && (
@@ -430,12 +450,12 @@ export default function Picker() {
                                     holidays.filter(holiday => holiday.upcoming)
                                         .sort((v1, v2) => v1.start - v2.start)
                                         .map((holidays) => (
-                                            <ButtonGroup size="large" variant="outlined" key={holidays.id}
+                                            <ButtonGroup size="large" variant="outlined" key={holidays.id} className={styles.datesGroup}
                                             >
                                                 <Button onClick={() => editHoliday(holidays.id)}
                                                         className={styles.dates}>
-                                                    {new Date(holidays.start).getUTCDate()}.{new Date(holidays.start).getUTCMonth() + 1}.{new Date(holidays.start).getUTCFullYear()} -{" "}
-                                                    {new Date(holidays.end).getUTCDate()}.{new Date(holidays.end).getUTCMonth() + 1}.{new Date(holidays.end).getUTCFullYear()}
+                                                    {holidays.start.getUTCDate()}.{holidays.start.getUTCMonth() + 1}.{holidays.start.getUTCFullYear()} -{" "}
+                                                    {holidays.end.getUTCDate()}.{holidays.end.getUTCMonth() + 1}.{holidays.end.getUTCFullYear()}
                                                     {" "} ({daysInDateRange(holidays.start, holidays.end)} days)
                                                 </Button>
                                                 <Button onClick={() => deleteHoliday(holidays.id)}
@@ -447,13 +467,13 @@ export default function Picker() {
                                     holidays
                                         .sort((v1, v2) => v1.start - v2.start)
                                         .map((holidays, index) => (
-                                            <ButtonGroup size="large" variant="outlined" key={holidays.id}
+                                            <ButtonGroup size="large" variant="outlined" key={holidays.id} className={styles.datesGroup}
                                             >
                                                 <Button onClick={() => editHoliday(holidays.id)}
                                                         color={holidays.upcoming ? "primary" : "secondary"}
                                                         className={styles.dates} disabled={!holidays.upcoming}>
-                                                    {new Date(holidays.start).getUTCDate()}.{new Date(holidays.start).getUTCMonth() + 1}.{new Date(holidays.start).getUTCFullYear()} -{" "}
-                                                    {new Date(holidays.end).getUTCDate()}.{new Date(holidays.end).getUTCMonth() + 1}.{new Date(holidays.end).getUTCFullYear()}
+                                                    {holidays.start.getUTCDate()}.{holidays.start.getUTCMonth() + 1}.{holidays.start.getUTCFullYear()} -{" "}
+                                                    {holidays.end.getUTCDate()}.{holidays.end.getUTCMonth() + 1}.{holidays.end.getUTCFullYear()}
                                                     {" "} ({daysInDateRange(holidays.start, holidays.end)} days)
                                                 </Button>
                                                 <Button onClick={() => deleteHoliday(holidays.id)}
@@ -488,6 +508,15 @@ export default function Picker() {
                         Save
                     </Button>
                 </form>
+            </div>
+            <div>
+                <ul>
+                    {calendarDaysExcluded.map((days) => (
+                                    <li>
+                                        {days.start.toLocaleDateString()} - {days.end.toLocaleDateString()}
+                                    </li>
+                    ))}
+                </ul>
             </div>
             {/*<div>*/}
             {/*    <ul>*/}

@@ -35,6 +35,9 @@ ul {
 .dates {
   width: 400px;
 }
+.datesGroup {
+  margin-bottom: 1%;
+}
 .holidays {
   display: flex;
   flex-direction: column;

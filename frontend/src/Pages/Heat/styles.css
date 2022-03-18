@@ -1,5 +1,6 @@
 .react-datepicker__day--highlighted-custom-1b {
     color: chartreuse;
+    text-overline: true;
 }
 .react-datepicker__day--highlighted-custom-2b{
     color: orange;
@@ -8,12 +9,13 @@
     color: darkred;
 }
 .react-datepicker__day--highlighted-custom-4{
-    color: red;
+    color: deeppink;
 }
 .react-datepicker__day--highlighted-custom-5{
-    color: gainsboro;
+    color: red;
 }
-/* CSS style from https://github.com/Hacker0x01/react-datepicker/issues/624*/
+
+/* Datepicker large style from https://github.com/Hacker0x01/react-datepicker/issues/624*/
 .react-datepicker {
     font-size: 2em;
 }

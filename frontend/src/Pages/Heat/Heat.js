@@ -3,17 +3,33 @@ import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './styles.css'
+import styles from "./heat.module.css";
+import Typography from "@mui/material/Typography";
+import {Box, Button, Dialog, DialogContent, DialogTitle, Slider} from "@mui/material";
 
 export default function Heat() {
+    const INITIAL_NUMBER_OF_EMPLOYEES = 30
     const [startDate, setStartDate] = useState(new Date());
     const [firstAmount, setFirstAmount] = useState(0);
     const [secondAmount, setSecondAmount] = useState(0);
     const [thirdAmount, setThirdAmount] = useState(0);
     const [fourthAmount, setFourthAmount] = useState(0);
     const [fifthAmount, setFifthAmount] = useState(0);
+    const [sliderValue, setSliderValue] = useState(0);
+
+    const [firstLimit, setFirstLimit] = useState(1);
+    const [secondLimit, setSecondLimit] = useState(2);
+    const [thirdLimit, setThirdLimit] = useState(4);
+    const [fourthLimit, setFourthLimit] = useState(6);
+    const [fifthLimit, setFifthLimit] = useState(8);
+    const [sixthLimit, setSixthLimit] = useState(10);
+    const [employeeSettings, setEmployeeSettings] = useState(false);
+
+    const [topLimit, setTopLimit] = useState();
 
     const [highlightedRanges, setHighlightedRanges] = useState([])
     const [disabledRanges, setDisabledRanges] = useState([])
+
 
     // From https://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
     const daysInMonth = (month, year) => {
@@ -23,7 +39,7 @@ export default function Heat() {
     const saveToGroup = (vacationerAmount, start) => {
         let dateGroup = [];
 
-        console.log("iso d", vacationerAmount, start, start.getUTCDate())
+        console.log("Muuttujia", vacationerAmount, start, start instanceof Date, start.getUTCDate())
         let oneAfter = new Date(start);
         oneAfter.setUTCDate(start.getUTCDate() + 1)
         let twoAfter = new Date(start);
@@ -37,8 +53,8 @@ export default function Heat() {
         let sixAfter = new Date(start);
         sixAfter.setUTCDate(start.getUTCDate() + 6)
 
-        if (start.getUTCDate() === 28){
-            switch (daysInMonth(start.getUTCMonth() + 1, start.getUTCFullYear())){
+        if (start.getUTCDate() === 28) {
+            switch (daysInMonth(start.getUTCMonth() + 1, start.getUTCFullYear())) {
                 case 29:
                     dateGroup.push(start)
                     break;
@@ -54,25 +70,25 @@ export default function Heat() {
         }
 
         switch (true) {
-            case vacationerAmount < 1:
+            case vacationerAmount < firstLimit:
                 setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-1b": dateGroup}])
                 break;
-            case vacationerAmount >= 1 && vacationerAmount < 2:
+            case vacationerAmount >= firstLimit && vacationerAmount < secondLimit:
                 setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-2": dateGroup}])
                 break;
-            case vacationerAmount >= 2 && vacationerAmount < 3:
+            case vacationerAmount >= secondLimit && vacationerAmount < thirdLimit:
                 setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-2b": dateGroup}])
                 break;
-            case vacationerAmount >= 3 && vacationerAmount < 4:
+            case vacationerAmount >= thirdLimit && vacationerAmount < fourthLimit:
                 setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-3": dateGroup}])
                 break;
-            case vacationerAmount >= 4 && vacationerAmount < 5:
+            case vacationerAmount >= fourthLimit && vacationerAmount < fifthLimit:
                 setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-4": dateGroup}])
                 break;
-            case vacationerAmount >= 5 && vacationerAmount < 6:
+            case vacationerAmount >= fifthLimit && vacationerAmount < sixthLimit:
                 setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-5": dateGroup}])
                 break;
-            case vacationerAmount >= 6:
+            case vacationerAmount >= sixthLimit:
                 let disabledDateGroup = [];
                 disabledDateGroup.start = start
                 disabledDateGroup.end = sixAfter
@@ -118,11 +134,29 @@ export default function Heat() {
     }
 
     useEffect(() => {
+        setSliderValue(INITIAL_NUMBER_OF_EMPLOYEES)
+        selectEmployeeAmount(INITIAL_NUMBER_OF_EMPLOYEES)
         onChange(new Date())
-    },[])
+    }, [])
+
+    useEffect(() => {
+        onChange(new Date())
+    }, [topLimit])
+
+    const selectEmployeeAmount = (amount) => {
+        setTopLimit(amount)
+        setFirstLimit(Math.floor(amount * (13 / 100)))
+        setSecondLimit(Math.floor(amount * (26 / 100)))
+        setThirdLimit(Math.floor(amount / 2))
+        setFourthLimit(Math.floor(amount * (62 / 100)))
+        setFifthLimit(Math.floor(amount * (74 / 100)))
+        setSixthLimit(Math.floor(amount * (86 / 100)))
+        onChange(new Date())
+    }
 
     const onChange = (date) => {
         setStartDate(date)
+        date.setUTCHours(12, 0, 0, 0)
         setHighlightedRanges((oldHighlighted) => [])
         console.log("date", date.toISOString());
 
@@ -159,7 +193,7 @@ export default function Heat() {
         getFourth(fourth, fifth);
         console.log("viisi", fifth.toISOString());
 
-        // Last day of the month (28th for FEB)
+        // Last day of the month (same as fifth for FEB)
         let sixth = new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 1);
         sixth.setUTCHours(23, 59, 59)
         getFifth(fifth, sixth);
@@ -170,13 +204,37 @@ export default function Heat() {
     return (
         <div>
             <h1>Heat</h1>
+            <div>Vacationer amount</div>
+            <div>Amount of employees <b>{topLimit}</b></div>
+            <Button variant="contained" color="primary"
+                    onClick={() => setEmployeeSettings(true)}>Change the number of employees</Button>
+            <Dialog open={employeeSettings} onClose={() => setEmployeeSettings(false)}>
+                <DialogTitle>
+                    Change number of employees
+                </DialogTitle>
+                <DialogContent>
+                    <Box className={styles.sliderBox}>
+                        <Typography>
+                            Amount of employees <b>{sliderValue}</b>
+                        </Typography>
+                        <Slider
+                            className={styles.slider}
+                            value={sliderValue}
+                            min={5}
+                            max={40}
+                            onChange={(e) => setSliderValue(e.target.value)}
+                        />
+                        <Button variant="contained" color="primary"
+                                onClick={() => {
+                                    selectEmployeeAmount(sliderValue);
+                                    setEmployeeSettings(false);
+                                }}>Save
+                        </Button>
+                    </Box>
+                </DialogContent>
+            </Dialog>
 
-            <div>{firstAmount && firstAmount}</div>
-            <div>{secondAmount && secondAmount}</div>
-            <div>{thirdAmount && thirdAmount}</div>
-            <div>{fourthAmount && fourthAmount}</div>
-            <div>{fifthAmount && fifthAmount}</div>
-            <div>
+            <div className={styles.heatmap}>
                 <DatePicker
                     selected={startDate}
                     value={startDate}
@@ -188,7 +246,28 @@ export default function Heat() {
                     excludeDateIntervals={disabledRanges}
                     disabledKeyboardNavigation
                 />
+                <div className={styles.coloredNumbers}>
+                    <div>Employees on vacation:</div>
+                    <div className="react-datepicker__day--highlighted-custom-1b">0</div>
+                    <div
+                        className="react-datepicker__day--highlighted-custom-2">{firstLimit} {(secondLimit - firstLimit > 1) && <>{" - "} {secondLimit - 1}</>}</div>
+                    <div
+                        className="react-datepicker__day--highlighted-custom-2b">{secondLimit}{(thirdLimit - secondLimit > 1) && <>{" - "} {thirdLimit - 1}</>}</div>
+                    <div
+                        className="react-datepicker__day--highlighted-custom-3">{thirdLimit}{(fourthLimit - thirdLimit > 1) && <>{" - "} {fourthLimit - 1}</>}</div>
+                    <div
+                        className="react-datepicker__day--highlighted-custom-4">{fourthLimit}{(fifthLimit - fourthLimit > 1) && <>{" - "} {fifthLimit - 1}</>}</div>
+                    <div
+                        className="react-datepicker__day--highlighted-custom-5">{fifthLimit}{(sixthLimit - fifthLimit > 1) && <>{" - "} {sixthLimit - 1}</>}</div>
+                    <div>>{sixthLimit} disabled</div>
+                </div>
             </div>
+
+            <div>{firstAmount && firstAmount}</div>
+            <div>{secondAmount && secondAmount}</div>
+            <div>{thirdAmount && thirdAmount}</div>
+            <div>{fourthAmount && fourthAmount}</div>
+            <div>{fifthAmount && fifthAmount}</div>
         </div>
     );
 }

@@ -1,0 +1,15 @@
+.heatmap{
+    display: flex;
+}
+.sliderBox{
+    width: 400px;
+}
+.slider{
+    margin-bottom: 1%;
+}
+.coloredNumbers {
+    display: inline;
+    font-size: xx-large;
+    margin-left: 4%;
+    margin-top: 4%;
+}

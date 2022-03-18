@@ -1,12 +1,13 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {Button, InputLabel, TextField} from "@mui/material";
+import {Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, TextField} from "@mui/material";
 import styles from "../Picker/picker.module.css";
 
 export default function Admin() {
 
     const [vacationers, setVacationers] = useState([]);
     const [newUser, setNewUser] = useState([]);
+    const [userCreationError, setUserCreationError] = useState(false);
 
     useEffect(() => {
         axios.get("http://localhost:3001/vacationers").then((response) => {
@@ -39,12 +40,14 @@ export default function Admin() {
                 .then((response) => console.log(response))
                 .catch((error) => {
                     console.error("There was a post error!", error);
+                    setUserCreationError(true)
                 });
             setNewUser("");
         } else {
             console.log("Not valid, check!");
         }
     };
+
 
     return (
         <>
@@ -76,6 +79,14 @@ export default function Admin() {
                     </>
                     ))}
             </ul>
+            <Dialog open={userCreationError} onClose={() => setUserCreationError(false)}>
+                <DialogTitle>
+                    ERROR!
+                </DialogTitle>
+                <DialogContent>
+                    This username is already taken!
+                </DialogContent>
+            </Dialog>
         </>
     )
 }
