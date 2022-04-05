@@ -4,6 +4,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import Picker from "./Pages/Picker/Picker";
+import Panorama from "./Pages/Panorama/Panorama"
 import Heat from "./Pages/Heat/Heat";
 import reportWebVitals from "./reportWebVitals";
 import Admin from "./Pages/Admin/Admin";
@@ -13,6 +14,7 @@ ReactDOM.render(
         <Routes>
             <Route path="/" element={<App/>}>
                 <Route path="picker" element={<Picker/>}/>
+                <Route path="panorama" element={<Panorama/>}/>
                 <Route path="heat" element={<Heat/>}/>
                 <Route path="admin" element={<Admin />}/>
                 <Route

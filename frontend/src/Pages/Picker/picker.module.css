@@ -20,6 +20,7 @@ ul {
   background-color: white;
   align-content: center;
   padding: 20px;
+  height: 90%;
 }
 .sliderBox{
   width: 400px;
@@ -49,4 +50,6 @@ ul {
 }
 .addHoliday {
   position: fixed;
+}
+.mainView{
 }

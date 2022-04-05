@@ -17,6 +17,9 @@ function App() {
           <Link to="/picker" className="navigation">
             Picker
           </Link>
+          <Link to="/panorama" className="navigation">
+            Panorama
+          </Link>
           <Link to="/heat" className="navigation">
             Holiday heat
           </Link>

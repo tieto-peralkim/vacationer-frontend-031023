@@ -13,7 +13,6 @@ const vacationerSchema = new mongoose.Schema({
             comment: String,
             start: Date,
             end: Date,
-            dates: [Date]
         }
     ]
 })

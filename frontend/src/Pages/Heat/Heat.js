@@ -5,10 +5,20 @@ import "react-datepicker/dist/react-datepicker.css";
 import './styles.css'
 import styles from "./heat.module.css";
 import Typography from "@mui/material/Typography";
-import {Box, Button, Dialog, DialogContent, DialogTitle, Slider} from "@mui/material";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    FormControlLabel,
+    FormGroup,
+    Slider,
+    Switch
+} from "@mui/material";
 
 export default function Heat() {
-    const INITIAL_NUMBER_OF_EMPLOYEES = 30
+    const INITIAL_NUMBER_OF_EMPLOYEES = 8
     const [startDate, setStartDate] = useState(new Date());
     const [firstAmount, setFirstAmount] = useState(0);
     const [secondAmount, setSecondAmount] = useState(0);
@@ -24,22 +34,36 @@ export default function Heat() {
     const [fifthLimit, setFifthLimit] = useState(8);
     const [sixthLimit, setSixthLimit] = useState(10);
     const [employeeSettings, setEmployeeSettings] = useState(false);
+    const themeColored =["chartreuse", "green", "orange", "darkred", "deeppink", "red", "white"]
+    const themeBW = ["gainsboro", "darkgrey", "lightslategrey", "grey", "dimgrey", "black", "white" ]
+
+    const [theme, setTheme] = useState(themeColored);
 
     const [topLimit, setTopLimit] = useState();
 
     const [highlightedRanges, setHighlightedRanges] = useState([])
     const [disabledRanges, setDisabledRanges] = useState([])
 
-
     // From https://stackoverflow.com/questions/1184334/get-number-days-in-a-specified-month-using-javascript
     const daysInMonth = (month, year) => {
         return new Date(year, month, 0).getDate();
+    }
+
+    const triggerToggle = () => {
+        if (theme.toString() === themeColored.toString()){
+            setTheme(themeBW)
+        }
+        else if (theme.toString() === themeBW.toString()){
+            setTheme(themeColored)
+        }
     }
 
     const saveToGroup = (vacationerAmount, start) => {
         let dateGroup = [];
 
         console.log("Muuttujia", vacationerAmount, start, start instanceof Date, start.getUTCDate())
+        let oneBefore = new Date(start);
+        oneBefore.setUTCDate(start.getUTCDate() - 1)
         let oneAfter = new Date(start);
         oneAfter.setUTCDate(start.getUTCDate() + 1)
         let twoAfter = new Date(start);
@@ -66,37 +90,78 @@ export default function Heat() {
                     break;
             }
         } else {
+            console.log("starttiii", start)
             dateGroup.push(start, oneAfter, twoAfter, threeAfter, fourAfter, fiveAfter, sixAfter)
         }
 
-        switch (true) {
-            case vacationerAmount < firstLimit:
-                setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-1b": dateGroup}])
-                break;
-            case vacationerAmount >= firstLimit && vacationerAmount < secondLimit:
-                setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-2": dateGroup}])
-                break;
-            case vacationerAmount >= secondLimit && vacationerAmount < thirdLimit:
-                setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-2b": dateGroup}])
-                break;
-            case vacationerAmount >= thirdLimit && vacationerAmount < fourthLimit:
-                setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-3": dateGroup}])
-                break;
-            case vacationerAmount >= fourthLimit && vacationerAmount < fifthLimit:
-                setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-4": dateGroup}])
-                break;
-            case vacationerAmount >= fifthLimit && vacationerAmount < sixthLimit:
-                setHighlightedRanges((oldHighlighted) => [...oldHighlighted, {"react-datepicker__day--highlighted-custom-5": dateGroup}])
-                break;
-            case vacationerAmount >= sixthLimit:
-                let disabledDateGroup = [];
-                disabledDateGroup.start = start
-                disabledDateGroup.end = sixAfter
-                setDisabledRanges((oldDisabled) => [...oldDisabled, disabledDateGroup])
-                break;
+
+        if (vacationerAmount >= sixthLimit){
+            let disabledDateGroup = [];
+            disabledDateGroup.start = oneBefore
+            disabledDateGroup.end = sixAfter
+            setDisabledRanges((oldDisabled) => [...oldDisabled, disabledDateGroup])
+        }
+        else {
+            let obj1 = {}
+            switch (true) {
+                case vacationerAmount < firstLimit:
+                    obj1[theme[0]] = dateGroup
+                    break;
+                case vacationerAmount >= firstLimit && vacationerAmount < secondLimit:
+                    obj1[theme[1]] = dateGroup
+                    break;
+                case vacationerAmount >= secondLimit && vacationerAmount < thirdLimit:
+                    obj1[theme[2]] = dateGroup
+                    break;
+                case vacationerAmount >= thirdLimit && vacationerAmount < fourthLimit:
+                    obj1[theme[3]] = dateGroup
+                    break;
+                case vacationerAmount >= fourthLimit && vacationerAmount < fifthLimit:
+                    obj1[theme[4]] = dateGroup
+                    break;
+                case vacationerAmount >= fifthLimit && vacationerAmount < sixthLimit:
+                    obj1[theme[5]] = dateGroup
+                    break;
+            }
+            setHighlightedRanges((oldHighlighted) => [...oldHighlighted, obj1])
         }
     }
 
+    const makeDisappear = (first, last) => {
+        let dateGroup = []
+        console.log("kaaak", last)
+        let today = new Date(last);
+        let oneAfter = new Date(last);
+        oneAfter.setUTCDate(last.getUTCDate() + 1)
+        let twoAfter = new Date(last);
+        twoAfter.setUTCDate(last.getUTCDate() + 2)
+        let threeAfter = new Date(last);
+        threeAfter.setUTCDate(last.getUTCDate() + 3)
+        let fourAfter = new Date(last);
+        fourAfter.setUTCDate(last.getUTCDate() + 4)
+        let fiveAfter = new Date(last);
+        fiveAfter.setUTCDate(last.getUTCDate() + 5)
+
+
+        let oneBefore = new Date(first);
+        oneBefore.setUTCDate(first.getUTCDate() - 1)
+        let twoBefore = new Date(first);
+        twoBefore.setUTCDate(first.getUTCDate() - 2)
+        let threeBefore = new Date(first);
+        threeBefore.setUTCDate(first.getUTCDate() - 3)
+        let fourBefore = new Date(first);
+        fourBefore.setUTCDate(first.getUTCDate() - 4)
+        let fiveBefore = new Date(first);
+        fiveBefore.setUTCDate(first.getUTCDate() - 5)
+        let sixBefore = new Date(first);
+        sixBefore.setUTCDate(first.getUTCDate() - 6)
+        console.log("kaaak", today, oneAfter, twoAfter, threeAfter, fourAfter, fiveAfter, "ja", oneBefore, twoBefore, threeBefore, fourBefore, fiveBefore, sixBefore)
+        dateGroup.push(today, oneAfter, twoAfter, threeAfter, fourAfter, fiveAfter, oneBefore, twoBefore, threeBefore, fourBefore, fiveBefore, sixBefore)
+
+        let obj1 = {}
+        obj1[theme[6]] = dateGroup
+        setHighlightedRanges((oldHighlighted) => [...oldHighlighted, obj1])
+    }
 
     const getFirst = (firstDate, secondDate) => {
         axios.get(`http://localhost:3001/timespan?start=${firstDate.toISOString()}&end=${secondDate.toISOString()}`).then((response) => {
@@ -136,12 +201,9 @@ export default function Heat() {
     useEffect(() => {
         setSliderValue(INITIAL_NUMBER_OF_EMPLOYEES)
         selectEmployeeAmount(INITIAL_NUMBER_OF_EMPLOYEES)
-        onChange(new Date())
+        setStartDate(new Date())
     }, [])
 
-    useEffect(() => {
-        onChange(new Date())
-    }, [topLimit])
 
     const selectEmployeeAmount = (amount) => {
         setTopLimit(amount)
@@ -151,60 +213,67 @@ export default function Heat() {
         setFourthLimit(Math.floor(amount * (62 / 100)))
         setFifthLimit(Math.floor(amount * (74 / 100)))
         setSixthLimit(Math.floor(amount * (86 / 100)))
-        onChange(new Date())
     }
 
-    const onChange = (date) => {
-        setStartDate(date)
-        date.setUTCHours(12, 0, 0, 0)
+    useEffect(() => {
+        setDisabledRanges([])
+        startDate.setUTCHours(12, 0, 0, 0)
         setHighlightedRanges((oldHighlighted) => [])
-        console.log("date", date.toISOString());
+        console.log("date", startDate.toISOString());
 
         // 1st day of the month
-        let first = new Date(date.getUTCFullYear(), date.getUTCMonth(), 2);
-        first.setUTCHours(0)
+        let first = new Date(startDate.getUTCFullYear(), startDate.getUTCMonth(), 2);
+        first.setUTCHours(12)
         console.log("yksi", first.toISOString());
 
         // 7th day of the month
-        let second = new Date(date);
+        let second = new Date(startDate);
         second.setUTCHours(23, 59, 59)
         second.setUTCDate(first.getUTCDate() + 6);
         getFirst(first, second);
         console.log("kaksi", second.toISOString());
 
         // 14th day of the month
-        let third = new Date(date);
+        let third = new Date(startDate);
         third.setUTCHours(23, 59, 59)
         third.setUTCDate(second.getUTCDate() + 7);
         getSecond(second, third);
         console.log("kolme", third.toISOString());
 
         // 21st day of the month
-        let fourth = new Date(date);
+        let fourth = new Date(startDate);
         fourth.setUTCHours(23, 59, 59)
         fourth.setUTCDate(third.getUTCDate() + 7);
         getThird(third, fourth);
         console.log("neljä", fourth.toISOString());
 
         // 28th day of the month
-        let fifth = new Date(date);
+        let fifth = new Date(startDate);
         fifth.setUTCHours(23, 59, 59)
         fifth.setUTCDate(fourth.getUTCDate() + 7);
         getFourth(fourth, fifth);
         console.log("viisi", fifth.toISOString());
 
         // Last day of the month (same as fifth for FEB)
-        let sixth = new Date(date.getUTCFullYear(), date.getUTCMonth() + 1, 1);
+        let sixth = new Date(startDate.getUTCFullYear(), startDate.getUTCMonth() + 1, 1);
         sixth.setUTCHours(23, 59, 59)
         getFifth(fifth, sixth);
         console.log("kuusi", sixth.toISOString());
-    };
+        console.log("limits", firstLimit, secondLimit, thirdLimit, fourthLimit, fifthLimit, sixthLimit)
+
+        makeDisappear(first, sixth)
+    }, [startDate, topLimit, theme])
+
+
 
 
     return (
         <div>
             <h1>Heat</h1>
             <div>Vacationer amount</div>
+            <FormGroup>
+                <FormControlLabel control={<Switch  onChange={triggerToggle}/>} label="Black and white theme" />
+            </FormGroup>
             <div>Amount of employees <b>{topLimit}</b></div>
             <Button variant="contained" color="primary"
                     onClick={() => setEmployeeSettings(true)}>Change the number of employees</Button>
@@ -238,8 +307,8 @@ export default function Heat() {
                 <DatePicker
                     selected={startDate}
                     value={startDate}
-                    onChange={onChange}
-                    onMonthChange={onChange}
+                    onChange={e => setStartDate(e)}
+                    onMonthChange={e => setStartDate(e)}
                     inline
                     calendarStartDay={1}
                     highlightDates={highlightedRanges}
@@ -248,17 +317,17 @@ export default function Heat() {
                 />
                 <div className={styles.coloredNumbers}>
                     <div>Employees on vacation:</div>
-                    <div className="react-datepicker__day--highlighted-custom-1b">0</div>
+                    <div className={theme[0]}>0</div>
                     <div
-                        className="react-datepicker__day--highlighted-custom-2">{firstLimit} {(secondLimit - firstLimit > 1) && <>{" - "} {secondLimit - 1}</>}</div>
+                        className={theme[1]}>{firstLimit} {(secondLimit - firstLimit > 1) && <>{" - "} {secondLimit - 1}</>}</div>
                     <div
-                        className="react-datepicker__day--highlighted-custom-2b">{secondLimit}{(thirdLimit - secondLimit > 1) && <>{" - "} {thirdLimit - 1}</>}</div>
+                        className={theme[2]}>{secondLimit}{(thirdLimit - secondLimit > 1) && <>{" - "} {thirdLimit - 1}</>}</div>
                     <div
-                        className="react-datepicker__day--highlighted-custom-3">{thirdLimit}{(fourthLimit - thirdLimit > 1) && <>{" - "} {fourthLimit - 1}</>}</div>
+                        className={theme[3]}>{thirdLimit}{(fourthLimit - thirdLimit > 1) && <>{" - "} {fourthLimit - 1}</>}</div>
                     <div
-                        className="react-datepicker__day--highlighted-custom-4">{fourthLimit}{(fifthLimit - fourthLimit > 1) && <>{" - "} {fifthLimit - 1}</>}</div>
+                        className={theme[4]}>{fourthLimit}{(fifthLimit - fourthLimit > 1) && <>{" - "} {fifthLimit - 1}</>}</div>
                     <div
-                        className="react-datepicker__day--highlighted-custom-5">{fifthLimit}{(sixthLimit - fifthLimit > 1) && <>{" - "} {sixthLimit - 1}</>}</div>
+                        className={theme[5]}>{fifthLimit}{(sixthLimit - fifthLimit > 1) && <>{" - "} {sixthLimit - 1}</>}</div>
                     <div>>{sixthLimit} disabled</div>
                 </div>
             </div>

@@ -1,0 +1,12 @@
+.buttons {
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.wholePage {
+    display: flex;
+    flex-direction: column;
+
+}
