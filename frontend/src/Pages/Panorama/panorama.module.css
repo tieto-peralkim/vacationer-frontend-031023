@@ -10,3 +10,15 @@
     flex-direction: column;
 
 }
+.popover {
+    position: absolute;
+    z-index: 2;
+}
+.cover {
+    position: fixed
+}
+.colorPickers {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 10px
+}

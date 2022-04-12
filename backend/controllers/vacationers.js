@@ -1,5 +1,6 @@
 const vacationersRouter = require('express').Router()
-const Vacationer = require('../models/vacationer')
+const Vacationer = require('../models/vacationer');
+const handleVacationData = require("./handler");
 
 vacationersRouter.get('/vacationers', (req, res, next) => {
     Vacationer.find({})
@@ -49,78 +50,15 @@ vacationersRouter.delete('/vacationers/:id', (req, res, next) => {
 
 })
 
-vacationersRouter.get('/holidaysbetween', (req, res, next) => {
+// Returns vacationers and their holiday amount between start and end dates
+vacationersRouter.get('/vacationeramount', (req, res, next) => {
     let start = req.query.start;
     let end = req.query.end;
     console.log("start ", start)
     console.log("end ", end)
 
     Vacationer.aggregate([
-
-            // ANTAA YKSITTÄISET LOMAT ERILLISINÄ
-            {
-                $unwind: {
-                    path: "$vacations"
-                }
-            },
-            {
-                $match: {
-                    $and: [
-                        {
-                            "vacations.end": {
-                                $gte: (new Date(start))
-                            }
-                        },
-                        {
-                            "vacations.start": {
-                                $lte: (new Date(end))
-                            }
-                        }
-                    ]
-                }
-            },
-
-            // antaa lomalaiset kaikkine lomineen, ei toimi oikein
-            // $and: [
-            //     {
-            //         "vacations":
-            //             {
-            //                 $elemMatch: {
-            //                     end: {
-            //                         $gte: (start)
-            //                     }
-            //                 }
-            //             }
-            //     },
-            //     {
-            //         "vacations":
-            //             {
-            //                 $elemMatch: {
-            //                     start: {
-            //                         $lte: (end)
-            //                     }
-            //                 }
-            //             }
-            //     }
-            // ]
-
-        ]
-    )
-        .then(vacationer => {
-            res.status(200).json(vacationer)
-        })
-        .catch(error => next(error))
-})
-vacationersRouter.get('/timespan', (req, res, next) => {
-    let start = req.query.start;
-    let end = req.query.end;
-    console.log("start ", start)
-    console.log("end ", end)
-
-    Vacationer.aggregate([
-
-            // ANTAA YKSITTÄISET LOMAT ERILLISINÄ
-            {
+         {
                 $unwind: {
                     path: "$vacations"
                 }
@@ -155,29 +93,53 @@ vacationersRouter.get('/timespan', (req, res, next) => {
         .catch(error => next(error))
 })
 
+// Returns all single holidays between start and end dates
+vacationersRouter.get('/holidaysbetween', (req, res, next) => {
+    let start = req.query.start;
+    let end = req.query.end;
+    console.log("start ", start)
+    console.log("end ", end)
 
-// vacationersRouter.get('/timespanks', (req, res, next) => {
-//     let start = req.query.start;
-//     let end = req.query.end;
-//
-//     Vacationer.aggregate([
-//         {$addFields: {days_diff: {$divide: [{$subtract: [$end}, $start}], 86400000.0 ]} }}
-//
-//         ,{$project: {dates_in_between_inclusive: {
-//                     $map: {
-//                         input: {$range: [0, {$add:["$days_diff",1]}] }, // +1 for inclusive
-//                         as: "dd",
-//                         in: {$add: ["$start_date", {$multiply:["$$dd", 86400000]}]}
-//                     }
-//                 }}},
-//
-//         {$unwind: "$dates_in_between_inclusive"}
-//         ]
-//     )
-//         .then(vacationer => {
-//             res.status(200).json(vacationer)
-//         })
-//         .catch(error => next(error))
-// })
+    Vacationer.aggregate([
+         {
+                $unwind: {
+                    path: "$vacations"
+                }
+            },
+            {
+                $match: {
+                    $and: [
+                        {
+                            "vacations.end": {
+                                $gte: (new Date(start))
+                            }
+                        },
+                        {
+                            "vacations.start": {
+                                $lte: (new Date(end))
+                            }
+                        }
+                    ]
+                }
+            },
+        ]
+    )
+        .then(vacationer => {
+            res.status(200).json(vacationer)
+        })
+        .catch(error => next(error))
+})
+
+// Returns dates with daily vacationer amount between start and end dates
+vacationersRouter.get('/timespan', (req, res, next) => {
+    let start = req.query.start;
+    let end = req.query.end;
+
+    handleVacationData(start, end)
+        .then(vacationer => {
+            res.status(200).json(vacationer)
+        })
+        .catch(error => next(error))
+})
 
 module.exports = vacationersRouter

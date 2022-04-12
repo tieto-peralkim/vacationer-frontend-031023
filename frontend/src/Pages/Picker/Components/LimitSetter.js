@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-export default function DailyNumbers({ setAlertingDates, workerLimit, dailyVacationers}) {
+export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, workerLimit, dailyVacationers}) {
     const [average, setAverage] = useState(0)
 
     useEffect(() => {
@@ -8,10 +8,13 @@ export default function DailyNumbers({ setAlertingDates, workerLimit, dailyVacat
         for (let i = 0; i < dailyVacationers.length; i++) {
             sumOfVacationers += dailyVacationers[i][1]
         }
-        setAverage(sumOfVacationers / dailyVacationers.length)
-    }, [dailyVacationers])
+        if (dailyVacationers.length !== 0) {
+            setAverage(sumOfVacationers / dailyVacationers.length)
+        }
+    }, [dailyVacationers, endDate])
 
     useEffect(() => {
+        console.log("noi", holidayToEdit, dailyVacationers)
         let tooManyVacationers = []
         for (let i = 0; i < dailyVacationers.length; i++) {
             if (dailyVacationers[i][1] >= workerLimit) {
@@ -19,18 +22,19 @@ export default function DailyNumbers({ setAlertingDates, workerLimit, dailyVacat
             }
         }
         setAlertingDates(tooManyVacationers)
+        console.log("toomany", tooManyVacationers)
     }, [dailyVacationers, workerLimit])
 
     return (
         <>
             {/*<div>*/}
-            {/*    {props.dailyVacationers.map((daily, index) => (*/}
-            {/*                <div key={index}>{daily[0].toLocaleDateString()}: {daily[1]} people on holiday</div>*/}
+            {/*    {dailyVacationers && dailyVacationers.map((daily, index) => (*/}
+            {/*                <div key={index}>{daily[0]}: {daily[1]} people on holiday</div>*/}
             {/*            )*/}
             {/*        )}*/}
             {/*</div>*/}
             <div>
-                Average: {!isNaN(average) && Math.round(average * 2) / 2} people per day
+                Average: {endDate ? Math.round(average * 2) / 2 : "?"} people / day on holiday
             </div>
         </>
     )

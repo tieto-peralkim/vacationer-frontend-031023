@@ -1,30 +1,47 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, TextField} from "@mui/material";
-import styles from "../Picker/picker.module.css";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    InputLabel,
+    Slider,
+    TextField
+} from "@mui/material";
+import styles from "./admin.module.css";
+import Typography from "@mui/material/Typography";
+import CustomDialog from "../Picker/Components/CustomDialog";
 
 export default function Admin() {
 
     const [vacationers, setVacationers] = useState([]);
     const [newUser, setNewUser] = useState([]);
     const [userCreationError, setUserCreationError] = useState(false);
+    const WORKER_LIMIT_DEFAULT = 12;
+    const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
+    const [completedAction, setCompletedAction] = useState({})
+    const [openDeleteAlert, setOpenDeleteAlert] = useState(false)
+    const [userToDelete, setUserToDelete] = useState({})
+    const nameError = newUser.length < 3;
 
     useEffect(() => {
         axios.get("http://localhost:3001/vacationers").then((response) => {
             setVacationers(response.data);
         });
-    }, []);
+    }, [completedAction]);
 
-    const nameError = newUser.length < 3;
-
-    const deleteUser = (userID) => {
-        console.log("userID", userID)
+    const deleteUser = () => {
+        console.log("userID")
         axios
-            .delete(`http://localhost:3001/vacationers/${userID}`)
+            .delete(`http://localhost:3001/vacationers/${userToDelete.id}`)
             .then((response) => console.log(response))
             .catch((error) => {
-                console.error("There was a put error!", error);
+                console.error("There was a delete error!", error);
             });
+        setCompletedAction({})
+        setOpenDeleteAlert(false)
     }
 
     const createUser = (e) => {
@@ -43,6 +60,7 @@ export default function Admin() {
                     setUserCreationError(true)
                 });
             setNewUser("");
+            setCompletedAction({})
         } else {
             console.log("Not valid, check!");
         }
@@ -51,9 +69,22 @@ export default function Admin() {
 
     return (
         <>
+            <Box className={styles.sliderBox}>
+                <Typography>
+                    Worker limit <b>{workerLimit}</b>
+                </Typography>
+                <Slider
+                    className={styles.slider}
+                    value={workerLimit}
+                    min={1}
+                    max={30}
+                    onChange={(e) => setWorkerLimit(e.target.value)}
+                />
+            </Box>
             <h1>Admin</h1>
             <InputLabel>Create a user</InputLabel>
             <TextField
+                style={{display: "block"}}
                 className={styles.extraMargin}
                 required
                 label="Username"
@@ -73,20 +104,26 @@ export default function Admin() {
                         ) : (
                             <b>No name</b>
                         )}
-                        {" "} {holidayer.id}
+                        {" "} {holidayer.id}<br/>
+                        <Button value={holidayer.name} variant="contained" color="secondary" onClick={e => {
+                            setUserToDelete({id:holidayer.id, name:holidayer.name})
+                            setOpenDeleteAlert(true)
+                        }}>DELETE {holidayer.name}</Button>
                     </li>
-                    <Button value={holidayer.id} variant="contained" color="secondary" onClick={e => deleteUser(e.target.value)}>DELETE</Button>
+
                     </>
                     ))}
             </ul>
-            <Dialog open={userCreationError} onClose={() => setUserCreationError(false)}>
-                <DialogTitle>
-                    ERROR!
-                </DialogTitle>
-                <DialogContent>
-                    This username is already taken!
-                </DialogContent>
-            </Dialog>
+            <CustomDialog openAlert={openDeleteAlert} handleCloseAlert={() => setOpenDeleteAlert(false)}
+                          handleAction={deleteUser}
+                          dialogTitle={"Delete user"}
+                          dialogContent={userToDelete && `Are you sure you want to delete the user ${userToDelete.name} ?`}
+                          cancel={"No"} confirm={"Yes delete"}/>
+            <CustomDialog openAlert={userCreationError} handleCloseAlert={() => setUserCreationError(false)}
+                          handleAction={deleteUser}
+                          dialogTitle={"ERROR!"}
+                          dialogContent={"This username is already taken!"}
+                          />
         </>
     )
 }

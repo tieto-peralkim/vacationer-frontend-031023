@@ -11,7 +11,6 @@ import {
     Button,
     ButtonGroup,
     Dialog,
-    DialogActions,
     DialogContent,
     DialogTitle,
     Divider,
@@ -20,20 +19,23 @@ import {
     MenuItem,
     Modal,
     Select,
-    Slider,
     Stack,
     TextField
 } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import Apitester from "./Components/Apitester";
-import Typography from "@mui/material/Typography";
-import DailyNumbers from "./Components/DailyNumbers";
+import LimitSetter from "./Components/LimitSetter";
+import CustomDialog from "./Components/CustomDialog";
 
 registerLocale("fi", fi);
 
 export default function Picker() {
 
-    const WORKER_LIMIT_DEFAULT = 2;
+
+    let [isBlocking, setIsBlocking] = useState(false);
+
+
+    const WORKER_LIMIT_DEFAULT = 5;
     //  Dates are in UTC time
     const today = new Date();
     today.setUTCHours(0, 0, 0)
@@ -42,13 +44,13 @@ export default function Picker() {
     nextMonday.setUTCDate(
         today.getUTCDate() + ((1 + 7 - today.getUTCDay()) % 7 || 7)
     );
-    nextMonday.setUTCHours(0, 0, 0, 0);
+    nextMonday.setUTCHours(12, 0, 0, 0);
     const nextSunday = new Date();
-    nextSunday.setTime(nextMonday.getTime() + 6*24*60*60*1000);
-    nextSunday.setUTCHours(23, 59, 59, 999);
+    nextSunday.setTime(nextMonday.getTime() + 6 * 24 * 60 * 60 * 1000);
+    nextSunday.setUTCHours(12, 0, 0, 0);
 
     const [startDate, setStartDate] = useState(new Date());
-    startDate.setUTCHours(12, 0, 0, 0);
+    startDate.setUTCHours(10, 0, 0, 0);
     const [endDate, setEndDate] = useState(null);
     const [alertingDates, setAlertingDates] = useState([])
 
@@ -65,11 +67,14 @@ export default function Picker() {
     const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
 
     const [openCalendar, setOpenCalendar] = useState(false);
-    const [openAlert, setOpenAlert] = useState(false);
+    const [openEditAlert, setOpenEditAlert] = useState(false);
+    const [openDeletionAlert, setOpenDeletionAlert] = useState(false);
     const [openRangeAlert, setOpenRangeAlert] = useState(false);
 
     const [idToEdit, setIdToEdit] = useState()
     const [idToDelete, setIdToDelete] = useState()
+    const [holidayToEdit, setHolidayToEdit] = useState({})
+    const [holidayToDelete, setHolidayToDelete] = useState({})
 
     const [chosenVacationer, setChosenVacationer] = useState("")
     const [editingSpace, setEditingSpace] = useState(false);
@@ -98,11 +103,17 @@ export default function Picker() {
         resetDates();
     };
 
-    const handleOpenAlert = () => {
-        setOpenAlert(true);
+    const handleOpenEditAlert = () => {
+        setOpenEditAlert(true);
     };
-    const handleCloseAlert = () => {
-        setOpenAlert(false);
+    const handleCloseEditAlert = () => {
+        setOpenEditAlert(false);
+    };
+    const handleOpenDeletionAlert = () => {
+        setOpenDeletionAlert(true);
+    };
+    const handleCloseDeletionAlert = () => {
+        setOpenDeletionAlert(false);
         resetDates();
     };
 
@@ -111,12 +122,6 @@ export default function Picker() {
         resetDates();
     };
 
-    const handleDeletion = () => {
-        setHolidays((holidays) =>
-            holidays.filter((holidays) => holidays.id !== idToDelete)
-        )
-        handleCloseAlert();
-    };
 
     useEffect(() => {
         if (endDate === null) {
@@ -184,40 +189,46 @@ export default function Picker() {
         }
     };
 
-    const sendToSlack = (vacationersDaily) => {
+    const sendToSlack = () => {
         let numberOfVacationers = 0;
+        let vacationersPerDay = []
 
-        axios.get(`http://localhost:3001/timespan?start=${nextMonday.toISOString()}&end=${nextSunday.toISOString()}`)
+        axios.get(`http://localhost:3001/vacationeramount?start=${nextMonday.toISOString()}&end=${nextSunday.toISOString()}`)
             .then((response) => {
                 numberOfVacationers = response.data.length;
-                console.log("dailyy", vacationersDaily)
-            })
-            .then(() =>
-                axios.post(process.env.REACT_APP_SLACK_URI, JSON.stringify({
-                    "text": `Ensi viikolla yhteensä ${numberOfVacationers} lomalaista:
-                ma: ${vacationersDaily[0][0].toLocaleDateString()} : ${vacationersDaily[0][1]},
-                ti: ${vacationersDaily[1][0].toLocaleDateString()} : ${vacationersDaily[1][1]},
-                ke: ${vacationersDaily[2][0].toLocaleDateString()} : ${vacationersDaily[2][1]},
-                to: ${vacationersDaily[3][0].toLocaleDateString()} : ${vacationersDaily[3][1]},
-                pe: ${vacationersDaily[4][0].toLocaleDateString()} : ${vacationersDaily[4][1]},
-                la: ${vacationersDaily[5][0].toLocaleDateString()} : ${vacationersDaily[5][1]},
-                su: ${vacationersDaily[6][0].toLocaleDateString()} : ${vacationersDaily[6][1]}`
-                }))
+                axios.get(`http://localhost:3001/timespan?start=${nextMonday.toISOString()}&end=${nextSunday.toISOString()}`)
                     .then((response) => {
-                        console.log("rs", response)
+                        console.log("response", response.data)
+                        vacationersPerDay = response.data;
                     })
+                    .then(() =>
+                        axios.post(process.env.REACT_APP_SLACK_URI, JSON.stringify({
+                            "text": `Ensi viikolla yhteensä ${numberOfVacationers} lomalaista:
+                ma: ${new Date(vacationersPerDay[0][0]).toLocaleDateString()} : ${vacationersPerDay[0][1]},
+                ti: ${new Date(vacationersPerDay[1][0]).toLocaleDateString()} : ${vacationersPerDay[1][1]},
+                ke: ${new Date(vacationersPerDay[2][0]).toLocaleDateString()} : ${vacationersPerDay[2][1]},
+                to: ${new Date(vacationersPerDay[3][0]).toLocaleDateString()} : ${vacationersPerDay[3][1]},
+                pe: ${new Date(vacationersPerDay[4][0]).toLocaleDateString()} : ${vacationersPerDay[4][1]},
+                la: ${new Date(vacationersPerDay[5][0]).toLocaleDateString()} : ${vacationersPerDay[5][1]},
+                su: ${new Date(vacationersPerDay[6][0]).toLocaleDateString()} : ${vacationersPerDay[6][1]}`
+                        }))
+                            .then((response) => {
+                                console.log("rs", response)
+                            })
+                            .catch((error) => {
+                                console.error("There was a Slack post error!", error);
+                            }))
                     .catch((error) => {
-                        console.error("There was a post error!", error);
-                    }))
+                        console.error("There was a timespan get error!", error);
+                    })
+            })
             .catch((error) => {
-                console.error("There was a get error!", error);
+                console.error("There was a vacationeramount get error!", error);
             })
     }
 
     const resetDates = () => {
-        let vacationersDaily = []
-        vacationersDaily = calculatePerDay(nextMonday, nextSunday, vacationers)
-        // sendToSlack(vacationersDaily)
+        // sendToSlack()
         setStartDate(new Date());
         setEndDate(null);
     }
@@ -227,22 +238,36 @@ export default function Picker() {
         setDaysInPastErrorMessage(false);
         const [start, end] = dates;
         setStartDate(start);
+        if (end !== null) {
+            end.setUTCHours(14)
+        }
         setEndDate(end);
         console.log("start", start, end)
         if (start !== null && end !== null) {
-            setDailyVacationers([])
-            setDailyVacationers(calculatePerDay(start, end, vacationers));
+            calculatePerDay(start, end)
         }
     };
 
 
     const calendarDatesOverlap = () => {
-        for (let i = 0; i < calendarDaysExcluded.length; i++) {
-            if (startDate <= calendarDaysExcluded[i].start && endDate >= calendarDaysExcluded[i].end) {
-                return true;
+        if (editingSpace) {
+            let holidaysWithoutEditableHoliday = [];
+            holidaysWithoutEditableHoliday = holidays.filter((holidays) => holidays.id !== idToEdit)
+
+            for (let i = 0; i < holidaysWithoutEditableHoliday.length; i++) {
+                if (startDate <= holidaysWithoutEditableHoliday[i].start && endDate >= holidaysWithoutEditableHoliday[i].end) {
+                    return true;
+                }
             }
+            return false;
+        } else {
+            for (let i = 0; i < holidays.length; i++) {
+                if (startDate <= holidays[i].start && endDate >= holidays[i].end) {
+                    return true;
+                }
+            }
+            return false;
         }
-        return false
     };
 
     const validateCalendar = () => {
@@ -252,6 +277,10 @@ export default function Picker() {
         } else if (alertingDates.length > 0) {
             setOpenRangeAlert(true)
             return false;
+        } else if (endDate === null) {
+            return false
+        } else if (endDate < today) {
+            setDaysInPastErrorMessage(true);
         } else {
             return true;
         }
@@ -277,58 +306,75 @@ export default function Picker() {
         }
     }
 
-    const addHolidayEditSpace = () => {
+    const confirmEdit = () => {
         if (validateCalendar()) {
-            let editedHoliday = {
-                start: startDate,
-                end: endDate,
-                comment: comment,
-                id: idToEdit
-            };
-            console.log("ajat on", editedHoliday.start, editedHoliday.end, today);
-            if (editedHoliday.start >= today || editedHoliday.end >= today) {
-                editedHoliday.upcoming = true;
-            } else {
-                editedHoliday.upcoming = false;
-                setDaysInPastErrorMessage(true);
-                return;
-            }
-            let vacationIndex = holidays.findIndex((holiday) => holiday.id === idToEdit)
-            console.log("YYY", holidays[vacationIndex], editedHoliday)
-            let holidaysCopy = [...holidays]
-            holidaysCopy[vacationIndex] = editedHoliday
-            setHolidays(holidaysCopy)
-            handleCloseCalendar()
+            handleOpenEditAlert()
         }
+    }
+
+    const handleEdit = () => {
+        let editedHoliday = {
+            start: startDate,
+            end: endDate,
+            comment: comment,
+            id: idToEdit
+        };
+        console.log("ajat on", editedHoliday.start, editedHoliday.end, today);
+        if (editedHoliday.end >= today) {
+            editedHoliday.upcoming = true;
+        } else {
+            editedHoliday.upcoming = false;
+        }
+        editedHoliday.edited = true;
+        let vacationIndex = holidays.findIndex((holiday) => holiday.id === idToEdit)
+        console.log("YYY", holidays[vacationIndex], editedHoliday)
+        let holidaysCopy = [...holidays]
+        holidaysCopy[vacationIndex] = editedHoliday
+        setHolidays(holidaysCopy)
+        handleCloseEditAlert()
+        handleCloseCalendar()
     };
 
-
-    const deleteHoliday = (id) => {
+    const confirmDeletion = (id) => {
         setIdToDelete(id);
         console.log("id", id)
-        handleOpenAlert()
+        for (let i = 0; i < holidays.length; i++) {
+            if (id === holidays[i].id) {
+                setHolidayToDelete(holidays[i])
+            }
+        }
+        handleOpenDeletionAlert()
+    };
+
+    const handleDeletion = () => {
+        setHolidays((holidays) =>
+            holidays.filter((holidays) => holidays.id !== idToDelete)
+        )
+        handleCloseDeletionAlert();
     };
 
     const editHoliday = (id) => {
         let editedItem = 0
         for (let i = 0; i < holidays.length; i++) {
-            if (id === holidays[i].id) {
+            if (holidays[i].id === id) {
                 editedItem = holidays[i]
             }
         }
+        setHolidayToEdit(editedItem)
+
         console.log("nämä", holidays, calendarDaysExcluded)
 
         updateExcludedDates(id)
         setComment(editedItem.comment)
         setStartDate(editedItem.start)
         setEndDate(editedItem.end)
+        calculatePerDay(editedItem.start, editedItem.end)
         setIdToEdit(id)
 
         if (editedItem.start < today && editedItem.end >= today) {
             setChangingStartedSpace(true)
         }
         setEditingSpace(true)
-        setStartDateErrorMessage(true)
         setOpenCalendar(true)
         console.log("CVVVV", chosenVacationer)
     }
@@ -400,61 +446,16 @@ export default function Picker() {
         return daysInRange;
     }
 
-    // Creates the array of dates with vacationer numbers
-    //https://dev.to/ashikpaul42/how-to-count-occurrences-of-dates-in-an-array-of-date-ranges-javascript-kjo
-    const calculatePerDay = (date1, date2, data) => {
 
-        // TODO: is there a better way ?
-        // TODO: Fix -> comparing the dates does not work because of timestamps
-        let earlyDate = JSON.parse(JSON.stringify(date1))
-        earlyDate = new Date(earlyDate)
-        earlyDate.setUTCHours(12)
-        let lateDate = JSON.parse(JSON.stringify(date2))
-        lateDate = new Date(lateDate)
-        lateDate.setUTCHours(12)
-        console.log("data", earlyDate, lateDate)
-
-        let dateRange = []
-        if (editingSpace) {
-            console.log("chosen", chosenVacationer)
-            data = data.filter(user => user.id !== chosenVacationer.id
-            )
-        }
-        console.log("data2", data)
-
-        for (let i = 0; i < data.length; i++) {
-            for (let j = 0; j < data[i].vacations.length; j++) {
-                let vacationObject = {}
-                vacationObject["start"] = new Date(data[i].vacations[j].start)
-                vacationObject["end"] = new Date(data[i].vacations[j].end)
-                dateRange.push(vacationObject)
-            }
-        }
-        console.log("DR", dateRange, earlyDate, lateDate)
-
-        let result = []
-        while (earlyDate <= lateDate) {
-            console.log("d1", earlyDate)
-            let count = 0;
-            dateRange.forEach(
-                function (range) {
-                    console.log("nää", earlyDate.getUTCHours(), range.start.getUTCHours(), range.end.getUTCHours())
-                    console.log("nää myös", earlyDate >= range.start, earlyDate <= range.end)
-
-                    if (earlyDate >= range.start && earlyDate <= range.end) {
-                        count++
-                    }
-                }
-            )
-            let dateObject = []
-            dateObject[0] = new Date(JSON.parse(JSON.stringify(earlyDate)))
-            dateObject[1] = count
-            console.log("DO", dateObject)
-            result.push(dateObject)
-            earlyDate.setDate(earlyDate.getDate() + 1)
-        }
-        console.log("result", result)
-        return result;
+    const calculatePerDay = (date1, date2) => {
+        axios.get(`http://localhost:3001/timespan?start=${date1.toISOString()}&end=${date2.toISOString()}`)
+            .then((response) => {
+                console.log("response", response.data)
+                setDailyVacationers(response.data);
+            })
+            .catch((error) => {
+                console.error("There was a timespan get error!", error);
+            })
     }
 
     return (
@@ -471,7 +472,7 @@ export default function Picker() {
             On vacation {nextMonday.getUTCDate()}.{nextMonday.getUTCMonth() + 1}.
             {nextMonday.getUTCFullYear()} - {nextSunday.getUTCDate()}.
             {nextSunday.getUTCMonth() + 1}.{nextSunday.getUTCFullYear()}
-            : <Apitester start={nextMonday.toISOString()} end={nextSunday.toISOString()}/> colleague(s)
+            : <Apitester start={nextMonday.toISOString()} end={nextSunday.toISOString()}/> people
             <Divider/>
             <br/>
             <div>
@@ -511,7 +512,8 @@ export default function Picker() {
                     {chosenVacationer &&
                         <>
                             FOUND {holidays.length} HOLIDAYS ({dayAmount} DAYS)
-                            OF WHICH {calculateUpcomingHolidays()[0]} ({calculateUpcomingHolidays()[1]} DAYS) ARE STILL
+                            OF WHICH {calculateUpcomingHolidays()[0]} ({calculateUpcomingHolidays()[1]} DAYS) ARE
+                            STILL
                             COMING<br/>
                             {/*HOLIDAYS LEFT {annualAmount - dayAmount}*/}
                         </>}
@@ -527,30 +529,26 @@ export default function Picker() {
                                 {"  "} - {endDate && <>{endDate.getUTCDate()}.{endDate.getUTCMonth() + 1}.{endDate.getUTCFullYear()}</>}
                                 <div>{endDate ? daysInDateRange(startDate, endDate) : "?"} {daysInDateRange(startDate, endDate) === 1 ? "day" : "days"}</div>
                             </h3>
-                            <Box className={styles.sliderBox}>
-                                <Typography>
-                                    Worker limit <b>{workerLimit}</b>
-                                </Typography>
-                                <Slider
-                                    // className={styles.slider}
-                                    value={workerLimit}
-                                    min={1}
-                                    max={30}
-                                    onChange={(e) => setWorkerLimit(e.target.value)}
-                                />
-                            </Box>
+                            {/*<Box className={styles.sliderBox}>*/}
+                            {/*    <Typography>*/}
+                            {/*        Worker limit <b>{workerLimit}</b>*/}
+                            {/*    </Typography>*/}
+                            {/*    <Slider*/}
+                            {/*        // className={styles.slider}*/}
+                            {/*        value={workerLimit}*/}
+                            {/*        min={1}*/}
+                            {/*        max={30}*/}
+                            {/*        onChange={(e) => setWorkerLimit(e.target.value)}*/}
+                            {/*    />*/}
+                            {/*</Box>*/}
                             {/*<h5><VacationerNumber vacationers={vacationers} startDate={startDate}*/}
                             {/*                      endDate={endDate}/> colleague(s) on holiday too</h5>*/}
                             {/*<h5> API says on holiday: {endDate ? <Apitester start={startDate.toISOString()}*/}
                             {/*                                                end={endDate.toISOString()}/> : 0} colleagues</h5>*/}
-                            <DailyNumbers setAlertingDates={setAlertingDates} workerLimit={workerLimit}
-                                          dailyVacationers={dailyVacationers}/>
-                            {alertingDates.length > 0 && <div style={{color: "red"}}>
-                                WARNING! {alertingDates.map((daily, index) => (
-                                    <div key={index}>{daily[0].toLocaleDateString()}: {daily[1]} people on holiday</div>
-                                )
-                            )}
-                            </div>}
+                            <LimitSetter holidayToEdit={holidayToEdit} endDate={endDate} holidays={holidays}
+                                         setAlertingDates={setAlertingDates}
+                                         workerLimit={workerLimit}
+                                         dailyVacationers={dailyVacationers}/>
                             <div className={styles.mainView}>
                                 <DatePicker
                                     locale="en"
@@ -563,12 +561,12 @@ export default function Picker() {
                                     minDate={!changingStartedSpace && today}
                                     dateFormat="dd.MM.yyyy"
                                     calendarStartDay={1}
+                                    monthsShown={3}
                                     showWeekNumbers
                                     disabledKeyboardNavigation
                                     inline
-                                    monthsShown={3}
                                     highlightDates={alertingDates.length > 0 && alertingDates.map(a => {
-                                        return a[0]
+                                        return new Date(a[0])
                                     })}
                                 />
                             </div>
@@ -581,29 +579,40 @@ export default function Picker() {
                                 </DialogContent>
                             </Dialog>
 
-                            <TextField className={styles.extraMargin}
-                                       label="Comment about the holiday"
-                                       variant="outlined"
-                                       value={comment}
-                                       onChange={(e) => setComment(e.target.value)}/>
-                            {editingSpace ?
-                                <Button className={styles.addHoliday} onClick={addHolidayEditSpace} variant="contained">
-                                    Edit a holiday
-                                </Button> :
-                                <Button className={styles.addHoliday} onClick={addHoliday} variant="contained">
-                                    Add a holiday
-                                </Button>}
+                            <div className={styles.addHoliday}>
+                                <TextField
+                                    label="Comment about the holiday"
+                                    variant="outlined"
+                                    value={comment}
+                                    onChange={(e) => setComment(e.target.value)}/>
+                                {editingSpace ?
+                                    <Button className={styles.buttonStyle}
+                                            disabled={!endDate || alertingDates.length !== 0} onClick={confirmEdit}
+                                            variant="contained">
+                                        Edit a holiday
+                                    </Button> :
+                                    <Button className={styles.buttonStyle} disabled={!endDate} onClick={addHoliday}
+                                            variant="contained">
+                                        Add a holiday
+                                    </Button>}
+                            </div>
                             <Stack sx={{width: '100%'}} spacing={2}>
-                                {editingSpace && <Alert onClose={() => {
-                                }}>Choose the NEW start and end dates!</Alert>}
-                                {(startDateErrorMessage) && <Alert onClose={() => {
+                                {alertingDates.length > 0 && <Alert severity="info">Choose new start and end dates!
+                                    {alertingDates.map((daily, index) => (
+                                        <div key={index}>{new Date(daily[0]).toLocaleDateString()}: {daily[1]} people on
+                                            holiday</div>
+                                    ))}
+                                </Alert>}
+
+                                {startDateErrorMessage && <Alert onClose={() => {
                                 }}>Choose the start date!</Alert>}
-                                {(endDateErrorMessage) && <Alert onClose={() => {
-                                }}>Choose the end date!</Alert>}
-                                {overlapErrorMessage && <Alert severity="warning" onClose={() => {
-                                }}>Dates overlap!</Alert>}
-                                {daysInPastErrorMessage && <Alert severity="warning" onClose={() => {
-                                }}>Dates are in the past! At least end date must be upcoming.</Alert>}
+
+                                {endDateErrorMessage && <Alert severity="info">Choose the end date!</Alert>}
+
+                                {overlapErrorMessage && <Alert severity="warning">Dates overlap!</Alert>}
+
+                                {daysInPastErrorMessage && <Alert severity="warning">
+                                    Dates are in the past! At least end date must be upcoming.</Alert>}
                             </Stack>
                         </Box>
                     </Modal>
@@ -618,12 +627,14 @@ export default function Picker() {
                                                          className={styles.datesGroup}
                                             >
                                                 <Button onClick={() => editHoliday(holidays.id)}
+                                                        color={!holidays.edited ? "primary" : "secondary"}
                                                         className={styles.dates}>
                                                     {holidays.start.getUTCDate()}.{holidays.start.getUTCMonth() + 1}.{holidays.start.getUTCFullYear()} -{" "}
                                                     {holidays.end.getUTCDate()}.{holidays.end.getUTCMonth() + 1}.{holidays.end.getUTCFullYear()}
-                                                    {" "} ({daysInDateRange(holidays.start, holidays.end)} days)
+                                                    {" "} ({daysInDateRange(holidays.start, holidays.end)} days) {holidays.edited && "*"}
                                                 </Button>
-                                                <Button onClick={() => deleteHoliday(holidays.id)}
+                                                <Button onClick={() => confirmDeletion(holidays.id)}
+                                                        color={!holidays.edited ? "primary" : "secondary"}
                                                         endIcon={<ClearIcon/>}>Delete</Button>
                                             </ButtonGroup>
                                         ))
@@ -636,14 +647,14 @@ export default function Picker() {
                                                          className={styles.datesGroup}
                                             >
                                                 <Button onClick={() => editHoliday(holidays.id)}
-                                                        color={holidays.upcoming ? "primary" : "secondary"}
+                                                        color={!holidays.edited ? "primary" : "secondary"}
                                                         className={styles.dates} disabled={!holidays.upcoming}>
                                                     {holidays.start.getUTCDate()}.{holidays.start.getUTCMonth() + 1}.{holidays.start.getUTCFullYear()} -{" "}
                                                     {holidays.end.getUTCDate()}.{holidays.end.getUTCMonth() + 1}.{holidays.end.getUTCFullYear()}
                                                     {" "} ({daysInDateRange(holidays.start, holidays.end)} days)
                                                 </Button>
-                                                <Button onClick={() => deleteHoliday(holidays.id)}
-                                                        color={holidays.upcoming ? "primary" : "secondary"}
+                                                <Button onClick={() => confirmDeletion(holidays.id)}
+                                                        color={!holidays.edited ? "primary" : "secondary"}
                                                         disabled={!holidays.upcoming}
                                                         endIcon={<ClearIcon/>}>Delete</Button>
                                             </ButtonGroup>
@@ -657,18 +668,20 @@ export default function Picker() {
                         <Button onClick={() => setShowAllVacations(true)}>Show old vacations</Button>}
                     {showAllVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&
                         <Button onClick={() => setShowAllVacations(false)}>Hide old vacations</Button>}
-                    <Dialog open={openAlert} onClose={handleCloseAlert}>
-                        <DialogTitle>
-                            Delete holiday
-                        </DialogTitle>
-                        <DialogContent>
-                            Are you sure you want to delete the holiday?
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleCloseAlert}>No</Button>
-                            <Button onClick={handleDeletion}>Yes delete</Button>
-                        </DialogActions>
-                    </Dialog>
+
+                    <CustomDialog openAlert={openEditAlert} handleCloseAlert={handleCloseEditAlert}
+                                  handleAction={handleEdit}
+                                  dialogTitle={"Edit holiday"}
+                                  dialogContent={(holidayToEdit.start && startDate && endDate) && `Are you sure you want to edit the holiday from ${holidayToEdit.start.toLocaleDateString()}
+                                   - ${holidayToEdit.end.toLocaleDateString()}  to ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()} ?`}
+                                  cancel={"No"} confirm={"Yes edit"}/>
+
+                    <CustomDialog openAlert={openDeletionAlert} handleCloseAlert={handleCloseDeletionAlert}
+                                  handleAction={handleDeletion}
+                                  dialogTitle={"Delete holiday"}
+                                  dialogContent={holidayToDelete.start && `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString()}
+                                   - ${holidayToDelete.end.toLocaleDateString()} ?`}
+                                  cancel={"No"} confirm={"Yes delete"}/>
                     <Button className={styles.extraMargin} type="submit"
                             variant="contained">
                         Save
