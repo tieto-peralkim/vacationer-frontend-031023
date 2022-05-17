@@ -17,6 +17,8 @@ import {
     Switch
 } from "@mui/material";
 
+
+// Deprecated ******************************************
 export default function Heat() {
     const INITIAL_NUMBER_OF_EMPLOYEES = 8
     const [startDate, setStartDate] = useState(new Date());

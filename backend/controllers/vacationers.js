@@ -50,7 +50,7 @@ vacationersRouter.delete('/vacationers/:id', (req, res, next) => {
 
 })
 
-// Returns vacationers and their holiday amount between start and end dates
+// Returns vacationers and their holiday amount between start and end dates (basically used for calculating the amount of vacationers on given timespan)
 vacationersRouter.get('/vacationeramount', (req, res, next) => {
     let start = req.query.start;
     let end = req.query.end;

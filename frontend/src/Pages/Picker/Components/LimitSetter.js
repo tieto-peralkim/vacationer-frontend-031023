@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import styles from "../picker.module.css";
 
 export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, workerLimit, dailyVacationers}) {
     const [average, setAverage] = useState(0)
@@ -9,7 +10,7 @@ export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, w
             sumOfVacationers += dailyVacationers[i][1]
         }
         if (dailyVacationers.length !== 0) {
-            setAverage(sumOfVacationers / dailyVacationers.length)
+            setAverage(Math.round((sumOfVacationers / dailyVacationers.length) * 2) / 2)
         }
     }, [dailyVacationers, endDate])
 
@@ -34,7 +35,7 @@ export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, w
             {/*        )}*/}
             {/*</div>*/}
             <div>
-                Average: {endDate ? Math.round(average * 2) / 2 : "?"} people / day on holiday
+                Average: <b className={styles.averageNumber}>{endDate ? average : "?"}</b> people / day on holiday
             </div>
         </>
     )

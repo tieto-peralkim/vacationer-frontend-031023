@@ -6,6 +6,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import styles from "./panorama.module.css";
 import {CompactPicker} from "react-color";
+import ce from "react-datepicker";
 
 export default function Panorama() {
 
@@ -21,7 +22,7 @@ export default function Panorama() {
 
     const [holidaySymbol, setHolidaySymbol] = useState(true)
     const WORKER_AMOUNT = 20;
-    const WORKER_TITLE = "Paikalla"
+    const WORKER_TITLE = "Employees"
 
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst)
     const [selectedYear, setSelectedYear] = useState(thisMonthFirst.getFullYear())
@@ -31,7 +32,7 @@ export default function Panorama() {
     let hiddenColumns = []
 
 
-    // https://date.nager.at/ Public holiday API
+    // Fetching Finnish public holidays from Public holiday API (https://date.nager.at/)
     useEffect(() => {
         axios.get(`https://date.nager.at/api/v3/publicholidays/${selectedYear}/FI`)
             .then((response) => {
@@ -51,23 +52,25 @@ export default function Panorama() {
     }, [selectedYear])
 
     useEffect(() => {
+        // If year changes, fetch public holidays
         if (selectedDate.getFullYear() !== selectedYear) {
             setSelectedYear(selectedDate.getFullYear())
         }
-        let publicDays = []
+        let publicMonthsHolidays = []
+        // This could be more effective
         for (let i = 0; i < publicHolidays.length; i++) {
             if (publicHolidays[i].month === selectedDate.getMonth() + 1) {
-                publicDays.push(publicHolidays[i].day)
+                publicMonthsHolidays.push(publicHolidays[i].day)
             }
         }
-        console.log("publi", publicDays)
-        setPublicHolidaysOfMonth(publicDays)
+        console.log("publi", publicMonthsHolidays)
+        setPublicHolidaysOfMonth(publicMonthsHolidays)
     }, [selectedDate, publicHolidays])
 
-    const handleClick = () => {
+    const handleColorPickerClick = () => {
         setDisplayColorPicker(prevValue => !prevValue)
     }
-    const handleClose = () => {
+    const handleColorPickerClose = () => {
         setDisplayColorPicker(false)
     }
 
@@ -81,7 +84,7 @@ export default function Panorama() {
         setWeekendHolidayColor(color.hex)
     }
 
-    const setExcludedDates = (vacationers) => {
+    const setMonthsHolidays = (vacationers) => {
         let pureVacations = [];
         let namesOfVacationers = []
         for (let i = 0; i < vacationers.length; i++) {
@@ -96,6 +99,7 @@ export default function Panorama() {
             holidayObject.end = vacationers[i].vacations.end
             holidayObject.comment = vacationers[i].vacations.comment
             holidayObject.id = vacationers[i].vacations._id
+
             let repeatingHolidayer;
             repeatingHolidayer = pureVacations.find(holiday => holiday.name === holidayObject.name);
             console.log("repee", repeatingHolidayer)
@@ -164,12 +168,14 @@ export default function Panorama() {
         // }
     };
 
+    // Sets the start and end date of holidays for shown calendar month
     const setNumbers = (holidayObject, start, end) => {
         console.log("obje", start.getDate(), end)
 
         let startingNumber = 0
         let endingNumber = 0
 
+        // Voidaanko lyhentää?
         if (start.getMonth() === end.getMonth()) {
             startingNumber = start.getDate()
             endingNumber = end.getDate()
@@ -285,9 +291,9 @@ export default function Panorama() {
     }
 
 
-    // Month lengths (0-11)
+    // Hide last days depending on the month lengths (0-11)
     useEffect(() => {
-        // Leap year
+        // Leap year February
         if (((selectedDate.getFullYear() % 4 === 0 && selectedDate.getFullYear() % 100 !== 0) || selectedDate.getFullYear() % 400 === 0) && selectedDate.getMonth() === 1) {
             setHiddenColumns(["thirty", "thirtyone"])
         } else {
@@ -320,7 +326,7 @@ export default function Panorama() {
 
         axios.get(`http://localhost:3001/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`)
             .then((response) => {
-                setExcludedDates(response.data);
+                setMonthsHolidays(response.data);
                 console.log(response.data)
             })
             .catch((error) => {
@@ -336,14 +342,15 @@ export default function Panorama() {
     // }) => {
     //     const [value, setValue] = useState(initialValue)
     //
-    //     const onChange = e => {
+    //     const onClick = () => {
     //         setValue(true)
+    //         console.log("painoooo")
     //     }
     //     useEffect(() =>{
     //         setValue(initialValue)
     //     }, [initialValue])
     //
-    //     return <button>{value}</button>
+    //     return <button value={value} onClick={onClick}/>
     // }
     //
     // const defaultColumn = {
@@ -353,7 +360,7 @@ export default function Panorama() {
     const columns = useMemo(
         () => [
             {
-                Header: 'name',
+                Header: 'Nimi',
                 accessor: 'name',
             },
             {
@@ -518,6 +525,7 @@ export default function Panorama() {
             }
             let dateToCheck = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), index)
 
+            // Saturday or Sunday
             if (dateToCheck.getDay() === 0 || dateToCheck.getDay() === 6) {
                 if (holiday === holidaySymbol) {
                     colorToAdd = weekendHolidayColor
@@ -569,9 +577,9 @@ export default function Panorama() {
     }
     return (
         <>
-            {/*<Button onClick={handleClick}>Holidaycolor</Button>*/}
+            {/*<Button onClick={handleColorPickerClick}>Holidaycolor</Button>*/}
             {/*{displayColorPicker ? <div className={styles.popover}>*/}
-            {/*    <div className={styles.cover} onClick={handleClose}/>*/}
+            {/*    <div className={styles.cover} onClick={handleColorPickerClose}/>*/}
             <div className={styles.colorPickers}>
                 <div><h3>Holiday color</h3>
                     <CompactPicker color={holidayColor} onChangeComplete={handleHolidayColorChange}/></div>
@@ -594,10 +602,10 @@ export default function Panorama() {
             <div className={styles.wholePage}>
                 <Box className={styles.buttons}>
                     <Button onClick={() => goBackMonth()} startIcon={
-                        <ArrowBackIosIcon/>}>Edellinen</Button>{selectedDate.toLocaleString('default', {
+                        <ArrowBackIosIcon/>}>Previous</Button>{selectedDate.toLocaleString('en-GB', {
                     month: 'long',
                     year: 'numeric'
-                })}<Button onClick={() => goForwardMonth()} endIcon={<ArrowForwardIosIcon/>}>Seuraava</Button>
+                })}<Button onClick={() => goForwardMonth()} endIcon={<ArrowForwardIosIcon/>}>Next</Button>
                 </Box>
                 {allHolidaysSelectedTime.length > 0 ? <table {...getTableProps()} style={{border: 'solid 1px blue'}}>
                     <thead>
@@ -631,6 +639,7 @@ export default function Panorama() {
                                             {...cell.getCellProps(
                                                 {
                                                     onClick: () => {
+                                                        console.log("joo", cell.value)
                                                         console.log("juuh", cell.row.original.name, cell.column.Header)
                                                     }
                                                 }

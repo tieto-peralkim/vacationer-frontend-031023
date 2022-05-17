@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 mongoose.set('useFindAndModify', false)
 
+// Tätä voisi vielä miettiä tarkemmin (pakolliset/vaihtoehtoiset kentät)
 const vacationerSchema = new mongoose.Schema({
     name: {
         type: String,

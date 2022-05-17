@@ -37,7 +37,27 @@
   }
 }
 
+.outlet {
+  margin-top: 50px;
+}
+
+.headline {
+  position: absolute;
+  left: 50%;
+}
+
+.appName {
+  color: #3383e7;
+}
 .navigation {
-  padding: 5%;
-  color: darkslategrey;
+  border-style: solid;
+  border-color: #00B7FF;
+  border-top: 0;
+  border-width: 1px;
+}
+
+.navigationText {
+  text-decoration: none;
+  padding: 30px;
+  color: #3383e7;
 }

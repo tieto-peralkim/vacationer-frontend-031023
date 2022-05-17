@@ -1,6 +1,6 @@
 const Vacationer= require("./models/vacationer");
 
-async function fetchVacationData(start, end) {
+async function fetchVacationsBetween(start, end) {
     const all = await Vacationer.aggregate([
 
         // ANTAA YKSITTÄISET LOMAT ERILLISINÄ
@@ -28,4 +28,4 @@ async function fetchVacationData(start, end) {
         ])
     return all;
 }
-module.exports = fetchVacationData
+module.exports = fetchVacationsBetween

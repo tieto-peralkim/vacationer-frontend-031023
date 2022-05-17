@@ -29,17 +29,13 @@ import CustomDialog from "./Components/CustomDialog";
 
 registerLocale("fi", fi);
 
+// Time stamps should be checked
 export default function Picker() {
-
-
-    let [isBlocking, setIsBlocking] = useState(false);
-
 
     const WORKER_LIMIT_DEFAULT = 5;
     //  Dates are in UTC time
     const today = new Date();
     today.setUTCHours(0, 0, 0)
-
     const nextMonday = new Date();
     nextMonday.setUTCDate(
         today.getUTCDate() + ((1 + 7 - today.getUTCDay()) % 7 || 7)
@@ -48,6 +44,7 @@ export default function Picker() {
     const nextSunday = new Date();
     nextSunday.setTime(nextMonday.getTime() + 6 * 24 * 60 * 60 * 1000);
     nextSunday.setUTCHours(12, 0, 0, 0);
+
 
     const [startDate, setStartDate] = useState(new Date());
     startDate.setUTCHours(10, 0, 0, 0);
@@ -100,6 +97,7 @@ export default function Picker() {
         setOverlapErrorMessage(false);
         setDaysInPastErrorMessage(false);
         setDailyVacationers([])
+        setComment("")
         resetDates();
     };
 
@@ -141,8 +139,6 @@ export default function Picker() {
     }, [startDate]);
 
     useEffect(() => {
-        setSave(false)
-        console.log("HAKEEE!")
         axios
             .get("http://localhost:3001/vacationers")
             .then((response) => {
@@ -174,7 +170,7 @@ export default function Picker() {
             axios
                 .put(`http://localhost:3001/vacationers/${chosenVacationer.id}`, newVacation)
                 .then((response) => {
-                    setSave(true);
+                    setSave(!save);
                     console.log(response)
                 })
                 .catch((error) => {
@@ -189,46 +185,9 @@ export default function Picker() {
         }
     };
 
-    const sendToSlack = () => {
-        let numberOfVacationers = 0;
-        let vacationersPerDay = []
 
-        axios.get(`http://localhost:3001/vacationeramount?start=${nextMonday.toISOString()}&end=${nextSunday.toISOString()}`)
-            .then((response) => {
-                numberOfVacationers = response.data.length;
-                axios.get(`http://localhost:3001/timespan?start=${nextMonday.toISOString()}&end=${nextSunday.toISOString()}`)
-                    .then((response) => {
-                        console.log("response", response.data)
-                        vacationersPerDay = response.data;
-                    })
-                    .then(() =>
-                        axios.post(process.env.REACT_APP_SLACK_URI, JSON.stringify({
-                            "text": `Ensi viikolla yhteensä ${numberOfVacationers} lomalaista:
-                ma: ${new Date(vacationersPerDay[0][0]).toLocaleDateString()} : ${vacationersPerDay[0][1]},
-                ti: ${new Date(vacationersPerDay[1][0]).toLocaleDateString()} : ${vacationersPerDay[1][1]},
-                ke: ${new Date(vacationersPerDay[2][0]).toLocaleDateString()} : ${vacationersPerDay[2][1]},
-                to: ${new Date(vacationersPerDay[3][0]).toLocaleDateString()} : ${vacationersPerDay[3][1]},
-                pe: ${new Date(vacationersPerDay[4][0]).toLocaleDateString()} : ${vacationersPerDay[4][1]},
-                la: ${new Date(vacationersPerDay[5][0]).toLocaleDateString()} : ${vacationersPerDay[5][1]},
-                su: ${new Date(vacationersPerDay[6][0]).toLocaleDateString()} : ${vacationersPerDay[6][1]}`
-                        }))
-                            .then((response) => {
-                                console.log("rs", response)
-                            })
-                            .catch((error) => {
-                                console.error("There was a Slack post error!", error);
-                            }))
-                    .catch((error) => {
-                        console.error("There was a timespan get error!", error);
-                    })
-            })
-            .catch((error) => {
-                console.error("There was a vacationeramount get error!", error);
-            })
-    }
-
+    // Kellonajan asettaminen startDatelle?
     const resetDates = () => {
-        // sendToSlack()
         setStartDate(new Date());
         setEndDate(null);
     }
@@ -300,6 +259,7 @@ export default function Picker() {
             } else {
                 newHoliday.upcoming = false;
             }
+            newHoliday.edited = true;
             console.log("NHD", newHoliday)
             setHolidays((oldHolidays) => [...oldHolidays, newHoliday]);
             handleCloseCalendar()
@@ -459,7 +419,7 @@ export default function Picker() {
     }
 
     return (
-        <div>
+        <div  className={styles.mainView}>
             <h1>Picker</h1>
             {/*<h4>*/}
             {/*    Today's {today.toLocaleDateString()}. getDay is {today.getUTCDay()}*/}
@@ -468,16 +428,16 @@ export default function Picker() {
             {/*    Next week {nextMonday.toISOString()} - {nextSunday.toISOString()}*/}
             {/*</h4>*/}
 
-            <Divider/>
-            On vacation {nextMonday.getUTCDate()}.{nextMonday.getUTCMonth() + 1}.
-            {nextMonday.getUTCFullYear()} - {nextSunday.getUTCDate()}.
-            {nextSunday.getUTCMonth() + 1}.{nextSunday.getUTCFullYear()}
-            : <Apitester start={nextMonday.toISOString()} end={nextSunday.toISOString()}/> people
-            <Divider/>
-            <br/>
+            {/*<Divider/>*/}
+            {/*On vacation {nextMonday.getUTCDate()}.{nextMonday.getUTCMonth() + 1}.*/}
+            {/*{nextMonday.getUTCFullYear()} - {nextSunday.getUTCDate()}.*/}
+            {/*{nextSunday.getUTCMonth() + 1}.{nextSunday.getUTCFullYear()}*/}
+            {/*: <Apitester start={nextMonday.toISOString()} end={nextSunday.toISOString()}/> people*/}
+            {/*<Divider/>*/}
+            {/*<br/>*/}
             <div>
                 <form onSubmit={updateVacation} className={styles.form}>
-                    <FormControl fullWidth>
+                    <FormControl className={styles.nameSelectBox}>
                         <InputLabel>Choose your name</InputLabel>
                         <Select defaultValue={chosenVacationer ? chosenVacationer.name : ""}
                                 value={chosenVacationer ? chosenVacationer.name : ""}
@@ -524,11 +484,11 @@ export default function Picker() {
                     </Button>
                     <Modal className={styles.modal} open={openCalendar} onClose={handleCloseCalendar}>
                         <Box className={styles.box}>
-                            <h3>Chosen dates:<br/>
+                            <h2>Chosen dates:<br/>
                                 {startDate && <>{startDate.getUTCDate()}.{startDate.getUTCMonth() + 1}.{startDate.getUTCFullYear()}</>}
                                 {"  "} - {endDate && <>{endDate.getUTCDate()}.{endDate.getUTCMonth() + 1}.{endDate.getUTCFullYear()}</>}
                                 <div>{endDate ? daysInDateRange(startDate, endDate) : "?"} {daysInDateRange(startDate, endDate) === 1 ? "day" : "days"}</div>
-                            </h3>
+                            </h2>
                             {/*<Box className={styles.sliderBox}>*/}
                             {/*    <Typography>*/}
                             {/*        Worker limit <b>{workerLimit}</b>*/}
@@ -549,7 +509,7 @@ export default function Picker() {
                                          setAlertingDates={setAlertingDates}
                                          workerLimit={workerLimit}
                                          dailyVacationers={dailyVacationers}/>
-                            <div className={styles.mainView}>
+                            <div>
                                 <DatePicker
                                     locale="en"
                                     selected={startDate}
@@ -591,7 +551,7 @@ export default function Picker() {
                                             variant="contained">
                                         Edit a holiday
                                     </Button> :
-                                    <Button className={styles.buttonStyle} disabled={!endDate} onClick={addHoliday}
+                                    <Button className={styles.buttonStyle} disabled={!endDate || alertingDates.length !== 0} onClick={addHoliday}
                                             variant="contained">
                                         Add a holiday
                                     </Button>}
@@ -688,37 +648,37 @@ export default function Picker() {
                     </Button>
                 </form>
             </div>
-            <div>
-                <ul>
-                    {holidays.map((days) => (
-                        <li>
-                            {days.start.toLocaleDateString()} - {days.end.toLocaleDateString()}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div>
-                <ul>
-                    {vacationers.map((holidayer) => (
-                        <li key={holidayer.id}>
-                            {holidayer.name ? (
-                                <b>{holidayer.name}</b>
-                            ) : (
-                                <b>No name</b>
-                            )}
-                            <ul>
-                                {holidayer.vacations.map((vacations, index) => (
-                                    <li
-                                        key={index}
-                                    >
-                                        {vacations.start} - {vacations.end}
-                                    </li>
-                                ))}
-                            </ul>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+            {/*<div>*/}
+            {/*    <ul>*/}
+            {/*        {holidays.map((days) => (*/}
+            {/*            <li>*/}
+            {/*                {days.start.toLocaleDateString()} - {days.end.toLocaleDateString()}*/}
+            {/*            </li>*/}
+            {/*        ))}*/}
+            {/*    </ul>*/}
+            {/*</div>*/}
+            {/*<div>*/}
+            {/*    <ul>*/}
+            {/*        {vacationers.map((holidayer) => (*/}
+            {/*            <li key={holidayer.id}>*/}
+            {/*                {holidayer.name ? (*/}
+            {/*                    <b>{holidayer.name}</b>*/}
+            {/*                ) : (*/}
+            {/*                    <b>No name</b>*/}
+            {/*                )}*/}
+            {/*                <ul>*/}
+            {/*                    {holidayer.vacations.map((vacations, index) => (*/}
+            {/*                        <li*/}
+            {/*                            key={index}*/}
+            {/*                        >*/}
+            {/*                            {vacations.start} - {vacations.end}*/}
+            {/*                        </li>*/}
+            {/*                    ))}*/}
+            {/*                </ul>*/}
+            {/*            </li>*/}
+            {/*        ))}*/}
+            {/*    </ul>*/}
+            {/*</div>*/}
         </div>
     )
         ;

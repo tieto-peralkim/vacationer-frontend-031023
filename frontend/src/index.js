@@ -15,7 +15,7 @@ ReactDOM.render(
             <Route path="/" element={<App/>}>
                 <Route path="picker" element={<Picker/>}/>
                 <Route path="panorama" element={<Panorama/>}/>
-                <Route path="heat" element={<Heat/>}/>
+                {/*<Route path="heat" element={<Heat/>}/>*/}
                 <Route path="admin" element={<Admin />}/>
                 <Route
                     path="*"
