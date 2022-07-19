@@ -13,6 +13,7 @@ import {
 import styles from "./admin.module.css";
 import Typography from "@mui/material/Typography";
 import CustomDialog from "../Picker/Components/CustomDialog";
+import TeamInput from "./Components/TeamInput";
 
 // Tähän pitäisi lisätä työntekijämäärien asetukset (määrä, minimimäärä)
 export default function Admin() {
@@ -35,9 +36,9 @@ export default function Admin() {
         today.getUTCDate() + ((1 + 7 - today.getUTCDay()) % 7 || 7)
     );
     nextMonday.setUTCHours(12, 0, 0, 0);
-    const nextSunday = new Date();
-    nextSunday.setTime(nextMonday.getTime() + 6 * 24 * 60 * 60 * 1000);
-    nextSunday.setUTCHours(12, 0, 0, 0);
+    const nextFriday = new Date();
+    nextFriday.setTime(nextMonday.getTime() + 4 * 24 * 60 * 60 * 1000);
+    nextFriday.setUTCHours(12, 0, 0, 0);
 
     useEffect(() => {
         axios.get("http://localhost:3001/vacationers").then((response) => {
@@ -83,10 +84,10 @@ export default function Admin() {
         let numberOfVacationers = 0;
         let vacationersPerDay = []
 
-        axios.get(`http://localhost:3001/vacationeramount?start=${nextMonday.toISOString()}&end=${nextSunday.toISOString()}`)
+        axios.get(`http://localhost:3001/vacationeramount?start=${nextMonday.toISOString()}&end=${nextFriday.toISOString()}`)
             .then((response) => {
                 numberOfVacationers = response.data.length;
-                axios.get(`http://localhost:3001/timespan?start=${nextMonday.toISOString()}&end=${nextSunday.toISOString()}`)
+                axios.get(`http://localhost:3001/timespan?start=${nextMonday.toISOString()}&end=${nextFriday.toISOString()}`)
                     .then((response) => {
                         console.log("response", response.data)
                         vacationersPerDay = response.data;
@@ -94,13 +95,11 @@ export default function Admin() {
                     .then(() =>
                         axios.post(process.env.REACT_APP_SLACK_URI, JSON.stringify({
                             "text": `Ensi viikolla yhteensä ${numberOfVacationers} lomalaista:
-                ma: ${new Date(vacationersPerDay[0][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[0][1]},
-                ti: ${new Date(vacationersPerDay[1][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[1][1]},
-                ke: ${new Date(vacationersPerDay[2][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[2][1]},
-                to: ${new Date(vacationersPerDay[3][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[3][1]},
-                pe: ${new Date(vacationersPerDay[4][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[4][1]},
-                la: ${new Date(vacationersPerDay[5][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[5][1]},
-                su: ${new Date(vacationersPerDay[6][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[6][1]}`
+                ma: ${new Date(vacationersPerDay[0][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[0][1]} (${vacationersPerDay[0][2]})
+                ti: ${new Date(vacationersPerDay[1][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[1][1]} (${vacationersPerDay[1][2]})
+                ke: ${new Date(vacationersPerDay[2][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[2][1]} (${vacationersPerDay[2][2]})
+                to: ${new Date(vacationersPerDay[3][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[3][1]} (${vacationersPerDay[3][2]})
+                pe: ${new Date(vacationersPerDay[4][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[4][1]} (${vacationersPerDay[4][2]})`
                         }))
                             .then((response) => {
                                 console.log("rs", response)
@@ -133,11 +132,12 @@ export default function Admin() {
             {/*    />*/}
             {/*</Box>*/}
             <h1>Admin</h1>
-            <InputLabel>Test Slack</InputLabel>
+            <TeamInput />
+            <InputLabel className={styles.extraMargin}>Test Slack</InputLabel>
             <Button onClick={sendToSlack} variant={"contained"}>
                 Send to Slack!
             </Button>
-            <InputLabel>Create a user</InputLabel>
+            <InputLabel className={styles.extraMargin}>Create a user</InputLabel>
             <TextField
                 style={{display: "block"}}
                 className={styles.extraMargin}
@@ -151,6 +151,7 @@ export default function Admin() {
             <Button onClick={createUser} variant="contained">
                 Create a new user
             </Button>
+            <InputLabel className={styles.extraMargin}>User list</InputLabel>
             <ul>
                 {vacationers.map((holidayer) => (<>
                     <li key={holidayer.id}>

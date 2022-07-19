@@ -1,12 +1,11 @@
 import {useEffect, useMemo, useState} from "react";
 import {useTable} from "react-table";
 import axios from "axios";
-import {Box, Button, TextField} from "@mui/material";
+import {Box, Button, Chip, CircularProgress, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import styles from "./panorama.module.css";
 import {CompactPicker} from "react-color";
-import ce from "react-datepicker";
 
 export default function Panorama() {
 
@@ -21,16 +20,22 @@ export default function Panorama() {
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("#666666")
 
     const [holidaySymbol, setHolidaySymbol] = useState(true)
+    const [replacementText, setReplacementText] = useState("");
+    const [showSpinner, setShowSpinner] = useState(false);
     const WORKER_AMOUNT = 20;
     const WORKER_TITLE = "Employees"
+    const TODAY_COLOR = "#e30f2d"
 
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst)
     const [selectedYear, setSelectedYear] = useState(thisMonthFirst.getFullYear())
     const [publicHolidaysOfMonth, setPublicHolidaysOfMonth] = useState([])
     const [publicHolidays, setPublicHolidays] = useState(thisMonthFirst.getFullYear())
 
-    let hiddenColumns = []
-
+    const hiddenColumns = [];
+    const [teams, setTeams] = useState([]);
+    const [teamToShow, setTeamToShow] = useState("");
+    const [selectedVacationers, setSelectedVacationers] = useState([]);
+    const [allMonthsVacationers, setAllMonthsVacationers] = useState([]);
 
     // Fetching Finnish public holidays from Public holiday API (https://date.nager.at/)
     useEffect(() => {
@@ -50,6 +55,23 @@ export default function Panorama() {
                 console.error("There was a get error!", error);
             })
     }, [selectedYear])
+
+    useEffect(() => {
+        setMonthsHolidays(selectedVacationers)
+    }, [selectedVacationers])
+
+    // Fetching teams from DB
+    useEffect(() => {
+        axios
+            .get("http://localhost:3001/teams")
+            .then((response) => {
+                setTeams(response.data);
+                console.log("TEAMS", response.data);
+            })
+            .catch((error) => {
+                console.log("There was a teams get error!", error)
+            });
+    }, [])
 
     useEffect(() => {
         // If year changes, fetch public holidays
@@ -84,11 +106,38 @@ export default function Panorama() {
         setWeekendHolidayColor(color.hex)
     }
 
+    const filterByTeam = (teamName) => {
+        console.log("TIIIMIII", teamName)
+        let filteringTeam = "";
+
+        // Retrieve team by name
+        for (let i = 0; i < teams.length; i++) {
+            if (teams[i].title === teamName) {
+                console.log("filterByTeam:", teams[i])
+                filteringTeam = teams[i];
+                break;
+            }
+        }
+
+        let filteredUsers = [];
+        for (let i = 0; i < filteringTeam.members.length; i++) {
+            // Filter the team's holidays from all the holidays of the month
+            const filteredUser = selectedVacationers.filter(
+                vacationer => vacationer.name.split(" ").indexOf(filteringTeam.members[i].name) !== -1)
+            if (filteredUser.length !== 0){
+                filteredUsers.push(filteredUser)
+            }
+        }
+        // An array of arrays to an array
+        filteredUsers = filteredUsers.flat();
+        console.log("filteredUsers", filteredUsers)
+        setMonthsHolidays(filteredUsers);
+    }
+
     const setMonthsHolidays = (vacationers) => {
         let pureVacations = [];
         let namesOfVacationers = []
         for (let i = 0; i < vacationers.length; i++) {
-            console.log(vacationers[i].vacations.start)
             let holidayObject = new Object()
             if (vacationers[i].name.length > 9) {
                 holidayObject.name = vacationers[i].name.slice(0, 9) + "..."
@@ -293,6 +342,8 @@ export default function Panorama() {
 
     // Hide last days depending on the month lengths (0-11)
     useEffect(() => {
+        setShowSpinner(true);
+        setReplacementText("");
         // Leap year February
         if (((selectedDate.getFullYear() % 4 === 0 && selectedDate.getFullYear() % 100 !== 0) || selectedDate.getFullYear() % 400 === 0) && selectedDate.getMonth() === 1) {
             setHiddenColumns(["thirty", "thirtyone"])
@@ -326,11 +377,15 @@ export default function Panorama() {
 
         axios.get(`http://localhost:3001/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`)
             .then((response) => {
-                setMonthsHolidays(response.data);
-                console.log(response.data)
+                setSelectedVacationers(response.data);
+                setAllMonthsVacationers(response.data);
+                console.log("response:", response.data)
+                setShowSpinner(false);
             })
             .catch((error) => {
+                setReplacementText("Sorry, no connection to database");
                 console.error("There was a get error!", error);
+                setShowSpinner(false);
             })
     }, [selectedDate])
 
@@ -360,7 +415,7 @@ export default function Panorama() {
     const columns = useMemo(
         () => [
             {
-                Header: 'Nimi',
+                Header: 'Name',
                 accessor: 'name',
             },
             {
@@ -516,6 +571,7 @@ export default function Panorama() {
     }
 
 
+    // Tätä voisi selkeyttää ja tehostaa
     const isCommonHoliday = (holiday, index) => {
         let colorToAdd = null
 
@@ -533,6 +589,7 @@ export default function Panorama() {
                     colorToAdd = weekendColor
                 }
             }
+
             if (publicHolidaysOfMonth.filter(e => e === index).length > 0) {
                 if (holiday === holidaySymbol) {
                     colorToAdd = weekendHolidayColor
@@ -540,6 +597,7 @@ export default function Panorama() {
                     colorToAdd = weekendColor
                 }
             }
+            // If Employees row
             if (typeof holiday === "number" || holiday === WORKER_TITLE) {
                 colorToAdd = "bisque"
                 if (holiday < 0.85 * WORKER_AMOUNT) {
@@ -561,7 +619,7 @@ export default function Panorama() {
     const setTodayHeader = (header) => {
         console.log("jotain", header, selectedDate.getDate())
         if (today.getFullYear() === selectedDate.getFullYear() && today.getMonth() === selectedDate.getMonth() && header == today.getDate()) {
-            return "blue"
+            return TODAY_COLOR
         } else {
             return "aliceblue"
         }
@@ -570,35 +628,64 @@ export default function Panorama() {
     const setTodayColumn = (value) => {
         console.log("valuu", value)
         if (today.getFullYear() === selectedDate.getFullYear() && today.getMonth() === selectedDate.getMonth() && parseInt(value.Header) === today.getDate()) {
-            return "solid 2px blue"
+            return `solid 2px ${TODAY_COLOR}`
         } else {
             return "solid 1px black"
         }
     }
     return (
         <>
-            {/*<Button onClick={handleColorPickerClick}>Holidaycolor</Button>*/}
-            {/*{displayColorPicker ? <div className={styles.popover}>*/}
-            {/*    <div className={styles.cover} onClick={handleColorPickerClose}/>*/}
-            <div className={styles.colorPickers}>
-                <div><h3>Holiday color</h3>
-                    <CompactPicker color={holidayColor} onChangeComplete={handleHolidayColorChange}/></div>
-                <div><h3>Weekend color</h3>
-                    <CompactPicker color={weekendColor} onChangeComplete={handleWeekendColorChange}/></div>
-                <div><h3>Weekend holiday color</h3>
-                    <CompactPicker color={weekendHolidayColor} onChangeComplete={handleWeekendHolidayColorChange}/>
+            <Button onClick={handleColorPickerClick}>Holidaycolor</Button>
+            {displayColorPicker ? <div className={styles.popover}>
+                <div className={styles.cover} onClick={handleColorPickerClose}/>
+                <div className={styles.colorPickers}>
+                    <div><h3>Holiday color</h3>
+                        <CompactPicker color={holidayColor} onChangeComplete={handleHolidayColorChange}/></div>
+                    <div><h3>Weekend color</h3>
+                        <CompactPicker color={weekendColor} onChangeComplete={handleWeekendColorChange}/></div>
+                    <div><h3>Weekend holiday color</h3>
+                        <CompactPicker color={weekendHolidayColor} onChangeComplete={handleWeekendHolidayColorChange}/>
+                    </div>
                 </div>
+                <TextField
+                    // className={styles.}
+                    label="Holiday symbol"
+                    variant="outlined"
+                    value={holidaySymbol}
+                    onChange={(e) => {
+                        setHolidaySymbol(e.target.value)
+                    }}/>
+            </div> : null}
+
+            <div>
+                <FormControl className={styles.nameSelectBox}>
+                    <InputLabel>Choose team</InputLabel>
+                    <Chip variant={!teamToShow ? "" : "outlined"} label="All teams" color="primary" onClick={() => {
+                        setMonthsHolidays(allMonthsVacationers);
+                        setTeamToShow("");
+                    }}/>
+                    {teams.map ((team) => (
+                        <Chip variant={teamToShow === team.title ? "" : "outlined"} label={team.title} onClick={() =>{
+                            setTeamToShow(team.title);
+                            filterByTeam(team.title);
+                            console.log("teamToShow", teamToShow);
+                        }}/>
+                    ))}
+                    {/*<Select*/}
+                    {/*    value={teamToShow ? teamToShow.title : ""}*/}
+                    {/*    onChange={e => {*/}
+                    {/*        setTeamToShow(e.target.value);*/}
+                    {/*        filterByTeam(e.target.value);*/}
+                    {/*        console.log("teamToShow", teamToShow);*/}
+                    {/*    }}>*/}
+                    {/*    {teams.map((team) => (*/}
+                    {/*            <MenuItem key={team.id} value={team.title}>{team.title}</MenuItem>*/}
+                    {/*        )*/}
+                    {/*    )}*/}
+
+                    {/*</Select>*/}
+                </FormControl>
             </div>
-            {/*</div> : null}*/}
-            <TextField
-                // className={styles.}
-                label="Holiday symbol"
-                variant="outlined"
-                value={holidaySymbol}
-                onChange={(e) => {
-                    setHolidaySymbol(e.target.value)
-                    setNumbers()
-                }}/>
             <div className={styles.wholePage}>
                 <Box className={styles.buttons}>
                     <Button onClick={() => goBackMonth()} startIcon={
@@ -607,7 +694,7 @@ export default function Panorama() {
                     year: 'numeric'
                 })}<Button onClick={() => goForwardMonth()} endIcon={<ArrowForwardIosIcon/>}>Next</Button>
                 </Box>
-                {allHolidaysSelectedTime.length > 0 ? <table {...getTableProps()} style={{border: 'solid 1px blue'}}>
+                {allHolidaysSelectedTime.length > 0 && <table {...getTableProps()} style={{border: 'solid 1px blue'}}>
                     <thead>
                     {headerGroups.map(headerGroup => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
@@ -661,7 +748,8 @@ export default function Panorama() {
                         )
                     })}
                     </tbody>
-                </table> : <p>No vacationers</p>}
+                </table>}
+                {showSpinner ? <CircularProgress/> : <p>{replacementText}</p>}
             </div>
         </>
     )

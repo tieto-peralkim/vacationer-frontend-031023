@@ -8,3 +8,7 @@ TODO:
 Smarter way for the calendar excluded dates.
 How to add/edit old holidays? Do they matter?
 If you edit holiday which is partly in past, it gives wrong error message if new dates are in the past.
+
+* tags for work teams
+* personal settings (calendar colors, default tags)
+* calendar filtering (all workers/workers on holiday/based on tag)

@@ -22,3 +22,7 @@
     justify-content: space-evenly;
     margin: 10px
 }
+.nameSelectBox {
+    width: 30%;
+    display: inline-block;
+}

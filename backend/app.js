@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const app = express();
 const cors = require('cors')
 const vacationsRouter = require('./controllers/vacationers')
+const teamsRouter = require('./controllers/teams')
 const middleWare = require('./utils/middleware')
 const mongoose = require('mongoose')
 
@@ -22,6 +23,7 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
 
 app.use(vacationsRouter)
+app.use(teamsRouter)
 
 app.use(middleWare.unknownEndpoint)
 app.use(middleWare.errorHandler)

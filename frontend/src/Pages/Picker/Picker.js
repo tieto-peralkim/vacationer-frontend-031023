@@ -46,8 +46,9 @@ export default function Picker() {
     nextSunday.setUTCHours(12, 0, 0, 0);
 
 
+
     const [startDate, setStartDate] = useState(new Date());
-    startDate.setUTCHours(10, 0, 0, 0);
+    startDate.setUTCHours(12, 0, 0, 0);
     const [endDate, setEndDate] = useState(null);
     const [alertingDates, setAlertingDates] = useState([])
 
@@ -422,7 +423,7 @@ export default function Picker() {
         <div  className={styles.mainView}>
             <h1>Picker</h1>
             {/*<h4>*/}
-            {/*    Today's {today.toLocaleDateString()}. getDay is {today.getUTCDay()}*/}
+            {/*    Today's {today.toLocaleDateString("fi-FI")}. getDay is {today.getUTCDay()}*/}
             {/*</h4>*/}
             {/*<h4>*/}
             {/*    Next week {nextMonday.toISOString()} - {nextSunday.toISOString()}*/}
@@ -469,14 +470,14 @@ export default function Picker() {
                     {/*        onChange={(e) => setAnnualAmount(e.target.value)}*/}
                     {/*    />*/}
                     {/*</Box>*/}
-                    {chosenVacationer &&
-                        <>
-                            FOUND {holidays.length} HOLIDAYS ({dayAmount} DAYS)
-                            OF WHICH {calculateUpcomingHolidays()[0]} ({calculateUpcomingHolidays()[1]} DAYS) ARE
-                            STILL
-                            COMING<br/>
-                            {/*HOLIDAYS LEFT {annualAmount - dayAmount}*/}
-                        </>}
+                    {/*{chosenVacationer &&*/}
+                    {/*    <div className={}>*/}
+                    {/*        FOUND {holidays.length} HOLIDAYS ({dayAmount} DAYS)*/}
+                    {/*        OF WHICH {calculateUpcomingHolidays()[0]} ({calculateUpcomingHolidays()[1]} DAYS) ARE*/}
+                    {/*        STILL*/}
+                    {/*        COMING<br/>*/}
+                    {/*        /!*HOLIDAYS LEFT {annualAmount - dayAmount}*!/*/}
+                    {/*    </div>}*/}
                     <Button className={styles.extraMargin} variant="contained" color="primary"
                             disabled={!chosenVacationer}
                             onClick={handleOpenCalendar}>
@@ -541,7 +542,7 @@ export default function Picker() {
 
                             <div className={styles.addHoliday}>
                                 <TextField
-                                    label="Comment about the holiday"
+                                    label="Description"
                                     variant="outlined"
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}/>
@@ -557,12 +558,14 @@ export default function Picker() {
                                     </Button>}
                             </div>
                             <Stack sx={{width: '100%'}} spacing={2}>
-                                {alertingDates.length > 0 && <Alert severity="info">Choose new start and end dates!
-                                    {alertingDates.map((daily, index) => (
-                                        <div key={index}>{new Date(daily[0]).toLocaleDateString()}: {daily[1]} people on
-                                            holiday</div>
-                                    ))}
-                                </Alert>}
+
+                                {alertingDates.length > 0 && <Alert severity="info">Choose new dates! Too many people on holiday!
+                                        <ul>
+                                        {alertingDates.map((daily, index) => (
+                                            <li className={styles.alertingDates} key={index}>{new Date(daily[0]).toLocaleDateString("fi-FI")} ({daily[1]}) </li>
+                                        ))}
+                                        </ul>
+                                    </Alert>}
 
                                 {startDateErrorMessage && <Alert onClose={() => {
                                 }}>Choose the start date!</Alert>}
@@ -625,22 +628,22 @@ export default function Picker() {
                     )}
                     {chosenVacationer !== "" && holidays.length === 0 && <p>No vacations...</p>}
                     {!showAllVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&
-                        <Button onClick={() => setShowAllVacations(true)}>Show old vacations</Button>}
+                        <Button onClick={() => setShowAllVacations(true)}>Show past vacations</Button>}
                     {showAllVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&
-                        <Button onClick={() => setShowAllVacations(false)}>Hide old vacations</Button>}
+                        <Button onClick={() => setShowAllVacations(false)}>Hide past vacations</Button>}
 
                     <CustomDialog openAlert={openEditAlert} handleCloseAlert={handleCloseEditAlert}
                                   handleAction={handleEdit}
                                   dialogTitle={"Edit holiday"}
-                                  dialogContent={(holidayToEdit.start && startDate && endDate) && `Are you sure you want to edit the holiday from ${holidayToEdit.start.toLocaleDateString()}
-                                   - ${holidayToEdit.end.toLocaleDateString()}  to ${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()} ?`}
+                                  dialogContent={(holidayToEdit.start && startDate && endDate) && `Are you sure you want to edit the holiday from ${holidayToEdit.start.toLocaleDateString("fi-FI")}
+                                   - ${holidayToEdit.end.toLocaleDateString("fi-FI")}  to ${startDate.toLocaleDateString("fi-FI")} - ${endDate.toLocaleDateString("fi-FI")} ?`}
                                   cancel={"No"} confirm={"Yes edit"}/>
 
                     <CustomDialog openAlert={openDeletionAlert} handleCloseAlert={handleCloseDeletionAlert}
                                   handleAction={handleDeletion}
                                   dialogTitle={"Delete holiday"}
-                                  dialogContent={holidayToDelete.start && `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString()}
-                                   - ${holidayToDelete.end.toLocaleDateString()} ?`}
+                                  dialogContent={holidayToDelete.start && `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString("fi-FI")}
+                                   - ${holidayToDelete.end.toLocaleDateString("fi-FI")} ?`}
                                   cancel={"No"} confirm={"Yes delete"}/>
                     <Button className={styles.extraMargin} type="submit"
                             variant="contained">
@@ -652,7 +655,7 @@ export default function Picker() {
             {/*    <ul>*/}
             {/*        {holidays.map((days) => (*/}
             {/*            <li>*/}
-            {/*                {days.start.toLocaleDateString()} - {days.end.toLocaleDateString()}*/}
+            {/*                {days.start.toLocaleDateString("fi-FI")} - {days.end.toLocaleDateString("fi-FI")}*/}
             {/*            </li>*/}
             {/*        ))}*/}
             {/*    </ul>*/}

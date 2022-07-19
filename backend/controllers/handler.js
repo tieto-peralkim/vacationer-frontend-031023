@@ -1,4 +1,4 @@
-const fetchVacationsBetween = require("../mongo.js");
+const fetchVacationsBetween = require("../functions.js");
 
 // Creates the array of dates with vacationer numbers
 //https://dev.to/ashikpaul42/how-to-count-occurrences-of-dates-in-an-array-of-date-ranges-javascript-kjo
@@ -12,6 +12,7 @@ async function handleVacationData(start, end) {
         let vacationObject = {}
         vacationObject["start"] = new Date(holidaysBetweenDates[i].vacations.start)
         vacationObject["end"] = new Date(holidaysBetweenDates[i].vacations.end)
+        vacationObject["vacationers"] = holidaysBetweenDates[i].name
         holidayTimes.push(vacationObject)
     }
     console.log("DR", holidayTimes)
@@ -22,17 +23,20 @@ async function handleVacationData(start, end) {
     let arrayOfDates = []
     while (earlyDate <= lateDate) {
         let count = 0
+        let vacationersOfDay = []
         holidayTimes.forEach(
             function (range) {
                 console.log("onko ", earlyDate, " aikavälillä ", range.start, " - ", range.end, "? ", earlyDate >= range.start && earlyDate <= range.end)
                 if (earlyDate >= range.start && earlyDate <= range.end) {
                     count++
+                    vacationersOfDay.push(range.vacationers)
                 }
             }
         )
         let dateObject = []
         dateObject[0] = new Date(JSON.parse(JSON.stringify(earlyDate)))
         dateObject[1] = count
+        dateObject[2] = vacationersOfDay.join(", ")
         console.log("Objekti", dateObject)
         arrayOfDates.push(dateObject)
         earlyDate.setDate(earlyDate.getDate() + 1)

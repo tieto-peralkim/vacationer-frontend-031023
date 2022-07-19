@@ -32,7 +32,7 @@ vacationersRouter.get('/vacationers/:id', (req, res, next) => {
 vacationersRouter.put('/vacationers/:id', (req, res, next) => {
     const body = req.body;
     const id = req.params.id;
-    console.log(id)
+    console.log("putting", id, body)
     Vacationer.findByIdAndUpdate(id, body, {new: true, runValidators: true, context: 'query'})
         .then(updatedVacationer => {
             res.status(200).json(updatedVacationer)

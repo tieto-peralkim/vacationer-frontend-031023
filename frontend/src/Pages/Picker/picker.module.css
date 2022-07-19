@@ -56,7 +56,8 @@ ul {
   margin: 8px
 }
 .nameSelectBox {
-  width: 500px;
+  width: 600px;
+  display: inline-block;
 }
 .mainView{
   padding: 10px;
@@ -64,4 +65,7 @@ ul {
   justify-content: center;
   flex-direction: column;
   display: flex;
+}
+.alertingDates {
+  display: inline;
 }

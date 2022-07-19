@@ -4,3 +4,11 @@
 .slider{
     margin-bottom: 1%;
 }
+.extraMargin {
+    margin-top: 2% !important;
+    margin-bottom: 1% !important;
+}
+.nameSelectBox {
+    width: 30%;
+    display: inline-block;
+}

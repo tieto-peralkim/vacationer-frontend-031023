@@ -4,6 +4,7 @@ import styles from "../picker.module.css";
 export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, workerLimit, dailyVacationers}) {
     const [average, setAverage] = useState(0)
 
+    // voiko endDaten poistaa riippuvuuksista?
     useEffect(() => {
         let sumOfVacationers = 0
         for (let i = 0; i < dailyVacationers.length; i++) {
