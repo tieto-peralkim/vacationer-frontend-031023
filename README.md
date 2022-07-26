@@ -1,9 +1,9 @@
 # Vacation app
 
-*CRUD operations for vacations
-*holidays calendar with team filtering
-*sends notifications to Slack of upcoming holidays
-*admin features: CRUD-functions for users and teams
+* CRUD operations for vacations
+* holidays calendar with team filtering
+* sends notifications to Slack of upcoming holidays
+* admin features: CRUD-functions for users and teams
 
 ## TODO:
 **Calendar**
@@ -16,10 +16,10 @@
 * How to add/edit old holidays? Do they matter?
 * If you edit holiday which is partly in past, it gives wrong error message if new dates are in the past.
 
-**holiday datepicker**
+**Holiday datepicker**
 
 *count the average by team
 
-**new sections**
+**New**
 
 * personal settings (calendar colors)
