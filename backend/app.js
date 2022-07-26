@@ -5,6 +5,8 @@ const app = express();
 const cors = require('cors')
 const vacationsRouter = require('./controllers/vacationers')
 const teamsRouter = require('./controllers/teams')
+const timeframesRouter = require('./controllers/timeframes')
+
 const middleWare = require('./utils/middleware')
 const mongoose = require('mongoose')
 
@@ -24,6 +26,7 @@ app.use(express.urlencoded({extended: false}));
 
 app.use(vacationsRouter)
 app.use(teamsRouter)
+app.use(timeframesRouter)
 
 app.use(middleWare.unknownEndpoint)
 app.use(middleWare.errorHandler)

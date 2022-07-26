@@ -16,7 +16,6 @@ export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, w
     }, [dailyVacationers, endDate])
 
     useEffect(() => {
-        console.log("noi", holidayToEdit, dailyVacationers)
         let tooManyVacationers = []
         for (let i = 0; i < dailyVacationers.length; i++) {
             if (dailyVacationers[i][1] >= workerLimit) {
@@ -24,7 +23,6 @@ export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, w
             }
         }
         setAlertingDates(tooManyVacationers)
-        console.log("toomany", tooManyVacationers)
     }, [dailyVacationers, workerLimit])
 
     return (

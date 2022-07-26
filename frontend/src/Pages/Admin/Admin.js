@@ -1,32 +1,19 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {
-    Box,
-    Button, containerClasses,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    InputLabel,
-    Slider,
-    TextField
-} from "@mui/material";
+import {Box, Button, InputLabel, Slider,} from "@mui/material";
 import styles from "./admin.module.css";
+import TeamForm from "./Components/TeamForm";
 import Typography from "@mui/material/Typography";
-import CustomDialog from "../Picker/Components/CustomDialog";
-import TeamInput from "./Components/TeamInput";
+import UserForm from "./Components/UserForm";
 
 // Tähän pitäisi lisätä työntekijämäärien asetukset (määrä, minimimäärä)
 export default function Admin() {
 
     const [vacationers, setVacationers] = useState([]);
-    const [newUser, setNewUser] = useState([]);
-    const [userCreationError, setUserCreationError] = useState(false);
+
     const WORKER_LIMIT_DEFAULT = 12;
     const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
     const [completedAction, setCompletedAction] = useState(false)
-    const [openDeleteAlert, setOpenDeleteAlert] = useState(false)
-    const [userToDelete, setUserToDelete] = useState({})
-    const nameError = newUser.length < 3;
 
     // Slack dates
     const today = new Date();
@@ -43,42 +30,31 @@ export default function Admin() {
     useEffect(() => {
         axios.get("http://localhost:3001/vacationers").then((response) => {
             setVacationers(response.data);
-        });
+            console.log("vacationers", response.data);
+        })
+            .catch((error) => {
+                console.log("There was a vacationers get error!", error)
+            });
     }, [completedAction]);
 
-    const deleteUser = () => {
-        console.log("userID")
-        axios
-            .delete(`http://localhost:3001/vacationers/${userToDelete.id}`)
-            .then((response) => console.log(response))
-            .then(() => setCompletedAction(!completedAction))
-            .catch((error) => {
-                console.error("There was a delete error!", error);
-            });
-        setOpenDeleteAlert(false)
-    }
-
-    const createUser = (e) => {
-        e.preventDefault();
-        if (!nameError) {
-            const newVacation = {
-                name: newUser,
-            };
-            console.log("NV", newVacation);
-
-            axios
-                .post("http://localhost:3001/vacationers", newVacation)
-                .then((response) => console.log(response))
-                .then(() => setCompletedAction(!completedAction))
-                .catch((error) => {
-                    console.error("There was a post error!", error);
-                    setUserCreationError(true)
-                });
-            setNewUser("");
-        } else {
-            console.log("Not valid, check!");
+    const slackMessage = (vacationerAmount, weekList) => {
+        for (let i=0; i < weekList.length; i++){
+            if (weekList[i][1] === 0){
+                weekList[i][1] = "";
+            }
         }
-    };
+
+        console.log("weekList", weekList);
+
+        axios.post(process.env.REACT_APP_SLACK_URI, JSON.stringify({
+            "text": `Ensi viikolla yhteensä ${vacationerAmount} lomalaista:
+                ma ${new Date(weekList[0][0]).toLocaleDateString("fi-FI")}  ${weekList[0][1]} - ${weekList[0][2]}
+                ti ${new Date(weekList[1][0]).toLocaleDateString("fi-FI")}  ${weekList[1][1]} - ${weekList[1][2]}
+                ke ${new Date(weekList[2][0]).toLocaleDateString("fi-FI")}  ${weekList[2][1]} - ${weekList[2][2]}
+                to ${new Date(weekList[3][0]).toLocaleDateString("fi-FI")}  ${weekList[3][1]} - ${weekList[3][2]}
+                pe ${new Date(weekList[4][0]).toLocaleDateString("fi-FI")}  ${weekList[4][1]} - ${weekList[4][2]}`
+        }))
+    }
 
     const sendToSlack = () => {
         let numberOfVacationers = 0;
@@ -93,16 +69,9 @@ export default function Admin() {
                         vacationersPerDay = response.data;
                     })
                     .then(() =>
-                        axios.post(process.env.REACT_APP_SLACK_URI, JSON.stringify({
-                            "text": `Ensi viikolla yhteensä ${numberOfVacationers} lomalaista:
-                ma: ${new Date(vacationersPerDay[0][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[0][1]} (${vacationersPerDay[0][2]})
-                ti: ${new Date(vacationersPerDay[1][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[1][1]} (${vacationersPerDay[1][2]})
-                ke: ${new Date(vacationersPerDay[2][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[2][1]} (${vacationersPerDay[2][2]})
-                to: ${new Date(vacationersPerDay[3][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[3][1]} (${vacationersPerDay[3][2]})
-                pe: ${new Date(vacationersPerDay[4][0]).toLocaleDateString("fi-FI")} : ${vacationersPerDay[4][1]} (${vacationersPerDay[4][2]})`
-                        }))
+                        slackMessage(numberOfVacationers, vacationersPerDay)
                             .then((response) => {
-                                console.log("rs", response)
+                                console.log("response", response)
                             })
                             .catch((error) => {
                                 console.error("There was a Slack post error!", error);
@@ -131,55 +100,16 @@ export default function Admin() {
             {/*        onChange={(e) => setWorkerLimit(e.target.value)}*/}
             {/*    />*/}
             {/*</Box>*/}
-            <h1>Admin</h1>
-            <TeamInput />
-            <InputLabel className={styles.extraMargin}>Test Slack</InputLabel>
-            <Button onClick={sendToSlack} variant={"contained"}>
-                Send to Slack!
-            </Button>
-            <InputLabel className={styles.extraMargin}>Create a user</InputLabel>
-            <TextField
-                style={{display: "block"}}
-                className={styles.extraMargin}
-                required
-                label="Username"
-                variant="outlined"
-                error={nameError}
-                value={newUser}
-                helperText={nameError && "Name must be at least 3 characters"}
-                onChange={(e) => setNewUser(e.target.value)}/>
-            <Button onClick={createUser} variant="contained">
-                Create a new user
-            </Button>
-            <InputLabel className={styles.extraMargin}>User list</InputLabel>
-            <ul>
-                {vacationers.map((holidayer) => (<>
-                    <li key={holidayer.id}>
-                        {holidayer.name ? (
-                            <b>{holidayer.name}</b>
-                        ) : (
-                            <b>No name</b>
-                        )}
-                        {" "} {holidayer.id}<br/>
-                        <Button value={holidayer.name} variant="contained" color="secondary" onClick={e => {
-                            setUserToDelete({id:holidayer.id, name:holidayer.name})
-                            setOpenDeleteAlert(true)
-                        }}>DELETE {holidayer.name}</Button>
-                    </li>
-
-                    </>
-                    ))}
-            </ul>
-            <CustomDialog openAlert={openDeleteAlert} handleCloseAlert={() => setOpenDeleteAlert(false)}
-                          handleAction={deleteUser}
-                          dialogTitle={"Delete user"}
-                          dialogContent={userToDelete && `Are you sure you want to delete the user ${userToDelete.name} ?`}
-                          cancel={"No"} confirm={"Yes delete"}/>
-            <CustomDialog openAlert={userCreationError} handleCloseAlert={() => setUserCreationError(false)}
-                          handleAction={deleteUser}
-                          dialogTitle={"ERROR!"}
-                          dialogContent={"This username is already taken!"}
-                          />
+            <h2>User</h2>
+            <UserForm setCompletedAction={setCompletedAction} completedAction={completedAction} vacationers={vacationers}/>
+            <h2>Team</h2>
+            <TeamForm vacationers={vacationers}/>
+            <div>
+                <InputLabel className={styles.extraMargin}>Test Slack</InputLabel>
+                <Button onClick={sendToSlack} variant={"contained"}>
+                    Send to Slack!
+                </Button>
+            </div>
         </>
     )
 }

@@ -23,16 +23,16 @@ import {
     TextField
 } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
-import Apitester from "./Components/Apitester";
 import LimitSetter from "./Components/LimitSetter";
-import CustomDialog from "./Components/CustomDialog";
+import AlertDialog from "../Dialogs/AlertDialog";
 
 registerLocale("fi", fi);
 
 // Time stamps should be checked
 export default function Picker() {
 
-    const WORKER_LIMIT_DEFAULT = 5;
+    // Max number of workers on holiday in a day
+    const WORKER_LIMIT_DEFAULT = 100;
     //  Dates are in UTC time
     const today = new Date();
     today.setUTCHours(0, 0, 0)
@@ -166,7 +166,7 @@ export default function Picker() {
                 name: chosenVacationer.name,
                 vacations: holidays
             };
-            console.log("NV", newVacation);
+            console.log("newVacation", newVacation);
 
             axios
                 .put(`http://localhost:3001/vacationers/${chosenVacationer.id}`, newVacation)
@@ -246,7 +246,6 @@ export default function Picker() {
         }
     }
 
-
     const addHoliday = () => {
         if (validateCalendar()) {
             let newHoliday = {
@@ -261,7 +260,7 @@ export default function Picker() {
                 newHoliday.upcoming = false;
             }
             newHoliday.edited = true;
-            console.log("NHD", newHoliday)
+            console.log("newHoliday", newHoliday)
             setHolidays((oldHolidays) => [...oldHolidays, newHoliday]);
             handleCloseCalendar()
         }
@@ -280,7 +279,7 @@ export default function Picker() {
             comment: comment,
             id: idToEdit
         };
-        console.log("ajat on", editedHoliday.start, editedHoliday.end, today);
+        console.log("editedHoliday times", editedHoliday.start, editedHoliday.end, today);
         if (editedHoliday.end >= today) {
             editedHoliday.upcoming = true;
         } else {
@@ -288,7 +287,7 @@ export default function Picker() {
         }
         editedHoliday.edited = true;
         let vacationIndex = holidays.findIndex((holiday) => holiday.id === idToEdit)
-        console.log("YYY", holidays[vacationIndex], editedHoliday)
+        console.log("handleEdit", holidays[vacationIndex], editedHoliday)
         let holidaysCopy = [...holidays]
         holidaysCopy[vacationIndex] = editedHoliday
         setHolidays(holidaysCopy)
@@ -298,7 +297,7 @@ export default function Picker() {
 
     const confirmDeletion = (id) => {
         setIdToDelete(id);
-        console.log("id", id)
+        console.log("confirmDeletion: id", id)
         for (let i = 0; i < holidays.length; i++) {
             if (id === holidays[i].id) {
                 setHolidayToDelete(holidays[i])
@@ -323,7 +322,7 @@ export default function Picker() {
         }
         setHolidayToEdit(editedItem)
 
-        console.log("nämä", holidays, calendarDaysExcluded)
+        console.log("editHoliday", holidays, calendarDaysExcluded)
 
         updateExcludedDates(id)
         setComment(editedItem.comment)
@@ -337,7 +336,7 @@ export default function Picker() {
         }
         setEditingSpace(true)
         setOpenCalendar(true)
-        console.log("CVVVV", chosenVacationer)
+        console.log("chosenVacationer", chosenVacationer)
     }
 
     // UI Method for adding the extra day before holiday. Because Datepicker exclusion does not include the 1st day of date range
@@ -395,7 +394,7 @@ export default function Picker() {
         for (let i = 0; i < vacationers.length; i++) {
             if (vacationers[i].name === name) {
                 setChosenVacationer(vacationers[i])
-                console.log("vvv", vacationers[i].vacations)
+                console.log("selectVacationer", vacationers[i].vacations)
                 setExcludedDates(vacationers[i].vacations)
             }
         }
@@ -421,21 +420,7 @@ export default function Picker() {
 
     return (
         <div  className={styles.mainView}>
-            <h1>Picker</h1>
-            {/*<h4>*/}
-            {/*    Today's {today.toLocaleDateString("fi-FI")}. getDay is {today.getUTCDay()}*/}
-            {/*</h4>*/}
-            {/*<h4>*/}
-            {/*    Next week {nextMonday.toISOString()} - {nextSunday.toISOString()}*/}
-            {/*</h4>*/}
-
-            {/*<Divider/>*/}
-            {/*On vacation {nextMonday.getUTCDate()}.{nextMonday.getUTCMonth() + 1}.*/}
-            {/*{nextMonday.getUTCFullYear()} - {nextSunday.getUTCDate()}.*/}
-            {/*{nextSunday.getUTCMonth() + 1}.{nextSunday.getUTCFullYear()}*/}
-            {/*: <Apitester start={nextMonday.toISOString()} end={nextSunday.toISOString()}/> people*/}
-            {/*<Divider/>*/}
-            {/*<br/>*/}
+            <h1>Holiday Picker</h1>
             <div>
                 <form onSubmit={updateVacation} className={styles.form}>
                     <FormControl className={styles.nameSelectBox}>
@@ -490,22 +475,6 @@ export default function Picker() {
                                 {"  "} - {endDate && <>{endDate.getUTCDate()}.{endDate.getUTCMonth() + 1}.{endDate.getUTCFullYear()}</>}
                                 <div>{endDate ? daysInDateRange(startDate, endDate) : "?"} {daysInDateRange(startDate, endDate) === 1 ? "day" : "days"}</div>
                             </h2>
-                            {/*<Box className={styles.sliderBox}>*/}
-                            {/*    <Typography>*/}
-                            {/*        Worker limit <b>{workerLimit}</b>*/}
-                            {/*    </Typography>*/}
-                            {/*    <Slider*/}
-                            {/*        // className={styles.slider}*/}
-                            {/*        value={workerLimit}*/}
-                            {/*        min={1}*/}
-                            {/*        max={30}*/}
-                            {/*        onChange={(e) => setWorkerLimit(e.target.value)}*/}
-                            {/*    />*/}
-                            {/*</Box>*/}
-                            {/*<h5><VacationerNumber vacationers={vacationers} startDate={startDate}*/}
-                            {/*                      endDate={endDate}/> colleague(s) on holiday too</h5>*/}
-                            {/*<h5> API says on holiday: {endDate ? <Apitester start={startDate.toISOString()}*/}
-                            {/*                                                end={endDate.toISOString()}/> : 0} colleagues</h5>*/}
                             <LimitSetter holidayToEdit={holidayToEdit} endDate={endDate} holidays={holidays}
                                          setAlertingDates={setAlertingDates}
                                          workerLimit={workerLimit}
@@ -632,56 +601,25 @@ export default function Picker() {
                     {showAllVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&
                         <Button onClick={() => setShowAllVacations(false)}>Hide past vacations</Button>}
 
-                    <CustomDialog openAlert={openEditAlert} handleCloseAlert={handleCloseEditAlert}
-                                  handleAction={handleEdit}
-                                  dialogTitle={"Edit holiday"}
-                                  dialogContent={(holidayToEdit.start && startDate && endDate) && `Are you sure you want to edit the holiday from ${holidayToEdit.start.toLocaleDateString("fi-FI")}
+                    <AlertDialog openAlert={openEditAlert} handleCloseAlert={handleCloseEditAlert}
+                                 handleAction={handleEdit}
+                                 dialogTitle={"Edit holiday"}
+                                 dialogContent={(holidayToEdit.start && startDate && endDate) && `Are you sure you want to edit the holiday from ${holidayToEdit.start.toLocaleDateString("fi-FI")}
                                    - ${holidayToEdit.end.toLocaleDateString("fi-FI")}  to ${startDate.toLocaleDateString("fi-FI")} - ${endDate.toLocaleDateString("fi-FI")} ?`}
-                                  cancel={"No"} confirm={"Yes edit"}/>
+                                 cancel={"No"} confirm={"Yes edit"}/>
 
-                    <CustomDialog openAlert={openDeletionAlert} handleCloseAlert={handleCloseDeletionAlert}
-                                  handleAction={handleDeletion}
-                                  dialogTitle={"Delete holiday"}
-                                  dialogContent={holidayToDelete.start && `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString("fi-FI")}
+                    <AlertDialog openAlert={openDeletionAlert} handleCloseAlert={handleCloseDeletionAlert}
+                                 handleAction={handleDeletion}
+                                 dialogTitle={"Delete holiday"}
+                                 dialogContent={holidayToDelete.start && `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString("fi-FI")}
                                    - ${holidayToDelete.end.toLocaleDateString("fi-FI")} ?`}
-                                  cancel={"No"} confirm={"Yes delete"}/>
+                                 cancel={"No"} confirm={"Yes delete"}/>
                     <Button className={styles.extraMargin} type="submit"
                             variant="contained">
                         Save
                     </Button>
                 </form>
             </div>
-            {/*<div>*/}
-            {/*    <ul>*/}
-            {/*        {holidays.map((days) => (*/}
-            {/*            <li>*/}
-            {/*                {days.start.toLocaleDateString("fi-FI")} - {days.end.toLocaleDateString("fi-FI")}*/}
-            {/*            </li>*/}
-            {/*        ))}*/}
-            {/*    </ul>*/}
-            {/*</div>*/}
-            {/*<div>*/}
-            {/*    <ul>*/}
-            {/*        {vacationers.map((holidayer) => (*/}
-            {/*            <li key={holidayer.id}>*/}
-            {/*                {holidayer.name ? (*/}
-            {/*                    <b>{holidayer.name}</b>*/}
-            {/*                ) : (*/}
-            {/*                    <b>No name</b>*/}
-            {/*                )}*/}
-            {/*                <ul>*/}
-            {/*                    {holidayer.vacations.map((vacations, index) => (*/}
-            {/*                        <li*/}
-            {/*                            key={index}*/}
-            {/*                        >*/}
-            {/*                            {vacations.start} - {vacations.end}*/}
-            {/*                        </li>*/}
-            {/*                    ))}*/}
-            {/*                </ul>*/}
-            {/*            </li>*/}
-            {/*        ))}*/}
-            {/*    </ul>*/}
-            {/*</div>*/}
         </div>
     )
         ;

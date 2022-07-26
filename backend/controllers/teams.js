@@ -31,13 +31,43 @@ teamsRouter.get('/teams/:id', (req, res, next) => {
 // Receives Vacationer to add to team
 teamsRouter.put('/teams/:id', (req, res, next) => {
     const teamId = req.params.id;
-
     const newMember = {name: req.body.name, vacationerId: req.body.id};
 
     console.log("Adding newMember:", newMember, " ", " to ->", teamId);
 
     Team.findByIdAndUpdate(
         teamId, {$push: {members: newMember}}, {new: true, runValidators: true, context: 'query'})
+        .then(updatedTeam => {
+            res.status(200).json(updatedTeam)
+        })
+        .catch(error => next(error))
+
+})
+
+teamsRouter.patch('/teams/:id', (req, res, next) => {
+    const teamId = req.params.id;
+    const newName = req.body.newName;
+
+    console.log("Changing team:", teamId, " ", "name to", newName);
+
+    Team.findByIdAndUpdate(
+        teamId, {$set: {title: newName}}, {new: true, runValidators: true, context: 'query'})
+        .then(updatedTeam => {
+            res.status(200).json(updatedTeam)
+        })
+        .catch(error => next(error))
+
+})
+
+teamsRouter.put('/teams/members/:id', (req, res, next) => {
+    const teamId = req.params.id;
+    const memberId = req.body.vacationerId;
+    console.log("IDs", teamId, memberId)
+    Team.updateOne({_id: teamId}, {
+        $pull: {
+            members: {vacationerId: memberId}
+        }
+    })
         .then(updatedTeam => {
             res.status(200).json(updatedTeam)
         })

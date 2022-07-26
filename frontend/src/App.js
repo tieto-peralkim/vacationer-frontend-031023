@@ -42,12 +42,12 @@ function App() {
                                 <div className={styles.navigationText}>Picker</div>
                             </ListItem>
                         </Link>
-                        <Link to="/panorama">
+                        <Link to="/calendar">
                             <ListItem className={styles.navigation} button onClick={() => setIsOpen(!isOpen)}>
                                 <ListItemIcon>
                                     <CalendarTodayIcon/>
                                 </ListItemIcon>
-                                <div className={styles.navigationText}>Panorama</div>
+                                <div className={styles.navigationText}>Calendar</div>
                             </ListItem>
                         </Link>
                         <Link to="/admin">
@@ -58,41 +58,12 @@ function App() {
                                 <div className={styles.navigationText}>Admin</div>
                             </ListItem>
                         </Link>
-                        {/*<Link to="/heat">*/}
-                        {/*    <ListItem className={styles.navigation} button onClick={() => setIsOpen(!isOpen)}>*/}
-                        {/*        <ListItemIcon>*/}
-                        {/*            <BeachAccessIcon/>*/}
-                        {/*        </ListItemIcon>*/}
-                        {/*        <div className={styles.navigationText}>Heat</div>*/}
-                        {/*    </ListItem>*/}
-                        {/*</Link>*/}
                     </List>
                 </Box>
             </Drawer>
             <div className={styles.outlet}>
                 <Outlet/>
             </div>
-
-            {/*<AppBar color="transparent" position="static">*/}
-
-            {/*    <Toolbar>*/}
-            {/*        <Typography variant="h5" className="appName">Vacation App</Typography>*/}
-            {/*        <Link to="/picker" className="navigation">*/}
-            {/*            Picker*/}
-            {/*        </Link>*/}
-            {/*        <Link to="/panorama" className="navigation">*/}
-            {/*            Panorama*/}
-            {/*        </Link>*/}
-            {/*        /!*<Link to="/heat" className="navigation">*!/*/}
-            {/*        /!*  Holiday heat*!/*/}
-            {/*        /!*</Link>*!/*/}
-            {/*        <Link to="/admin" className="navigation">*/}
-            {/*            Admin*/}
-            {/*        </Link>*/}
-            {/*    </Toolbar>*/}
-            {/*</AppBar>*/}
-
-            {/*<Outlet/>*/}
         </>
     );
 }

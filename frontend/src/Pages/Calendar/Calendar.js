@@ -1,13 +1,13 @@
 import {useEffect, useMemo, useState} from "react";
 import {useTable} from "react-table";
 import axios from "axios";
-import {Box, Button, Chip, CircularProgress, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {Box, Button, Chip, CircularProgress, TextField} from "@mui/material";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import styles from "./panorama.module.css";
+import styles from "./calendar.module.css";
 import {CompactPicker} from "react-color";
 
-export default function Panorama() {
+export default function Calendar() {
 
     const today = new Date();
     const thisMonthFirst = new Date(today.getFullYear(), today.getMonth(), 1)
@@ -22,8 +22,8 @@ export default function Panorama() {
     const [holidaySymbol, setHolidaySymbol] = useState(true)
     const [replacementText, setReplacementText] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
-    const WORKER_AMOUNT = 20;
-    const WORKER_TITLE = "Employees"
+    const WORKER_TITLE = "Employees present"
+    const PRESENCE_PERCENTAGE = 0.5;
     const TODAY_COLOR = "#e30f2d"
 
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst)
@@ -36,6 +36,7 @@ export default function Panorama() {
     const [teamToShow, setTeamToShow] = useState("");
     const [selectedVacationers, setSelectedVacationers] = useState([]);
     const [allMonthsVacationers, setAllMonthsVacationers] = useState([]);
+    const [totalVacationers, setTotalVacationers] = useState([]);
 
     // Fetching Finnish public holidays from Public holiday API (https://date.nager.at/)
     useEffect(() => {
@@ -57,8 +58,27 @@ export default function Panorama() {
     }, [selectedYear])
 
     useEffect(() => {
-        setMonthsHolidays(selectedVacationers)
-    }, [selectedVacationers])
+        if (teamToShow) {
+            console.log("filterByTeam:", teamToShow)
+
+            let filteredVacations = [];
+            for (let i = 0; i < teamToShow.members.length; i++) {
+                // Filter the team's holidays from all the holidays of the month
+                const filteredVacation = selectedVacationers.filter(
+                    vacationer => vacationer.name.split(" ").indexOf(teamToShow.members[i].name) !== -1)
+                if (filteredVacation.length !== 0) {
+                    filteredVacations.push(filteredVacation)
+                }
+            }
+            // An array of arrays to an array
+            filteredVacations = filteredVacations.flat();
+            console.log("filteredVacations", filteredVacations)
+            setMonthsHolidays(filteredVacations);
+        } else {
+            console.log("filterByTeam: no")
+            setMonthsHolidays(selectedVacationers)
+        }
+    }, [teamToShow, selectedVacationers])
 
     // Fetching teams from DB
     useEffect(() => {
@@ -73,6 +93,19 @@ export default function Panorama() {
             });
     }, [])
 
+    // Fetching total number of vacationers in DB
+    useEffect(() => {
+        axios
+            .get("http://localhost:3001/vacationers/total")
+            .then((response) => {
+                setTotalVacationers(response.data);
+                console.log("totalvacationers", response.data);
+            })
+            .catch((error) => {
+                console.log("There was a totalvacationers get error!", error)
+            });
+    }, [allMonthsVacationers])
+
     useEffect(() => {
         // If year changes, fetch public holidays
         if (selectedDate.getFullYear() !== selectedYear) {
@@ -85,7 +118,7 @@ export default function Panorama() {
                 publicMonthsHolidays.push(publicHolidays[i].day)
             }
         }
-        console.log("publi", publicMonthsHolidays)
+        console.log("publicMonthsHolidays", publicMonthsHolidays)
         setPublicHolidaysOfMonth(publicMonthsHolidays)
     }, [selectedDate, publicHolidays])
 
@@ -106,34 +139,6 @@ export default function Panorama() {
         setWeekendHolidayColor(color.hex)
     }
 
-    const filterByTeam = (teamName) => {
-        console.log("TIIIMIII", teamName)
-        let filteringTeam = "";
-
-        // Retrieve team by name
-        for (let i = 0; i < teams.length; i++) {
-            if (teams[i].title === teamName) {
-                console.log("filterByTeam:", teams[i])
-                filteringTeam = teams[i];
-                break;
-            }
-        }
-
-        let filteredUsers = [];
-        for (let i = 0; i < filteringTeam.members.length; i++) {
-            // Filter the team's holidays from all the holidays of the month
-            const filteredUser = selectedVacationers.filter(
-                vacationer => vacationer.name.split(" ").indexOf(filteringTeam.members[i].name) !== -1)
-            if (filteredUser.length !== 0){
-                filteredUsers.push(filteredUser)
-            }
-        }
-        // An array of arrays to an array
-        filteredUsers = filteredUsers.flat();
-        console.log("filteredUsers", filteredUsers)
-        setMonthsHolidays(filteredUsers);
-    }
-
     const setMonthsHolidays = (vacationers) => {
         let pureVacations = [];
         let namesOfVacationers = []
@@ -151,7 +156,7 @@ export default function Panorama() {
 
             let repeatingHolidayer;
             repeatingHolidayer = pureVacations.find(holiday => holiday.name === holidayObject.name);
-            console.log("repee", repeatingHolidayer)
+            console.log("repeatingHolidayer", repeatingHolidayer)
 
             if (repeatingHolidayer) {
                 setNumbers(repeatingHolidayer, new Date(vacationers[i].vacations.start), new Date(vacationers[i].vacations.end))
@@ -163,6 +168,7 @@ export default function Panorama() {
                 pureVacations.push(holidayObject);
             }
         }
+        // Last row of the table: amount of working vacationers
         pureVacations.push(
             {
                 name: WORKER_TITLE,
@@ -198,28 +204,30 @@ export default function Panorama() {
                 thirty: getWorkerAmount(pureVacations, "thirty"),
                 thirtyone: getWorkerAmount(pureVacations, "thirtyone"),
             })
-        console.log("PUR", pureVacations)
+        console.log("pureVacations", pureVacations)
         setAllHolidaysSelectedTime(pureVacations)
     }
 
     const getWorkerAmount = (data, key) => {
-        // try {
-        //     console.log("häähä", data, key, data[1][key])
         let total = 0;
         for (let i = 0; i < data.length; i++) {
             if (data[i][key] === holidaySymbol) {
                 total++
             }
         }
-        return WORKER_AMOUNT - total;
-        // } catch (e) {
-        //     return WORKER_AMOUNT
-        // }
+        // If a team has been selected
+        if (teamToShow) {
+            console.log("Total", total, teamToShow.members.length)
+            return teamToShow.members.length - total;
+        } else {
+            console.log("totalVacationers",key,":", totalVacationers, total)
+            return totalVacationers - total;
+        }
     };
 
     // Sets the start and end date of holidays for shown calendar month
     const setNumbers = (holidayObject, start, end) => {
-        console.log("obje", start.getDate(), end)
+        console.log("setNumbers", start.getDate(), end)
 
         let startingNumber = 0
         let endingNumber = 0
@@ -239,7 +247,7 @@ export default function Panorama() {
             endingNumber = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate()
         }
 
-        console.log("objekt numerot", startingNumber, endingNumber)
+        console.log("startingNumber, endingNumber", startingNumber, endingNumber)
         for (let i = startingNumber; i <= endingNumber; i++) {
             switch (i) {
                 case 1:
@@ -373,7 +381,7 @@ export default function Panorama() {
 
         let nextMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1)
 
-        console.log("neee", selectedDate, nextMonth)
+        console.log("selectedDate, nextMonth", selectedDate, nextMonth)
 
         axios.get(`http://localhost:3001/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`)
             .then((response) => {
@@ -399,7 +407,7 @@ export default function Panorama() {
     //
     //     const onClick = () => {
     //         setValue(true)
-    //         console.log("painoooo")
+    //         console.log("onClick")
     //     }
     //     useEffect(() =>{
     //         setValue(initialValue)
@@ -419,39 +427,39 @@ export default function Panorama() {
                 accessor: 'name',
             },
             {
-                Header: '1',
+                Header: '01',
                 accessor: "one",
             },
             {
-                Header: '2',
+                Header: '02',
                 accessor: "two",
             },
             {
-                Header: '3',
+                Header: '03',
                 accessor: "three"
             },
             {
-                Header: '4',
+                Header: '04',
                 accessor: "four"
             },
             {
-                Header: '5',
+                Header: '05',
                 accessor: "five"
             },
             {
-                Header: '6',
+                Header: '06',
                 accessor: "six"
             },
             {
-                Header: '7',
+                Header: '07',
                 accessor: "seven"
             },
             {
-                Header: '8',
+                Header: '08',
                 accessor: "eight"
             },
             {
-                Header: '9',
+                Header: '09',
                 accessor: "nine"
             },
             {
@@ -574,7 +582,11 @@ export default function Panorama() {
     // Tätä voisi selkeyttää ja tehostaa
     const isCommonHoliday = (holiday, index) => {
         let colorToAdd = null
+        console.log("holiday, index", holiday, index)
 
+        if (holiday === WORKER_TITLE) {
+            colorToAdd = "bisque"
+        }
         if (index !== 0) {
             if (holiday === holidaySymbol) {
                 colorToAdd = holidayColor
@@ -590,6 +602,7 @@ export default function Panorama() {
                 }
             }
 
+            // Public holidays
             if (publicHolidaysOfMonth.filter(e => e === index).length > 0) {
                 if (holiday === holidaySymbol) {
                     colorToAdd = weekendHolidayColor
@@ -597,10 +610,15 @@ export default function Panorama() {
                     colorToAdd = weekendColor
                 }
             }
-            // If Employees row
-            if (typeof holiday === "number" || holiday === WORKER_TITLE) {
+
+            // Employees row
+
+            if (typeof holiday === "number") {
                 colorToAdd = "bisque"
-                if (holiday < 0.85 * WORKER_AMOUNT) {
+                if (!teamToShow && holiday < PRESENCE_PERCENTAGE * totalVacationers) {
+                    colorToAdd = "orange"
+                }
+                if (teamToShow && holiday < PRESENCE_PERCENTAGE * teamToShow.members.length){
                     colorToAdd = "orange"
                 }
             }
@@ -617,7 +635,7 @@ export default function Panorama() {
     }
 
     const setTodayHeader = (header) => {
-        console.log("jotain", header, selectedDate.getDate())
+        console.log("setTodayHeader", header, selectedDate.getDate())
         if (today.getFullYear() === selectedDate.getFullYear() && today.getMonth() === selectedDate.getMonth() && header == today.getDate()) {
             return TODAY_COLOR
         } else {
@@ -626,7 +644,7 @@ export default function Panorama() {
     }
 
     const setTodayColumn = (value) => {
-        console.log("valuu", value)
+        console.log("setTodayColumn", value)
         if (today.getFullYear() === selectedDate.getFullYear() && today.getMonth() === selectedDate.getMonth() && parseInt(value.Header) === today.getDate()) {
             return `solid 2px ${TODAY_COLOR}`
         } else {
@@ -658,19 +676,27 @@ export default function Panorama() {
             </div> : null}
 
             <div>
-                <FormControl className={styles.nameSelectBox}>
-                    <InputLabel>Choose team</InputLabel>
-                    <Chip variant={!teamToShow ? "" : "outlined"} label="All teams" color="primary" onClick={() => {
+                <div>
+                    <Chip variant={!teamToShow ? "" : "outlined"} label="All teams" color="secondary" onClick={() => {
                         setMonthsHolidays(allMonthsVacationers);
                         setTeamToShow("");
                     }}/>
-                    {teams.map ((team) => (
-                        <Chip variant={teamToShow === team.title ? "" : "outlined"} label={team.title} onClick={() =>{
-                            setTeamToShow(team.title);
-                            filterByTeam(team.title);
-                            console.log("teamToShow", teamToShow);
+                    {teams.map((team) => (
+                        <Chip variant={teamToShow.title === team.title ? "" : "outlined"} color="primary"
+                              label={team.title} onClick={() => {
+                            setTeamToShow(team);
+                            console.log("team", team);
                         }}/>
                     ))}
+                    {/*<div>*/}
+                        {teamToShow &&
+                            teamToShow.members
+                                // some sorting?
+                                // .sort((v1, v2) => v1.name - v2.name)
+                                .map(member => (
+                                    <Chip label={member.name}/>
+                                ))}
+                    {/*</div>*/}
                     {/*<Select*/}
                     {/*    value={teamToShow ? teamToShow.title : ""}*/}
                     {/*    onChange={e => {*/}
@@ -684,7 +710,7 @@ export default function Panorama() {
                     {/*    )}*/}
 
                     {/*</Select>*/}
-                </FormControl>
+                </div>
             </div>
             <div className={styles.wholePage}>
                 <Box className={styles.buttons}>
@@ -726,8 +752,8 @@ export default function Panorama() {
                                             {...cell.getCellProps(
                                                 {
                                                     onClick: () => {
-                                                        console.log("joo", cell.value)
-                                                        console.log("juuh", cell.row.original.name, cell.column.Header)
+                                                        console.log("loki1", cell.value)
+                                                        console.log("loki2", cell.row.original.name, cell.column.Header)
                                                     }
                                                 }
                                             )}
