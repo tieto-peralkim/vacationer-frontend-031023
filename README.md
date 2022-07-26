@@ -1,14 +1,19 @@
-Vacation app
+# Vacation app
 
-All timestamps are in UTC timezone.
-Selected holidays set the time of date stamp to 12:00:00 o'clock UTC.
+-CRUD operations for vacations
+-holidays calendar with team filtering
+-sends notifications to Slack of upcoming holidays
+-admin features: CRUD-functions for users and teams
+-All timestamps are in UTC timezone.
 
-
-TODO:
-Smarter way for the calendar excluded dates.
-How to add/edit old holidays? Do they matter?
-If you edit holiday which is partly in past, it gives wrong error message if new dates are in the past.
-
-* tags for work teams
-* personal settings (calendar colors, default tags)
-* calendar filtering (all workers/workers on holiday/based on tag)
+## TODO:
+**calendar**
+* calendar filtering (all workers/workers on holiday)
+**holiday picker list**
+* filter past holidays by amount/time (eg last 10 holidays)
+* How to add/edit old holidays? Do they matter?
+* If you edit holiday which is partly in past, it gives wrong error message if new dates are in the past.
+**holiday datepicker**
+* count the average by team
+**new sections**
+* personal settings (calendar colors)

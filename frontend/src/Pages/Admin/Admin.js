@@ -100,9 +100,9 @@ export default function Admin() {
             {/*        onChange={(e) => setWorkerLimit(e.target.value)}*/}
             {/*    />*/}
             {/*</Box>*/}
-            <h2>User</h2>
+            <h3>User</h3>
             <UserForm setCompletedAction={setCompletedAction} completedAction={completedAction} vacationers={vacationers}/>
-            <h2>Team</h2>
+            <h3>Team</h3>
             <TeamForm vacationers={vacationers}/>
             <div>
                 <InputLabel className={styles.extraMargin}>Test Slack</InputLabel>

@@ -1,6 +1,6 @@
 const timeframesRouter = require('express').Router()
 const Vacationer = require("../models/vacationer");
-const handleVacationData = require("./handler");
+const handleVacationData = require("../functions/handler");
 
 // Returns vacationers and their holiday amount between start and end dates (basically used for calculating the amount of vacationers on given timespan)
 timeframesRouter.get('/vacationeramount', (req, res, next) => {

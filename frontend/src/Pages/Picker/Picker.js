@@ -6,25 +6,16 @@ import styles from "./picker.module.css";
 
 import fi from "date-fns/locale/fi";
 import {
-    Alert,
-    Box,
     Button,
     ButtonGroup,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    Divider,
     FormControl,
     InputLabel,
     MenuItem,
-    Modal,
-    Select,
-    Stack,
-    TextField
+    Select
 } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
-import LimitSetter from "./Components/LimitSetter";
 import AlertDialog from "../Dialogs/AlertDialog";
+import PickerModal from "./Components/PickerModal";
 
 registerLocale("fi", fi);
 
@@ -44,30 +35,21 @@ export default function Picker() {
     const nextSunday = new Date();
     nextSunday.setTime(nextMonday.getTime() + 6 * 24 * 60 * 60 * 1000);
     nextSunday.setUTCHours(12, 0, 0, 0);
-
-
-
     const [startDate, setStartDate] = useState(new Date());
-    startDate.setUTCHours(12, 0, 0, 0);
+    startDate.setUTCHours(10, 0, 0, 0);
     const [endDate, setEndDate] = useState(null);
-    const [alertingDates, setAlertingDates] = useState([])
 
     const [comment, setComment] = useState("");
-    const [annualAmount, setAnnualAmount] = useState(20);
     const [vacationers, setVacationers] = useState([]);
     const [startDateErrorMessage, setStartDateErrorMessage] = useState(false);
     const [endDateErrorMessage, setEndDateErrorMessage] = useState(false);
-    const [overlapErrorMessage, setOverlapErrorMessage] = useState(false);
-    const [daysInPastErrorMessage, setDaysInPastErrorMessage] = useState(false);
     const [showAllVacations, setShowAllVacations] = useState(false);
     const [dailyVacationers, setDailyVacationers] = useState([]);
 
     const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
 
     const [openCalendar, setOpenCalendar] = useState(false);
-    const [openEditAlert, setOpenEditAlert] = useState(false);
     const [openDeletionAlert, setOpenDeletionAlert] = useState(false);
-    const [openRangeAlert, setOpenRangeAlert] = useState(false);
 
     const [idToEdit, setIdToEdit] = useState()
     const [idToDelete, setIdToDelete] = useState()
@@ -85,29 +67,14 @@ export default function Picker() {
     const [dayAmount, setDayAmount] = useState(0);
 
     const [save, setSave] = useState(false)
+    const [annualAmount, setAnnualAmount] = useState(20);
     const [holidaySeason, setHolidaySeason] = useState(2022);
 
     const handleOpenCalendar = () => {
         setOpenCalendar(true);
         updateExcludedDates(0)
     };
-    const handleCloseCalendar = () => {
-        setOpenCalendar(false);
-        setEditingSpace(false);
-        setChangingStartedSpace(false);
-        setOverlapErrorMessage(false);
-        setDaysInPastErrorMessage(false);
-        setDailyVacationers([])
-        setComment("")
-        resetDates();
-    };
 
-    const handleOpenEditAlert = () => {
-        setOpenEditAlert(true);
-    };
-    const handleCloseEditAlert = () => {
-        setOpenEditAlert(false);
-    };
     const handleOpenDeletionAlert = () => {
         setOpenDeletionAlert(true);
     };
@@ -115,12 +82,6 @@ export default function Picker() {
         setOpenDeletionAlert(false);
         resetDates();
     };
-
-    const handleCloseRangeAlert = () => {
-        setOpenRangeAlert(false);
-        resetDates();
-    };
-
 
     useEffect(() => {
         if (endDate === null) {
@@ -186,114 +147,14 @@ export default function Picker() {
         }
     };
 
-
     // Kellonajan asettaminen startDatelle?
     const resetDates = () => {
         setStartDate(new Date());
+        startDate.setUTCHours(10)
         setEndDate(null);
     }
 
-    const onChange = (dates) => {
-        setOverlapErrorMessage(false);
-        setDaysInPastErrorMessage(false);
-        const [start, end] = dates;
-        setStartDate(start);
-        if (end !== null) {
-            end.setUTCHours(14)
-        }
-        setEndDate(end);
-        console.log("start", start, end)
-        if (start !== null && end !== null) {
-            calculatePerDay(start, end)
-        }
-    };
 
-
-    const calendarDatesOverlap = () => {
-        if (editingSpace) {
-            let holidaysWithoutEditableHoliday = [];
-            holidaysWithoutEditableHoliday = holidays.filter((holidays) => holidays.id !== idToEdit)
-
-            for (let i = 0; i < holidaysWithoutEditableHoliday.length; i++) {
-                if (startDate <= holidaysWithoutEditableHoliday[i].start && endDate >= holidaysWithoutEditableHoliday[i].end) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            for (let i = 0; i < holidays.length; i++) {
-                if (startDate <= holidays[i].start && endDate >= holidays[i].end) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
-
-    const validateCalendar = () => {
-        if (calendarDatesOverlap()) {
-            setOverlapErrorMessage(true);
-            return false;
-        } else if (alertingDates.length > 0) {
-            setOpenRangeAlert(true)
-            return false;
-        } else if (endDate === null) {
-            return false
-        } else if (endDate < today) {
-            setDaysInPastErrorMessage(true);
-        } else {
-            return true;
-        }
-    }
-
-    const addHoliday = () => {
-        if (validateCalendar()) {
-            let newHoliday = {
-                start: startDate,
-                end: endDate,
-                comment: comment,
-                id: Math.random().toString(16).slice(2)
-            };
-            if (newHoliday.start >= today || newHoliday.end >= today) {
-                newHoliday.upcoming = true;
-            } else {
-                newHoliday.upcoming = false;
-            }
-            newHoliday.edited = true;
-            console.log("newHoliday", newHoliday)
-            setHolidays((oldHolidays) => [...oldHolidays, newHoliday]);
-            handleCloseCalendar()
-        }
-    }
-
-    const confirmEdit = () => {
-        if (validateCalendar()) {
-            handleOpenEditAlert()
-        }
-    }
-
-    const handleEdit = () => {
-        let editedHoliday = {
-            start: startDate,
-            end: endDate,
-            comment: comment,
-            id: idToEdit
-        };
-        console.log("editedHoliday times", editedHoliday.start, editedHoliday.end, today);
-        if (editedHoliday.end >= today) {
-            editedHoliday.upcoming = true;
-        } else {
-            editedHoliday.upcoming = false;
-        }
-        editedHoliday.edited = true;
-        let vacationIndex = holidays.findIndex((holiday) => holiday.id === idToEdit)
-        console.log("handleEdit", holidays[vacationIndex], editedHoliday)
-        let holidaysCopy = [...holidays]
-        holidaysCopy[vacationIndex] = editedHoliday
-        setHolidays(holidaysCopy)
-        handleCloseEditAlert()
-        handleCloseCalendar()
-    };
 
     const confirmDeletion = (id) => {
         setIdToDelete(id);
@@ -468,86 +329,32 @@ export default function Picker() {
                             onClick={handleOpenCalendar}>
                         Add a holiday
                     </Button>
-                    <Modal className={styles.modal} open={openCalendar} onClose={handleCloseCalendar}>
-                        <Box className={styles.box}>
-                            <h2>Chosen dates:<br/>
-                                {startDate && <>{startDate.getUTCDate()}.{startDate.getUTCMonth() + 1}.{startDate.getUTCFullYear()}</>}
-                                {"  "} - {endDate && <>{endDate.getUTCDate()}.{endDate.getUTCMonth() + 1}.{endDate.getUTCFullYear()}</>}
-                                <div>{endDate ? daysInDateRange(startDate, endDate) : "?"} {daysInDateRange(startDate, endDate) === 1 ? "day" : "days"}</div>
-                            </h2>
-                            <LimitSetter holidayToEdit={holidayToEdit} endDate={endDate} holidays={holidays}
-                                         setAlertingDates={setAlertingDates}
-                                         workerLimit={workerLimit}
-                                         dailyVacationers={dailyVacationers}/>
-                            <div>
-                                <DatePicker
-                                    locale="en"
-                                    selected={startDate}
-                                    onChange={onChange}
-                                    selectsRange
-                                    excludeDateIntervals={calendarDaysExcluded}
-                                    startDate={startDate}
-                                    endDate={endDate}
-                                    minDate={!changingStartedSpace && today}
-                                    dateFormat="dd.MM.yyyy"
-                                    calendarStartDay={1}
-                                    monthsShown={3}
-                                    showWeekNumbers
-                                    disabledKeyboardNavigation
-                                    inline
-                                    highlightDates={alertingDates.length > 0 && alertingDates.map(a => {
-                                        return new Date(a[0])
-                                    })}
-                                />
-                            </div>
-                            <Dialog open={openRangeAlert} onClose={handleCloseRangeAlert}>
-                                <DialogTitle>
-                                    Time range you selected has full days!
-                                </DialogTitle>
-                                <DialogContent>
-                                    Recheck your dates!
-                                </DialogContent>
-                            </Dialog>
-
-                            <div className={styles.addHoliday}>
-                                <TextField
-                                    label="Description"
-                                    variant="outlined"
-                                    value={comment}
-                                    onChange={(e) => setComment(e.target.value)}/>
-                                {editingSpace ?
-                                    <Button className={styles.buttonStyle}
-                                            disabled={!endDate || alertingDates.length !== 0} onClick={confirmEdit}
-                                            variant="contained">
-                                        Edit a holiday
-                                    </Button> :
-                                    <Button className={styles.buttonStyle} disabled={!endDate || alertingDates.length !== 0} onClick={addHoliday}
-                                            variant="contained">
-                                        Add a holiday
-                                    </Button>}
-                            </div>
-                            <Stack sx={{width: '100%'}} spacing={2}>
-
-                                {alertingDates.length > 0 && <Alert severity="info">Choose new dates! Too many people on holiday!
-                                        <ul>
-                                        {alertingDates.map((daily, index) => (
-                                            <li className={styles.alertingDates} key={index}>{new Date(daily[0]).toLocaleDateString("fi-FI")} ({daily[1]}) </li>
-                                        ))}
-                                        </ul>
-                                    </Alert>}
-
-                                {startDateErrorMessage && <Alert onClose={() => {
-                                }}>Choose the start date!</Alert>}
-
-                                {endDateErrorMessage && <Alert severity="info">Choose the end date!</Alert>}
-
-                                {overlapErrorMessage && <Alert severity="warning">Dates overlap!</Alert>}
-
-                                {daysInPastErrorMessage && <Alert severity="warning">
-                                    Dates are in the past! At least end date must be upcoming.</Alert>}
-                            </Stack>
-                        </Box>
-                    </Modal>
+                    <PickerModal openCalendar={openCalendar}
+                    startDate={startDate}
+                    setStartDate={setStartDate}
+                    endDate={endDate}
+                    setEndDate={setEndDate}
+                    daysInDateRange={daysInDateRange}
+                    holidayToEdit={holidayToEdit}
+                    holidays={holidays}
+                    workerLimit={workerLimit}
+                    dailyVacationers={dailyVacationers}
+                    setDailyVacationers={setDailyVacationers}
+                    calendarDaysExcluded={calendarDaysExcluded}
+                    editingSpace={editingSpace}
+                    setEditingSpace={setEditingSpace}
+                    changingStartedSpace={changingStartedSpace}
+                    today={today}
+                    setComment={setComment}
+                    startDateErrorMessage={startDateErrorMessage}
+                    endDateErrorMessage={endDateErrorMessage}
+                    comment={comment}
+                    idToEdit={idToEdit}
+                    setHolidays={setHolidays}
+                    setChangingStartedSpace={setChangingStartedSpace}
+                    setOpenCalendar={setOpenCalendar}
+                    resetDates={resetDates}
+                    calculatePerDay={calculatePerDay}/>
                     {holidays.length > 0 && (
                         <div>
                             <div className={styles.holidays}>
@@ -600,13 +407,6 @@ export default function Picker() {
                         <Button onClick={() => setShowAllVacations(true)}>Show past vacations</Button>}
                     {showAllVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&
                         <Button onClick={() => setShowAllVacations(false)}>Hide past vacations</Button>}
-
-                    <AlertDialog openAlert={openEditAlert} handleCloseAlert={handleCloseEditAlert}
-                                 handleAction={handleEdit}
-                                 dialogTitle={"Edit holiday"}
-                                 dialogContent={(holidayToEdit.start && startDate && endDate) && `Are you sure you want to edit the holiday from ${holidayToEdit.start.toLocaleDateString("fi-FI")}
-                                   - ${holidayToEdit.end.toLocaleDateString("fi-FI")}  to ${startDate.toLocaleDateString("fi-FI")} - ${endDate.toLocaleDateString("fi-FI")} ?`}
-                                 cancel={"No"} confirm={"Yes edit"}/>
 
                     <AlertDialog openAlert={openDeletionAlert} handleCloseAlert={handleCloseDeletionAlert}
                                  handleAction={handleDeletion}

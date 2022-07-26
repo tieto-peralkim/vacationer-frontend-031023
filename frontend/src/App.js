@@ -8,7 +8,7 @@ import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Typography from "@mui/material/Typography";
 import {useState} from "react";
-
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 function App() {
     const [isOpen, setIsOpen] = useState(false)
@@ -56,6 +56,14 @@ function App() {
                                     <SettingsIcon/>
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>Admin</div>
+                            </ListItem>
+                        </Link>
+                        <Link to="/combo">
+                            <ListItem className={styles.navigation} button onClick={() => setIsOpen(!isOpen)}>
+                                <ListItemIcon>
+                                    <Brightness7Icon/>
+                                </ListItemIcon>
+                                <div className={styles.navigationText}>Combo</div>
                             </ListItem>
                         </Link>
                     </List>

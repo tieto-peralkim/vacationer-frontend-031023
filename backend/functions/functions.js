@@ -1,4 +1,4 @@
-const Vacationer= require("./models/vacationer");
+const Vacationer= require("../models/vacationer");
 
 async function fetchVacationsBetween(start, end) {
     const all = await Vacationer.aggregate([

@@ -7,6 +7,7 @@ import Picker from "./Pages/Picker/Picker";
 import Calendar from "./Pages/Calendar/Calendar"
 import reportWebVitals from "./reportWebVitals";
 import Admin from "./Pages/Admin/Admin";
+import Combo from "./Pages/Combo/Combo";
 
 ReactDOM.render(
     <BrowserRouter>
@@ -15,6 +16,7 @@ ReactDOM.render(
                 <Route path="picker" element={<Picker/>}/>
                 <Route path="calendar" element={<Calendar/>}/>
                 <Route path="admin" element={<Admin />}/>
+                <Route path="combo" element={<Combo />}/>
                 <Route
                     path="*"
                     element={

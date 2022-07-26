@@ -220,7 +220,7 @@ export default function Calendar() {
             console.log("Total", total, teamToShow.members.length)
             return teamToShow.members.length - total;
         } else {
-            console.log("totalVacationers",key,":", totalVacationers, total)
+            console.log("totalVacationers", key, ":", totalVacationers, total)
             return totalVacationers - total;
         }
     };
@@ -618,7 +618,7 @@ export default function Calendar() {
                 if (!teamToShow && holiday < PRESENCE_PERCENTAGE * totalVacationers) {
                     colorToAdd = "orange"
                 }
-                if (teamToShow && holiday < PRESENCE_PERCENTAGE * teamToShow.members.length){
+                if (teamToShow && holiday < PRESENCE_PERCENTAGE * teamToShow.members.length) {
                     colorToAdd = "orange"
                 }
             }
@@ -675,8 +675,8 @@ export default function Calendar() {
                     }}/>
             </div> : null}
 
-            <div>
-                <div>
+            <div className={styles.wholeCalendar}>
+                <div className={styles.teamChips}>
                     <Chip variant={!teamToShow ? "" : "outlined"} label="All teams" color="secondary" onClick={() => {
                         setMonthsHolidays(allMonthsVacationers);
                         setTeamToShow("");
@@ -688,31 +688,15 @@ export default function Calendar() {
                             console.log("team", team);
                         }}/>
                     ))}
-                    {/*<div>*/}
-                        {teamToShow &&
-                            teamToShow.members
-                                // some sorting?
-                                // .sort((v1, v2) => v1.name - v2.name)
-                                .map(member => (
-                                    <Chip label={member.name}/>
-                                ))}
-                    {/*</div>*/}
-                    {/*<Select*/}
-                    {/*    value={teamToShow ? teamToShow.title : ""}*/}
-                    {/*    onChange={e => {*/}
-                    {/*        setTeamToShow(e.target.value);*/}
-                    {/*        filterByTeam(e.target.value);*/}
-                    {/*        console.log("teamToShow", teamToShow);*/}
-                    {/*    }}>*/}
-                    {/*    {teams.map((team) => (*/}
-                    {/*            <MenuItem key={team.id} value={team.title}>{team.title}</MenuItem>*/}
-                    {/*        )*/}
-                    {/*    )}*/}
-
-                    {/*</Select>*/}
+                    {teamToShow &&
+                        teamToShow.members
+                            // some sorting?
+                            // .sort((v1, v2) => v1.name - v2.name)
+                            .map(member => (
+                                <Chip label={member.name}/>
+                            ))}
                 </div>
-            </div>
-            <div className={styles.wholePage}>
+            <div className={styles.wholeCalendar}>
                 <Box className={styles.buttons}>
                     <Button onClick={() => goBackMonth()} startIcon={
                         <ArrowBackIosIcon/>}>Previous</Button>{selectedDate.toLocaleString('en-GB', {
@@ -777,6 +761,8 @@ export default function Calendar() {
                 </table>}
                 {showSpinner ? <CircularProgress/> : <p>{replacementText}</p>}
             </div>
+            </div>
+
         </>
     )
 }
