@@ -1,9 +1,9 @@
 # Vacation app
 
 * CRUD operations for vacations
-* holidays calendar with team filtering
-* sends notifications to Slack of upcoming holidays
-* admin features: CRUD-functions for users and teams
+* Holidays calendar with team filtering
+* Sends notifications to Slack of upcoming holidays
+* Admin features: CRUD-functions for users and teams
 
 ## TODO:
 **Calendar**
@@ -18,8 +18,8 @@
 
 **Holiday datepicker**
 
-*count the average by team
+* Count the average by team
 
 **New**
 
-* personal settings (calendar colors)
+* Personal settings (calendar colors)
