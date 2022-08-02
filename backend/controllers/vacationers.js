@@ -10,12 +10,20 @@ vacationersRouter.get('/vacationers', (req, res, next) => {
 })
 
 vacationersRouter.get('/vacationers/total', (req, res, next) => {
-    Vacationer.countDocuments({})
+    Vacationer.find({}, {name: 1})
         .then(vacationer => {
             res.status(200).json(vacationer)
         })
         .catch(error => next(error))
 })
+//
+// vacationersRouter.get('/vacationers/total', (req, res, next) => {
+//     Vacationer.countDocuments({})
+//         .then(vacationer => {
+//             res.status(200).json(vacationer)
+//         })
+//         .catch(error => next(error))
+// })
 
 vacationersRouter.post('/vacationers', (req, res, next) => {
     const body = req.body

@@ -2,8 +2,11 @@
 
 * CRUD operations for vacations
 * Holidays calendar with team filtering
-* Sends notifications to Slack of upcoming holidays
+* Notifications to Slack of upcoming holidays
 * Admin features: CRUD-functions for users and teams
+
+## NOTICE
+* No sign-in so: don't use full names, real customer names
 
 ## TODO:
 **Calendar**
@@ -19,6 +22,10 @@
 **Holiday datepicker**
 
 * Count the average by team
+
+**Admin**
+
+* -
 
 **New**
 

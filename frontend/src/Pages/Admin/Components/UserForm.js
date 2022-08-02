@@ -5,12 +5,18 @@ import axios from "axios";
 import {useState} from "react";
 import ModifyDialog from "../../Dialogs/ModifyDialog";
 
-export default function UserForm({setCompletedAction, completedAction, vacationers}) {
+export default function UserForm({
+                                     emptySelections,
+                                     selectedUser,
+                                     setSelectedUser,
+                                     setCompletedAction,
+                                     completedAction,
+                                     vacationers
+                                 }) {
 
     const [newUser, setNewUser] = useState([]);
     const [userCreationError, setUserCreationError] = useState(false);
     const [userNameError, setUserNameError] = useState(false);
-    const [selectedUser, setSelectedUser] = useState("")
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false)
     const [openModifyUserAlert, setOpenModifyUserAlert] = useState(false)
     const nameError = newUser.length < 3;
@@ -20,14 +26,27 @@ export default function UserForm({setCompletedAction, completedAction, vacatione
         console.log("userID", selectedUser)
         axios
             .delete(`http://localhost:3001/vacationers/${selectedUser.id}`)
-            .then((response) => console.log(response))
-            .then(() => {
-                setCompletedAction(!completedAction)
+            .then((response) => {
                 setOpenDeleteUserAlert(false)
-                setSelectedUser("")
+                console.log(response)
+                removeUserFromTeams(selectedUser)
             })
             .catch((error) => {
-                console.error("There was a delete error!", error);
+                console.error("There was a delete user error!", error);
+            });
+
+    }
+
+    const removeUserFromTeams = (removableUser) => {
+        axios
+            .put(`http://localhost:3001/teams/members/all`, removableUser)
+            .then((response) => {
+                console.log("nyt response", response)
+                setCompletedAction(!completedAction)
+                emptySelections();
+            })
+            .catch((error) => {
+                console.error("There was a delete user from all teams error!", error);
             });
     }
 
@@ -37,10 +56,10 @@ export default function UserForm({setCompletedAction, completedAction, vacatione
             axios
                 .patch(`http://localhost:3001/vacationers/${selectedUser.id}`, {"newName": newName})
                 .then((response) => {
+                    changeUserNameinTeams(selectedUser.id, newName);
                     console.log(response);
-                    setCompletedAction(!completedAction)
                     setOpenModifyUserAlert(false);
-                    setSelectedUser("")
+                    emptySelections();
                 })
                 .catch((error) => {
                     console.error("There was a put new name error!", error);
@@ -49,6 +68,18 @@ export default function UserForm({setCompletedAction, completedAction, vacatione
         } else {
             setUserNameError(true);
         }
+    }
+
+    const changeUserNameinTeams = (memberId, newName) => {
+        console.log("changeUserNameinTeams", memberId, newName)
+        axios
+            .put(`http://localhost:3001/teams/membername/${memberId}`, {"newName": newName})
+            .then((response) => {
+                setCompletedAction(!completedAction)
+            })
+            .catch((error) => {
+                console.error("There was a put changeUserNameinTeams error!", error);
+            });
     }
 
     const createUser = (e) => {
@@ -61,8 +92,11 @@ export default function UserForm({setCompletedAction, completedAction, vacatione
 
             axios
                 .post("http://localhost:3001/vacationers", newVacation)
-                .then((response) => console.log(response))
-                .then(() => setCompletedAction(!completedAction))
+                .then((response) => {
+                    console.log(response);
+                    setCompletedAction(!completedAction);
+                    emptySelections();
+                })
                 .catch((error) => {
                     console.error("There was a post error!", error);
                     setUserCreationError(true)

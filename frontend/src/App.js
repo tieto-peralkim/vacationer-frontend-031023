@@ -23,7 +23,7 @@ function App() {
                         <MenuIcon/>
                     </IconButton>
                     <Typography className={styles.headline} variant="h6">
-                        Vacation App
+                        Holidaypicker
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -39,7 +39,7 @@ function App() {
                                 <ListItemIcon>
                                     <BeachAccessIcon/>
                                 </ListItemIcon>
-                                <div className={styles.navigationText}>Picker</div>
+                                <div className={styles.navigationText}>Pick a holiday</div>
                             </ListItem>
                         </Link>
                         <Link to="/calendar">

@@ -1,18 +1,11 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import DatePicker, {registerLocale} from "react-datepicker";
+import {registerLocale} from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./picker.module.css";
 
 import fi from "date-fns/locale/fi";
-import {
-    Button,
-    ButtonGroup,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select
-} from "@mui/material";
+import {Button, ButtonGroup, Chip, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
@@ -43,7 +36,7 @@ export default function Picker() {
     const [vacationers, setVacationers] = useState([]);
     const [startDateErrorMessage, setStartDateErrorMessage] = useState(false);
     const [endDateErrorMessage, setEndDateErrorMessage] = useState(false);
-    const [showAllVacations, setShowAllVacations] = useState(false);
+    const [showPastVacations, setShowPastVacations] = useState(0);
     const [dailyVacationers, setDailyVacationers] = useState([]);
 
     const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
@@ -250,7 +243,7 @@ export default function Picker() {
     }
 
     const selectVacationer = (name) => {
-        setShowAllVacations(false)
+        setShowPastVacations(0)
         console.log("vacationers", vacationers)
         for (let i = 0; i < vacationers.length; i++) {
             if (vacationers[i].name === name) {
@@ -355,10 +348,41 @@ export default function Picker() {
                     setOpenCalendar={setOpenCalendar}
                     resetDates={resetDates}
                     calculatePerDay={calculatePerDay}/>
+                    {/*{!showPastVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&*/}
+                    <Chip
+                        // className={styles.}
+                        variant={(showPastVacations === 8) ? "" : "outlined"}
+                        label="Show 8 latest holidays"
+                        color="secondary"
+                        onClick={() => {
+                            setShowPastVacations(8)
+                        }}
+                    />
+                    <Chip
+                        // className={styles.}
+                        variant={(showPastVacations === 4) ? "" : "outlined"}
+                        label="Show 4 latest holidays"
+                        color="secondary"
+                        onClick={() => {
+                            setShowPastVacations(4)
+                        }}
+                    />
+                    <Chip
+                        // className={styles.}
+                        variant={(showPastVacations === 0) ? "" : "outlined"}
+                        label="Upcoming"
+                        color="secondary"
+                        onClick={() => {
+                            setShowPastVacations(0)
+                        }}
+                    />
+                        {/*<Button onClick={() => setShowPastVacations(true)}>Show past vacations</Button>}*/}
+                    {/*{showPastVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&*/}
+                    {/*    <Button onClick={() => setShowPastVacations(false)}>Hide past vacations</Button>}*/}
                     {holidays.length > 0 && (
                         <div>
                             <div className={styles.holidays}>
-                                {showAllVacations === false &&
+                                {showPastVacations === 0 &&
                                     holidays.filter(holiday => holiday.upcoming)
                                         .sort((v1, v2) => v1.start - v2.start)
                                         .map((holidays) => (
@@ -378,9 +402,11 @@ export default function Picker() {
                                             </ButtonGroup>
                                         ))
                                 }
-                                {showAllVacations === true &&
+                                {showPastVacations !== 0 &&
                                     holidays
                                         .sort((v1, v2) => v1.start - v2.start)
+                                        // tehtävää ############
+                                        // .slice(holidays.length - showPastVacations > 0 ? (holidays.length - showPastVacations, holidays.length) : (0, holidays.length))
                                         .map((holidays, index) => (
                                             <ButtonGroup size="large" variant="outlined" key={holidays.id}
                                                          className={styles.datesGroup}
@@ -403,10 +429,6 @@ export default function Picker() {
                         </div>
                     )}
                     {chosenVacationer !== "" && holidays.length === 0 && <p>No vacations...</p>}
-                    {!showAllVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&
-                        <Button onClick={() => setShowAllVacations(true)}>Show past vacations</Button>}
-                    {showAllVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&
-                        <Button onClick={() => setShowAllVacations(false)}>Hide past vacations</Button>}
 
                     <AlertDialog openAlert={openDeletionAlert} handleCloseAlert={handleCloseDeletionAlert}
                                  handleAction={handleDeletion}

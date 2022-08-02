@@ -41,7 +41,6 @@ teamsRouter.put('/teams/:id', (req, res, next) => {
             res.status(200).json(updatedTeam)
         })
         .catch(error => next(error))
-
 })
 
 teamsRouter.patch('/teams/:id', (req, res, next) => {
@@ -56,9 +55,42 @@ teamsRouter.patch('/teams/:id', (req, res, next) => {
             res.status(200).json(updatedTeam)
         })
         .catch(error => next(error))
-
 })
 
+// Change name of a team member in all the teams
+teamsRouter.put('/teams/membername/:id', (req, res, next) => {
+    const memberId = req.params.id;
+    const newMemberName = req.body.newName;
+    console.log("nyt muokataan ", memberId, "->", newMemberName)
+    Team.updateMany( {"members.vacationerId": memberId},
+        {
+            $set: {
+                "members.$[elem].name": newMemberName
+            }},
+    {arrayFilters: [{"elem.vacationerId": memberId}], "multi": true}
+    )
+        .then(updatedTeam => {
+            res.status(200).json(updatedTeam)
+        })
+        .catch(error => next(error))
+})
+
+// Delete a team member from all the teams
+teamsRouter.put('/teams/members/all', (req, res, next) => {
+    const memberId = req.body.id;
+    console.log("nyt poistetaan ", req.body.name, ":", memberId)
+    Team.updateMany( {
+        $pull: {
+            members: {vacationerId: memberId}
+        }
+    })
+        .then(updatedTeam => {
+            res.status(200).json(updatedTeam)
+        })
+        .catch(error => next(error))
+})
+
+// Delete a team member from spesific team
 teamsRouter.put('/teams/members/:id', (req, res, next) => {
     const teamId = req.params.id;
     const memberId = req.body.vacationerId;
@@ -72,7 +104,6 @@ teamsRouter.put('/teams/members/:id', (req, res, next) => {
             res.status(200).json(updatedTeam)
         })
         .catch(error => next(error))
-
 })
 
 teamsRouter.delete('/teams/:id', (req, res, next) => {
@@ -81,7 +112,6 @@ teamsRouter.delete('/teams/:id', (req, res, next) => {
             res.status(200).json(deletedTeam)
         })
         .catch(error => next(error))
-
 })
 
 module.exports = teamsRouter

@@ -5,24 +5,16 @@
     display: flex;
 }
 .teamChips {
-    padding: 20px;
+    padding-top: 20px;
+}
+.oneTeamChip {
+    margin: 10px;
 }
 .wholeCalendar {
     display: flex;
     flex-direction: column;
 }
-.popover {
-    position: absolute;
-    z-index: 2;
-}
-.cover {
-    position: fixed
-}
-.colorPickers {
-    display: flex;
-    justify-content: space-evenly;
-    margin: 10px
-}
+
 .nameSelectBox {
     width: 30%;
     display: inline-block;

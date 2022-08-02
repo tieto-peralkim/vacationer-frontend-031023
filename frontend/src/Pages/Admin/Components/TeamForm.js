@@ -6,26 +6,16 @@ import axios from "axios";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import ModifyDialog from "../../Dialogs/ModifyDialog";
 
-export default function TeamForm({vacationers}) {
+export default function TeamForm({emptySelections, selectedTeam, setSelectedTeam, selectedMember, setSelectedMember, setCompletedAction, completedAction, vacationers, teams}) {
 
-    const [selectedMember, setSelectedMember] = useState("");
-    const [selectedTeam, setSelectedTeam] = useState("");
     const [deletableMember, setDeletableMember] = useState("");
-
     const [newTeam, setNewTeam] = useState([]);
-    const [teams, setTeams] = useState([]);
-    const [save, setSave] = useState(false);
     const [isEmpty, setIsEmpty] = useState(true);
     const [memberExistsError, setMemberExistsError] = useState(false);
     const [openDeleteTeamAlert, setOpenDeleteTeamAlert] = useState(false)
     const [openModifyTeamAlert, setOpenModifyTeamAlert] = useState(false)
     const [openDeleteMemberAlert, setOpenDeleteMemberAlert] = useState(false)
     const TITLE = "Create team";
-
-    const emptySelections = () => {
-        setSelectedMember("");
-        setSelectedTeam("");
-    }
 
     const addToTeam = (newMember, team) => {
         console.log("newMember", newMember, "team", team);
@@ -43,7 +33,7 @@ export default function TeamForm({vacationers}) {
                 .put(`http://localhost:3001/teams/${team.id}`, newMember)
                 .then((response) => {
                     emptySelections();
-                    setSave(!save);
+                    setCompletedAction(!completedAction);
                     setIsEmpty(true);
                     setMemberExistsError(false);
                 })
@@ -63,8 +53,9 @@ export default function TeamForm({vacationers}) {
         axios
             .post("http://localhost:3001/teams", teamToAdd)
             .then((response) => {
+                emptySelections();
                 console.log(response);
-                setSave(!save);
+                setCompletedAction(!completedAction);
             })
             .catch((error) => {
                 console.error("There was a post error!", error);
@@ -77,7 +68,7 @@ export default function TeamForm({vacationers}) {
             .patch(`http://localhost:3001/teams/${selectedTeam.id}`, {"newName": newName})
             .then((response) => {
                 console.log(response);
-                setSave(!save);
+                setCompletedAction(!completedAction);
                 setOpenModifyTeamAlert(false);
                 emptySelections();
             })
@@ -94,7 +85,7 @@ export default function TeamForm({vacationers}) {
             .then((response) => {
                 console.log(response);
                 setDeletableMember("");
-                setSave(!save);
+                setCompletedAction(!completedAction);
                 setOpenDeleteMemberAlert(false);
                 emptySelections();
             })
@@ -110,7 +101,7 @@ export default function TeamForm({vacationers}) {
             .then((response) => {
                 console.log(response);
                 emptySelections();
-                setSave(!save);
+                setCompletedAction(!completedAction);
                 setOpenDeleteTeamAlert(false);
             })
             .catch((error) => {
@@ -126,17 +117,6 @@ export default function TeamForm({vacationers}) {
     }, [selectedTeam, selectedMember]);
 
 
-    useEffect(() => {
-        axios
-            .get("http://localhost:3001/teams")
-            .then((response) => {
-                setTeams(response.data);
-                console.log("teams", response.data);
-            })
-            .catch((error) => {
-                console.log("There was a teams get error!", error)
-            });
-    }, [save]);
 
 
     return (

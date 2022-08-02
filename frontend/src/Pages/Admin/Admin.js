@@ -1,19 +1,31 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {Box, Button, InputLabel, Slider,} from "@mui/material";
+import {Box, Button, InputLabel, Slider, TextField,} from "@mui/material";
 import styles from "./admin.module.css";
 import TeamForm from "./Components/TeamForm";
 import Typography from "@mui/material/Typography";
 import UserForm from "./Components/UserForm";
+import {CompactPicker} from "react-color";
+import {useNavigate} from "react-router-dom";
 
 // Tähän pitäisi lisätä työntekijämäärien asetukset (määrä, minimimäärä)
 export default function Admin() {
-
+    const navigate = useNavigate();
     const [vacationers, setVacationers] = useState([]);
+    const [teams, setTeams] = useState([]);
 
     const WORKER_LIMIT_DEFAULT = 12;
     const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
     const [completedAction, setCompletedAction] = useState(false)
+    const [displayColorPicker, setDisplayColorPicker] = useState(true)
+    const [holidayColor, setHolidayColor] = useState("#73D8FF")
+    const [weekendColor, setWeekendColor] = useState("#CCCCCC")
+    const [weekendHolidayColor, setWeekendHolidayColor] = useState("#666666")
+    const [selectedMember, setSelectedMember] = useState("");
+    const [selectedTeam, setSelectedTeam] = useState("");
+    const [selectedUser, setSelectedUser] = useState("")
+
+    const [holidaySymbol, setHolidaySymbol] = useState(true);
 
     // Slack dates
     const today = new Date();
@@ -27,6 +39,36 @@ export default function Admin() {
     nextFriday.setTime(nextMonday.getTime() + 4 * 24 * 60 * 60 * 1000);
     nextFriday.setUTCHours(12, 0, 0, 0);
 
+    const emptySelections = () => {
+        setSelectedMember("");
+        setSelectedTeam("");
+        setSelectedUser("");
+    }
+
+    const handleColorPickerClick = () => {
+        setDisplayColorPicker(prevValue => !prevValue)
+    }
+    const handleColorPickerClose = () => {
+        setDisplayColorPicker(false)
+    }
+
+    const setAllColors = () => {
+        navigate('/calendar',
+            {state: {"holidayColor": holidayColor, "weekendColor": weekendColor, "weekendHolidayColor": weekendHolidayColor}},
+            );
+        console.log("Värit", holidayColor, weekendColor, weekendHolidayColor)
+    }
+
+    const handleHolidayColorChange = (color) => {
+        setHolidayColor(color.hex);
+    }
+    const handleWeekendColorChange = (color) => {
+        setWeekendColor(color.hex)
+    }
+    const handleWeekendHolidayColorChange = (color) => {
+        setWeekendHolidayColor(color.hex)
+    }
+
     useEffect(() => {
         axios.get("http://localhost:3001/vacationers").then((response) => {
             setVacationers(response.data);
@@ -34,6 +76,19 @@ export default function Admin() {
         })
             .catch((error) => {
                 console.log("There was a vacationers get error!", error)
+            });
+    }, [completedAction]);
+
+
+    useEffect(() => {
+        axios
+            .get("http://localhost:3001/teams")
+            .then((response) => {
+                setTeams(response.data);
+                console.log("teams", response.data);
+            })
+            .catch((error) => {
+                console.log("There was a teams get error!", error)
             });
     }, [completedAction]);
 
@@ -101,15 +156,39 @@ export default function Admin() {
             {/*    />*/}
             {/*</Box>*/}
             <h3>User</h3>
-            <UserForm setCompletedAction={setCompletedAction} completedAction={completedAction} vacationers={vacationers}/>
+            <UserForm emptySelections={emptySelections} selectedUser={selectedUser} setSelectedUser={setSelectedUser} setCompletedAction={setCompletedAction} completedAction={completedAction} vacationers={vacationers}/>
             <h3>Team</h3>
-            <TeamForm vacationers={vacationers}/>
+            <TeamForm emptySelections={emptySelections} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} selectedMember={selectedMember} setSelectedMember={setSelectedMember} setCompletedAction={setCompletedAction} completedAction={completedAction} vacationers={vacationers} teams={teams}/>
             <div>
                 <InputLabel className={styles.extraMargin}>Test Slack</InputLabel>
                 <Button onClick={sendToSlack} variant={"contained"}>
                     Send to Slack!
                 </Button>
             </div>
+            {/*<Button onClick={handleColorPickerClick}>Holidaycolor</Button>*/}
+            {displayColorPicker ? <div
+                // className={styles.popover}
+            >
+                <div className={styles.cover} onClick={handleColorPickerClose}/>
+                <div className={styles.colorPickers}>
+                    <div><h3>Holiday color</h3>
+                        <CompactPicker color={holidayColor} onChangeComplete={handleHolidayColorChange}/></div>
+                    <div><h3>Weekend color</h3>
+                        <CompactPicker color={weekendColor} onChangeComplete={handleWeekendColorChange}/></div>
+                    <div><h3>Weekend holiday color</h3>
+                        <CompactPicker color={weekendHolidayColor} onChangeComplete={handleWeekendHolidayColorChange}/>
+                    </div>
+                </div>
+                <TextField
+                    // className={styles.}
+                    label="Holiday symbol"
+                    variant="outlined"
+                    value={holidaySymbol}
+                    onChange={(e) => {
+                        setHolidaySymbol(e.target.value)
+                    }}/>
+            </div> : null}
+            <Button variant={"contained"} onClick={setAllColors}>Tallenna värit</Button>
         </>
     )
 }
