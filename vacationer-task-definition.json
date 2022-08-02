@@ -2,8 +2,8 @@
     "taskDefinitionArn": "arn:aws:ecs:eu-west-1:629517020360:task-definition/vacationer-task-definition:1",
     "containerDefinitions": [
         {
-            "name": "sample-app",
-            "image": "httpd:2.4",
+            "name": "vacationer-app",
+            "image": "node:16-alpine",
             "cpu": 256,
             "memoryReservation": 512,
             "links": [],
