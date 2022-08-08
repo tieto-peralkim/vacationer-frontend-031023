@@ -1,5 +1,4 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:629517020360:task-definition/vacationer-task-definition:4",
     "containerDefinitions": [
         {
             "name": "vacationer-app",
@@ -15,12 +14,10 @@
                 }
             ],
             "essential": true,
-            "entryPoint": [
-                "sh",
-                "-c"
+            "entryPoint": [""
             ],
             "command": [
-                "/bin/sh -c \"echo '<html> <head> <title>Amazon ECS Sample App</title> <style>body {margin-top: 40px; background-color: #333;} </style> </head><body> <div style=color:white;text-align:center> <h1>Amazon ECS Sample App</h1> <h2>Congratulations!</h2> <p>Your application is now running on a container in Amazon ECS.</p> </div></body></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
+                "docker run -t -i -p 80:80 vacationer-app"
             ],
             "environment": [],
             "mountPoints": [],
@@ -38,9 +35,7 @@
     "family": "vacationer-task-definition",
     "executionRoleArn": "arn:aws:iam::629517020360:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 4,
     "volumes": [],
-    "status": "ACTIVE",
     "requiresAttributes": [
         {
             "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
@@ -62,15 +57,9 @@
         }
     ],
     "placementConstraints": [],
-    "compatibilities": [
-        "EC2",
-        "FARGATE"
-    ],
     "requiresCompatibilities": [
         "FARGATE"
     ],
     "cpu": "256",
     "memory": "512",
-    "registeredAt": "2022-08-08T14:54:27.491000+03:00",
-    "registeredBy": "arn:aws:sts::629517020360:assumed-role/TietoCemAmsSandbox/kimmo.perala@tietoevry.com"
 }
