@@ -1,5 +1,5 @@
 {
-    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:629517020360:task-definition/vacationer-task-definition:12",
+    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:629517020360:task-definition/vacationer-task-definition:16",
     "containerDefinitions": [
         {
             "name": "vacationer-app",
@@ -32,7 +32,7 @@
     "family": "vacationer-task-definition",
     "executionRoleArn": "arn:aws:iam::629517020360:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 12,
+    "revision": 16,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -68,6 +68,6 @@
     ],
     "cpu": "256",
     "memory": "512",
-    "registeredAt": "2022-08-09T09:40:59.660000+03:00",
+    "registeredAt": "2022-08-09T11:59:23.284000+03:00",
     "registeredBy": "arn:aws:sts::629517020360:assumed-role/TietoCemAmsSandbox/kimmo.perala@tietoevry.com"
 }
