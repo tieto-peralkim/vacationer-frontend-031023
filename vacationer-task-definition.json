@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "vacationer-app",
-            "image": "629517020360.dkr.ecr.eu-west-1.amazonaws.com/ecr-vacationer",
+            "image": "629517020360.dkr.ecr.eu-west-1.amazonaws.com/ecr-vacationer:404fba7f462f32ec480736d8577e2696086e336e",
             "cpu": 0,
             "links": [],
             "portMappings": [
