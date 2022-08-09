@@ -66,6 +66,19 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v3.4.1
+      with:
+        # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
+        node-version: 16.14.0
+        # Used to specify a package manager for caching in the default directory. Supported values: npm, yarn, pnpm.
+        cache: npm
+        # Used to specify the path to a dependency file: package-lock.json, yarn.lock, etc. Supports wildcards or a list of file names for caching multiple dependencies.
+        cache-dependency-path: package*.json
+    - run:
+        npm ci
+        npm test
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
