@@ -30,7 +30,7 @@ export default function TeamForm({emptySelections, selectedTeam, setSelectedTeam
 
         if (!isDuplicate) {
             axios
-                .put(`http://localhost:3001/teams/${team.id}`, newMember)
+                .post(`http://localhost:3001/teams/${team.id}`, newMember)
                 .then((response) => {
                     emptySelections();
                     setCompletedAction(!completedAction);

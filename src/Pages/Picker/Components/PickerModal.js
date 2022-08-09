@@ -4,9 +4,11 @@ import LimitSetter from "./LimitSetter";
 import DatePicker from "react-datepicker";
 import {useState} from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
+import axios from "axios";
 
 export default function PickerModal({
                                         openCalendar,
+                                        chosenVacationer,
                                         startDate,
                                         setStartDate,
                                         endDate,
@@ -31,10 +33,14 @@ export default function PickerModal({
                                         setEditingSpace,
                                         setOpenCalendar,
                                         resetDates,
+                                        resetForm,
+                                        save,
+                                        setSave,
                                         calculatePerDay
                                     }) {
     const [alertingDates, setAlertingDates] = useState([])
     const [openEditAlert, setOpenEditAlert] = useState(false);
+    const [openAddAlert, setOpenAddAlert] = useState(false)
     const [overlapErrorMessage, setOverlapErrorMessage] = useState(false);
     const [daysInPastErrorMessage, setDaysInPastErrorMessage] = useState(false);
     const [openRangeAlert, setOpenRangeAlert] = useState(false);
@@ -48,6 +54,13 @@ export default function PickerModal({
         setDailyVacationers([])
         setComment("")
         resetDates();
+    };
+
+    const handleOpenAddAlert = () => {
+        setOpenAddAlert(true);
+    };
+    const handleCloseAddAlert = () => {
+        setOpenAddAlert(false);
     };
 
     const handleOpenEditAlert = () => {
@@ -104,23 +117,32 @@ export default function PickerModal({
                 start: startDate,
                 end: endDate,
                 comment: comment,
-                id: Math.random().toString(16).slice(2)
             };
-            if (newHoliday.start >= today || newHoliday.end >= today) {
-                newHoliday.upcoming = true;
-            } else {
-                newHoliday.upcoming = false;
-            }
-            newHoliday.edited = true;
             console.log("newHoliday", newHoliday)
-            setHolidays((oldHolidays) => [...oldHolidays, newHoliday]);
+            axios
+                .post(`http://localhost:3001/vacationers/${chosenVacationer.id}`, newHoliday)
+                .then((response) => {
+                    console.log(response)
+                    resetForm();
+                    resetDates()
+                })
+                .catch((error) => {
+                    console.error("There was a put error!", error);
+                });
+            handleCloseAddAlert()
             handleCloseCalendar()
+            setSave(!save);
         }
     }
 
     const confirmEdit = () => {
         if (validateCalendar()) {
             handleOpenEditAlert()
+        }
+    }
+    const confirmAdd = () => {
+        if (validateCalendar()) {
+            handleOpenAddAlert()
         }
     }
 
@@ -146,20 +168,19 @@ export default function PickerModal({
             comment: comment,
             id: idToEdit
         };
-        console.log("editedHoliday times", editedHoliday.start, editedHoliday.end, today);
-        if (editedHoliday.end >= today) {
-            editedHoliday.upcoming = true;
-        } else {
-            editedHoliday.upcoming = false;
-        }
-        editedHoliday.edited = true;
-        let vacationIndex = holidays.findIndex((holiday) => holiday.id === idToEdit)
-        console.log("handleEdit", holidays[vacationIndex], editedHoliday)
-        let holidaysCopy = [...holidays]
-        holidaysCopy[vacationIndex] = editedHoliday
-        setHolidays(holidaysCopy)
+        axios
+            .put(`http://localhost:3001/vacationers/${chosenVacationer.id}/${idToEdit}`, editedHoliday)
+            .then((response) => {
+                console.log(response)
+                resetForm();
+                resetDates()
+            })
+            .catch((error) => {
+                console.error("There was a put error!", error);
+            });
         handleCloseEditAlert()
         handleCloseCalendar()
+        setSave(!save);
     };
 
     return (
@@ -218,7 +239,7 @@ export default function PickerModal({
                                 Edit a holiday
                             </Button> :
                             <Button className={styles.buttonStyle} disabled={!endDate || alertingDates.length !== 0}
-                                    onClick={addHoliday}
+                                    onClick={confirmAdd}
                                     variant="contained">
                                 Add a holiday
                             </Button>}
@@ -253,6 +274,13 @@ export default function PickerModal({
                          dialogContent={(holidayToEdit.start && startDate && endDate) && `Are you sure you want to edit the holiday from ${holidayToEdit.start.toLocaleDateString("fi-FI")}
                                    - ${holidayToEdit.end.toLocaleDateString("fi-FI")}  to ${startDate.toLocaleDateString("fi-FI")} - ${endDate.toLocaleDateString("fi-FI")} ?`}
                          cancel={"No"} confirm={"Yes edit"}/>
+
+            <AlertDialog openAlert={openAddAlert} handleCloseAlert={handleCloseAddAlert}
+                         handleAction={addHoliday}
+                         dialogTitle={"Add a holiday"}
+                         dialogContent={(startDate && endDate) && `Are you sure you want to add the holiday ${startDate.toLocaleDateString("fi-FI")}
+                                   - ${endDate.toLocaleDateString("fi-FI")}?`}
+                         cancel={"No"} confirm={"Yes add"}/>
         </>
     )
 }

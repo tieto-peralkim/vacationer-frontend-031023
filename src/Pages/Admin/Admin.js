@@ -188,7 +188,7 @@ export default function Admin() {
                         setHolidaySymbol(e.target.value)
                     }}/>
             </div> : null}
-            <Button variant={"contained"} onClick={setAllColors}>Tallenna värit</Button>
+            <Button variant={"contained"} onClick={setAllColors}>Save calendar colors (for one session)</Button>
         </>
     )
 }

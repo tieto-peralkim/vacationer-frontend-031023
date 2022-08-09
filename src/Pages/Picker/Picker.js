@@ -5,10 +5,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./picker.module.css";
 
 import fi from "date-fns/locale/fi";
-import {Button, ButtonGroup, Chip, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {Button, ButtonGroup, FormControl, InputLabel, MenuItem, Select, Slider} from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
+import Typography from "@mui/material/Typography";
 
 registerLocale("fi", fi);
 
@@ -17,6 +18,7 @@ export default function Picker() {
 
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
+    const NUMBER_OF_SHOWN_DEFAULT = 2;
     //  Dates are in UTC time
     const today = new Date();
     today.setUTCHours(0, 0, 0)
@@ -36,9 +38,9 @@ export default function Picker() {
     const [vacationers, setVacationers] = useState([]);
     const [startDateErrorMessage, setStartDateErrorMessage] = useState(false);
     const [endDateErrorMessage, setEndDateErrorMessage] = useState(false);
-    const [showPastVacations, setShowPastVacations] = useState(0);
+    const [showPastVacations, setShowPastVacations] = useState(NUMBER_OF_SHOWN_DEFAULT);
     const [dailyVacationers, setDailyVacationers] = useState([]);
-
+    const [showHolidays, setShowHolidays] = useState(2);
     const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
 
     const [openCalendar, setOpenCalendar] = useState(false);
@@ -94,10 +96,12 @@ export default function Picker() {
     }, [startDate]);
 
     useEffect(() => {
+        console.log("Saved!")
         axios
             .get("http://localhost:3001/vacationers")
             .then((response) => {
                 setVacationers(response.data);
+                console.log("tallennettu", "chosen", chosenVacationer, " ja response.data:", response.data)
             })
             .catch((error) => {
                 console.log("There was a get error!", error)
@@ -113,41 +117,27 @@ export default function Picker() {
         setCalendarDaysExcluded(holidays)
     }, [holidays]);
 
-    const updateVacation = (e) => {
-        e.preventDefault();
-        if (chosenVacationer !== "") {
-            const newVacation = {
-                name: chosenVacationer.name,
-                vacations: holidays
-            };
-            console.log("newVacation", newVacation);
-
-            axios
-                .put(`http://localhost:3001/vacationers/${chosenVacationer.id}`, newVacation)
-                .then((response) => {
-                    setSave(!save);
-                    console.log(response)
-                })
-                .catch((error) => {
-                    console.error("There was a put error!", error);
-                });
-            resetDates();
-            setHolidays([]);
-            setWorkerLimit(WORKER_LIMIT_DEFAULT)
-            setChosenVacationer("")
+    useEffect(() => {
+        if (holidays.length - showPastVacations >= 0) {
+            setShowHolidays(holidays.length - showPastVacations)
+            console.log("slice", holidays.length - showPastVacations, holidays.length)
         } else {
-            console.log("Not valid, check!");
+            setShowHolidays(0)
+            console.log("slice 0", holidays.length)
         }
-    };
+    }, [holidays, showPastVacations]);
 
-    // Kellonajan asettaminen startDatelle?
+
     const resetDates = () => {
         setStartDate(new Date());
         startDate.setUTCHours(10)
         setEndDate(null);
     }
 
-
+    const resetForm = () => {
+        setHolidays([]);
+        setChosenVacationer("")
+    }
 
     const confirmDeletion = (id) => {
         setIdToDelete(id);
@@ -161,9 +151,16 @@ export default function Picker() {
     };
 
     const handleDeletion = () => {
-        setHolidays((holidays) =>
-            holidays.filter((holidays) => holidays.id !== idToDelete)
-        )
+        axios.delete(`http://localhost:3001/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`)
+            .then(() => {
+                setSave(!save);
+                resetForm();
+                resetDates()
+            })
+            .catch((error) => {
+                console.error("There was a delete holiday error!", error);
+            })
+
         handleCloseDeletionAlert();
     };
 
@@ -243,8 +240,7 @@ export default function Picker() {
     }
 
     const selectVacationer = (name) => {
-        setShowPastVacations(0)
-        console.log("vacationers", vacationers)
+        setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT)
         for (let i = 0; i < vacationers.length; i++) {
             if (vacationers[i].name === name) {
                 setChosenVacationer(vacationers[i])
@@ -273,10 +269,10 @@ export default function Picker() {
     }
 
     return (
-        <div  className={styles.mainView}>
+        <div className={styles.mainView}>
             <h1>Holiday Picker</h1>
             <div>
-                <form onSubmit={updateVacation} className={styles.form}>
+                <form className={styles.form}>
                     <FormControl className={styles.nameSelectBox}>
                         <InputLabel>Choose your name</InputLabel>
                         <Select defaultValue={chosenVacationer ? chosenVacationer.name : ""}
@@ -323,110 +319,107 @@ export default function Picker() {
                         Add a holiday
                     </Button>
                     <PickerModal openCalendar={openCalendar}
-                    startDate={startDate}
-                    setStartDate={setStartDate}
-                    endDate={endDate}
-                    setEndDate={setEndDate}
-                    daysInDateRange={daysInDateRange}
-                    holidayToEdit={holidayToEdit}
-                    holidays={holidays}
-                    workerLimit={workerLimit}
-                    dailyVacationers={dailyVacationers}
-                    setDailyVacationers={setDailyVacationers}
-                    calendarDaysExcluded={calendarDaysExcluded}
-                    editingSpace={editingSpace}
-                    setEditingSpace={setEditingSpace}
-                    changingStartedSpace={changingStartedSpace}
-                    today={today}
-                    setComment={setComment}
-                    startDateErrorMessage={startDateErrorMessage}
-                    endDateErrorMessage={endDateErrorMessage}
-                    comment={comment}
-                    idToEdit={idToEdit}
-                    setHolidays={setHolidays}
-                    setChangingStartedSpace={setChangingStartedSpace}
-                    setOpenCalendar={setOpenCalendar}
-                    resetDates={resetDates}
-                    calculatePerDay={calculatePerDay}/>
-                    {/*{!showPastVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&*/}
-                    <Chip
-                        // className={styles.}
-                        variant={(showPastVacations === 8) ? "" : "outlined"}
-                        label="Show 8 latest holidays"
-                        color="secondary"
-                        onClick={() => {
-                            setShowPastVacations(8)
-                        }}
-                    />
-                    <Chip
-                        // className={styles.}
-                        variant={(showPastVacations === 4) ? "" : "outlined"}
-                        label="Show 4 latest holidays"
-                        color="secondary"
-                        onClick={() => {
-                            setShowPastVacations(4)
-                        }}
-                    />
-                    <Chip
-                        // className={styles.}
-                        variant={(showPastVacations === 0) ? "" : "outlined"}
-                        label="Upcoming"
-                        color="secondary"
-                        onClick={() => {
-                            setShowPastVacations(0)
-                        }}
-                    />
-                        {/*<Button onClick={() => setShowPastVacations(true)}>Show past vacations</Button>}*/}
-                    {/*{showPastVacations && chosenVacationer !== "" && holidays.length !== 0 && calculateUpcomingHolidays()[0] !== holidays.length &&*/}
-                    {/*    <Button onClick={() => setShowPastVacations(false)}>Hide past vacations</Button>}*/}
+                                 selectVacationer={selectVacationer}
+                                 chosenVacationer={chosenVacationer}
+                                 startDate={startDate}
+                                 setStartDate={setStartDate}
+                                 endDate={endDate}
+                                 setEndDate={setEndDate}
+                                 daysInDateRange={daysInDateRange}
+                                 holidayToEdit={holidayToEdit}
+                                 holidays={holidays}
+                                 workerLimit={workerLimit}
+                                 dailyVacationers={dailyVacationers}
+                                 setDailyVacationers={setDailyVacationers}
+                                 calendarDaysExcluded={calendarDaysExcluded}
+                                 editingSpace={editingSpace}
+                                 setEditingSpace={setEditingSpace}
+                                 changingStartedSpace={changingStartedSpace}
+                                 today={today}
+                                 setComment={setComment}
+                                 startDateErrorMessage={startDateErrorMessage}
+                                 endDateErrorMessage={endDateErrorMessage}
+                                 comment={comment}
+                                 idToEdit={idToEdit}
+                                 setHolidays={setHolidays}
+                                 setChangingStartedSpace={setChangingStartedSpace}
+                                 setOpenCalendar={setOpenCalendar}
+                                 resetDates={resetDates}
+                                 resetForm={resetForm}
+                                 save={save}
+                                 setSave={setSave}
+                                 calculatePerDay={calculatePerDay}/>
                     {holidays.length > 0 && (
-                        <div>
-                            <div className={styles.holidays}>
-                                {showPastVacations === 0 &&
-                                    holidays.filter(holiday => holiday.upcoming)
+                        <>
+                            {/*<Chip*/}
+                            {/*    // className={styles.}*/}
+                            {/*    variant={(showPastVacations === 12) ? "" : "outlined"}*/}
+                            {/*    label="Show 12 latest holidays"*/}
+                            {/*    color="secondary"*/}
+                            {/*    onClick={() => {*/}
+                            {/*        setShowPastVacations(12)*/}
+                            {/*    }}*/}
+                            {/*/>*/}
+                            {/*<Chip*/}
+                            {/*    // className={styles.}*/}
+                            {/*    variant={(showPastVacations === 8) ? "" : "outlined"}*/}
+                            {/*    label="Show 8 latest holidays"*/}
+                            {/*    color="secondary"*/}
+                            {/*    onClick={() => {*/}
+                            {/*        setShowPastVacations(8)*/}
+                            {/*    }}*/}
+                            {/*/>*/}
+                            {/*<Chip*/}
+                            {/*    // className={styles.}*/}
+                            {/*    variant={(showPastVacations === 4) ? "" : "outlined"}*/}
+                            {/*    label="Show 4 latest holidays"*/}
+                            {/*    color="secondary"*/}
+                            {/*    onClick={() => {*/}
+                            {/*        setShowPastVacations(4)*/}
+                            {/*    }}*/}
+                            {/*/>*/}
+                            <div>
+
+                                {holidays.length > NUMBER_OF_SHOWN_DEFAULT && (
+                                    <div className={styles.marginTop}>
+                                        <Typography>
+                                            Showing last {showPastVacations} holidays
+                                        </Typography>
+                                        <Slider
+                                            className={styles.marginTop}
+                                            value={showPastVacations}
+                                            min={1}
+                                            max={holidays.length}
+                                            valueLabelDisplay={"on"}
+                                            onChange={(e) => setShowPastVacations(e.target.value)}
+                                        />
+                                    </div>
+                                )}
+                                <div className={styles.holidays}>
+                                    {holidays
                                         .sort((v1, v2) => v1.start - v2.start)
+                                        .slice(showHolidays, holidays.length)
                                         .map((holidays) => (
                                             <ButtonGroup size="large" variant="outlined" key={holidays.id}
                                                          className={styles.datesGroup}
                                             >
                                                 <Button onClick={() => editHoliday(holidays.id)}
-                                                        color={!holidays.edited ? "primary" : "secondary"}
-                                                        className={styles.dates}>
-                                                    {holidays.start.getUTCDate()}.{holidays.start.getUTCMonth() + 1}.{holidays.start.getUTCFullYear()} -{" "}
-                                                    {holidays.end.getUTCDate()}.{holidays.end.getUTCMonth() + 1}.{holidays.end.getUTCFullYear()}
-                                                    {" "} ({daysInDateRange(holidays.start, holidays.end)} days) {holidays.edited && "*"}
-                                                </Button>
-                                                <Button onClick={() => confirmDeletion(holidays.id)}
-                                                        color={!holidays.edited ? "primary" : "secondary"}
-                                                        endIcon={<ClearIcon/>}>Delete</Button>
-                                            </ButtonGroup>
-                                        ))
-                                }
-                                {showPastVacations !== 0 &&
-                                    holidays
-                                        .sort((v1, v2) => v1.start - v2.start)
-                                        // tehtävää ############
-                                        // .slice(holidays.length - showPastVacations > 0 ? (holidays.length - showPastVacations, holidays.length) : (0, holidays.length))
-                                        .map((holidays, index) => (
-                                            <ButtonGroup size="large" variant="outlined" key={holidays.id}
-                                                         className={styles.datesGroup}
-                                            >
-                                                <Button onClick={() => editHoliday(holidays.id)}
-                                                        color={!holidays.edited ? "primary" : "secondary"}
+                                                        color={"primary"}
                                                         className={styles.dates} disabled={!holidays.upcoming}>
                                                     {holidays.start.getUTCDate()}.{holidays.start.getUTCMonth() + 1}.{holidays.start.getUTCFullYear()} -{" "}
                                                     {holidays.end.getUTCDate()}.{holidays.end.getUTCMonth() + 1}.{holidays.end.getUTCFullYear()}
                                                     {" "} ({daysInDateRange(holidays.start, holidays.end)} days)
                                                 </Button>
                                                 <Button onClick={() => confirmDeletion(holidays.id)}
-                                                        color={!holidays.edited ? "primary" : "secondary"}
+                                                        color={"primary"}
                                                         disabled={!holidays.upcoming}
                                                         endIcon={<ClearIcon/>}>Delete</Button>
                                             </ButtonGroup>
-                                        ))
-                                }
+                                        ))}
+                                </div>
                             </div>
-                        </div>
+                        </>
+
                     )}
                     {chosenVacationer !== "" && holidays.length === 0 && <p>No vacations...</p>}
 
@@ -436,10 +429,6 @@ export default function Picker() {
                                  dialogContent={holidayToDelete.start && `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString("fi-FI")}
                                    - ${holidayToDelete.end.toLocaleDateString("fi-FI")} ?`}
                                  cancel={"No"} confirm={"Yes delete"}/>
-                    <Button className={styles.extraMargin} type="submit"
-                            variant="contained">
-                        Save
-                    </Button>
                 </form>
             </div>
         </div>
