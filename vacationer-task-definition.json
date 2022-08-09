@@ -1,24 +1,21 @@
 {
+    "taskDefinitionArn": "arn:aws:ecs:eu-west-1:629517020360:task-definition/vacationer-task-definition:12",
     "containerDefinitions": [
         {
             "name": "vacationer-app",
-            "image": "node:16-alpine",
-            "cpu": 256,
-            "memoryReservation": 512,
+            "image": "629517020360.dkr.ecr.eu-west-1.amazonaws.com/ecr-vacationer",
+            "cpu": 0,
             "links": [],
             "portMappings": [
                 {
-                    "containerPort": 80,
-                    "hostPort": 80,
+                    "containerPort": 3000,
+                    "hostPort": 3000,
                     "protocol": "tcp"
                 }
             ],
             "essential": true,
-            "entryPoint": [""
-            ],
-            "command": [
-                "docker run -t -i -p 80:80 vacationer-app"
-            ],
+            "entryPoint": [],
+            "command": [],
             "environment": [],
             "mountPoints": [],
             "volumesFrom": [],
@@ -35,7 +32,9 @@
     "family": "vacationer-task-definition",
     "executionRoleArn": "arn:aws:iam::629517020360:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
+    "revision": 12,
     "volumes": [],
+    "status": "ACTIVE",
     "requiresAttributes": [
         {
             "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
@@ -44,10 +43,13 @@
             "name": "ecs.capability.execution-role-awslogs"
         },
         {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
         },
         {
-            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.21"
+            "name": "ecs.capability.execution-role-ecr-pull"
         },
         {
             "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
@@ -57,9 +59,15 @@
         }
     ],
     "placementConstraints": [],
+    "compatibilities": [
+        "EC2",
+        "FARGATE"
+    ],
     "requiresCompatibilities": [
         "FARGATE"
     ],
     "cpu": "256",
-    "memory": "512"
+    "memory": "512",
+    "registeredAt": "2022-08-09T09:40:59.660000+03:00",
+    "registeredBy": "arn:aws:sts::629517020360:assumed-role/TietoCemAmsSandbox/kimmo.perala@tietoevry.com"
 }
