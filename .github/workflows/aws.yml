@@ -66,13 +66,12 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Setup Node.js environment
-      uses: actions/setup-node@v3.4.1
-      with:
-        # Version Spec of the version to use. Examples: 12.x, 10.15.1, >=10.15.0.
-        node-version: 16.x
-    - run: npm ci
-    - run: npm test
+#    - name: Setup Node.js environment
+#      uses: actions/setup-node@v3.4.1
+#      with:
+#        node-version: 16.x
+#    - run: npm ci
+#    - run: npm test
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
