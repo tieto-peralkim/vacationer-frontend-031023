@@ -99,7 +99,7 @@ export default function Picker() {
     useEffect(() => {
         console.log("Saved!")
         axios
-            .get("http://172.31.14.201:3001/vacationers")
+            .get("http://34.242.217.69:3001/vacationers")
             .then((response) => {
                 setVacationers(response.data);
                 console.log("tallennettu, response.data:", response.data)
@@ -147,7 +147,7 @@ export default function Picker() {
     };
 
     const handleDeletion = () => {
-        axios.delete(`http://172.31.14.201:3001/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`) // 1. private backend  2. public backend && whitelist backissa frontendia varten
+        axios.delete(`http://34.242.217.69:3001/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`)
             .then(() => {
                 setSave(!save);
                 resetForm();
@@ -422,7 +422,7 @@ export default function Picker() {
                                                 </Button>
                                                 <Button onClick={() => confirmDeletion(holiday)}
                                                         color={"primary"}
-                                                        // disabled={!holiday.upcoming}
+                                                        disabled={!holiday.upcoming}
                                                         endIcon={<ClearIcon/>}>Delete</Button>
                                             </ButtonGroup>
                                         ))}
