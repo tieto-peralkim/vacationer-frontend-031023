@@ -127,7 +127,7 @@ export default function PickerModal({
                     resetDates()
                 })
                 .catch((error) => {
-                    console.error("There was a put error!", error);
+                    console.error("There was a post new holiday error!", error);
                 });
             handleCloseAddAlert()
             handleCloseCalendar()
@@ -150,12 +150,15 @@ export default function PickerModal({
         setOverlapErrorMessage(false);
         setDaysInPastErrorMessage(false);
         const [start, end] = dates;
+
+        console.log("start1", start, end)
+
         setStartDate(start);
         if (end !== null) {
             end.setUTCHours(14)
         }
         setEndDate(end);
-        console.log("start", start, end)
+        console.log("start2", start, end)
         if (start !== null && end !== null) {
             calculatePerDay(start, end)
         }
@@ -212,6 +215,7 @@ export default function PickerModal({
                             showWeekNumbers
                             disabledKeyboardNavigation
                             inline
+                            isClearable
                             highlightDates={alertingDates.length > 0 && alertingDates.map(a => {
                                 return new Date(a[0])
                             })}
@@ -256,8 +260,7 @@ export default function PickerModal({
                                 </ul>
                             </Alert>}
 
-                        {startDateErrorMessage && <Alert onClose={() => {
-                        }}>Choose the start date!</Alert>}
+                        {startDateErrorMessage && <Alert severity="info">Choose the start date!</Alert>}
 
                         {endDateErrorMessage && <Alert severity="info">Choose the end date!</Alert>}
 

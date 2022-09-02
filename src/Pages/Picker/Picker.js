@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./picker.module.css";
 
 import fi from "date-fns/locale/fi";
-import {Button, ButtonGroup, FormControl, InputLabel, MenuItem, Select, Slider} from "@mui/material";
+import {Button, ButtonGroup, Chip, FormControl, InputLabel, MenuItem, Select, Slider} from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
@@ -30,8 +30,10 @@ export default function Picker() {
     const nextSunday = new Date();
     nextSunday.setTime(nextMonday.getTime() + 6 * 24 * 60 * 60 * 1000);
     nextSunday.setUTCHours(12, 0, 0, 0);
+
     const [startDate, setStartDate] = useState(new Date());
     startDate.setUTCHours(10, 0, 0, 0);
+
     const [endDate, setEndDate] = useState(null);
 
     const [comment, setComment] = useState("");
@@ -47,7 +49,6 @@ export default function Picker() {
     const [openDeletionAlert, setOpenDeletionAlert] = useState(false);
 
     const [idToEdit, setIdToEdit] = useState()
-    const [idToDelete, setIdToDelete] = useState()
     const [holidayToEdit, setHolidayToEdit] = useState({})
     const [holidayToDelete, setHolidayToDelete] = useState({})
 
@@ -98,10 +99,10 @@ export default function Picker() {
     useEffect(() => {
         console.log("Saved!")
         axios
-            .get("http://localhost:3001/vacationers")
+            .get("http://172.31.14.201:3001/vacationers")
             .then((response) => {
                 setVacationers(response.data);
-                console.log("tallennettu", "chosen", chosenVacationer, " ja response.data:", response.data)
+                console.log("tallennettu, response.data:", response.data)
             })
             .catch((error) => {
                 console.log("There was a get error!", error)
@@ -139,19 +140,14 @@ export default function Picker() {
         setChosenVacationer("")
     }
 
-    const confirmDeletion = (id) => {
-        setIdToDelete(id);
-        console.log("confirmDeletion: id", id)
-        for (let i = 0; i < holidays.length; i++) {
-            if (id === holidays[i].id) {
-                setHolidayToDelete(holidays[i])
-            }
-        }
+    const confirmDeletion = (holiday) => {
+        console.log("confirmDeletion: id", holiday)
+        setHolidayToDelete(holiday)
         handleOpenDeletionAlert()
     };
 
     const handleDeletion = () => {
-        axios.delete(`http://localhost:3001/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`)
+        axios.delete(`http://172.31.14.201:3001/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`) // 1. private backend  2. public backend && whitelist backissa frontendia varten
             .then(() => {
                 setSave(!save);
                 resetForm();
@@ -268,6 +264,22 @@ export default function Picker() {
             })
     }
 
+    const startAndEndTimeJSX = (holiday) => {
+        console.log("pituus", holiday.start, holiday.end)
+        if (holiday.start.getDate() === holiday.end.getDate() && holiday.start.getMonth() === holiday.end.getMonth() && holiday.start.getYear() === holiday.end.getYear()) {
+            return (
+                <>{holiday.start.getUTCDate()}.{holiday.start.getUTCMonth() + 1}.{holiday.start.getUTCFullYear()}
+                    {" "} ({daysInDateRange(holiday.start, holiday.end)} day)</>
+            )
+        } else {
+            return (
+                <>{holiday.start.getUTCDate()}.{holiday.start.getUTCMonth() + 1}.{holiday.start.getUTCFullYear()} -{" "}
+                    {holiday.end.getUTCDate()}.{holiday.end.getUTCMonth() + 1}.{holiday.end.getUTCFullYear()}
+                    {" "} ({daysInDateRange(holiday.start, holiday.end)} days)</>
+            )
+        }
+    }
+
     return (
         <div className={styles.mainView}>
             <h1>Holiday Picker</h1>
@@ -351,39 +363,39 @@ export default function Picker() {
                                  calculatePerDay={calculatePerDay}/>
                     {holidays.length > 0 && (
                         <>
-                            {/*<Chip*/}
-                            {/*    // className={styles.}*/}
-                            {/*    variant={(showPastVacations === 12) ? "" : "outlined"}*/}
-                            {/*    label="Show 12 latest holidays"*/}
-                            {/*    color="secondary"*/}
-                            {/*    onClick={() => {*/}
-                            {/*        setShowPastVacations(12)*/}
-                            {/*    }}*/}
-                            {/*/>*/}
-                            {/*<Chip*/}
-                            {/*    // className={styles.}*/}
-                            {/*    variant={(showPastVacations === 8) ? "" : "outlined"}*/}
-                            {/*    label="Show 8 latest holidays"*/}
-                            {/*    color="secondary"*/}
-                            {/*    onClick={() => {*/}
-                            {/*        setShowPastVacations(8)*/}
-                            {/*    }}*/}
-                            {/*/>*/}
-                            {/*<Chip*/}
-                            {/*    // className={styles.}*/}
-                            {/*    variant={(showPastVacations === 4) ? "" : "outlined"}*/}
-                            {/*    label="Show 4 latest holidays"*/}
-                            {/*    color="secondary"*/}
-                            {/*    onClick={() => {*/}
-                            {/*        setShowPastVacations(4)*/}
-                            {/*    }}*/}
-                            {/*/>*/}
+                            <Chip
+                                // className={styles.}
+                                variant={(showPastVacations === 12) ? "" : "outlined"}
+                                label="Show 12 newest holidays"
+                                color="secondary"
+                                onClick={() => {
+                                    setShowPastVacations(12)
+                                }}
+                            />
+                            <Chip
+                                // className={styles.}
+                                variant={(showPastVacations === 8) ? "" : "outlined"}
+                                label="Show 8 newest holidays"
+                                color="secondary"
+                                onClick={() => {
+                                    setShowPastVacations(8)
+                                }}
+                            />
+                            <Chip
+                                // className={styles.}
+                                variant={(showPastVacations === 4) ? "" : "outlined"}
+                                label="Show 4 newest holidays"
+                                color="secondary"
+                                onClick={() => {
+                                    setShowPastVacations(4)
+                                }}
+                            />
                             <div>
 
                                 {holidays.length > NUMBER_OF_SHOWN_DEFAULT && (
                                     <div className={styles.marginTop}>
                                         <Typography>
-                                            Showing last {showPastVacations} holidays
+                                            Showing newest {showPastVacations} holidays
                                         </Typography>
                                         <Slider
                                             className={styles.marginTop}
@@ -399,20 +411,18 @@ export default function Picker() {
                                     {holidays
                                         .sort((v1, v2) => v1.start - v2.start)
                                         .slice(showHolidays, holidays.length)
-                                        .map((holidays) => (
-                                            <ButtonGroup size="large" variant="outlined" key={holidays.id}
+                                        .map((holiday) => (
+                                            <ButtonGroup size="large" variant="outlined" key={holiday.id}
                                                          className={styles.datesGroup}
                                             >
-                                                <Button onClick={() => editHoliday(holidays.id)}
+                                                <Button onClick={() => editHoliday(holiday.id)}
                                                         color={"primary"}
-                                                        className={styles.dates} disabled={!holidays.upcoming}>
-                                                    {holidays.start.getUTCDate()}.{holidays.start.getUTCMonth() + 1}.{holidays.start.getUTCFullYear()} -{" "}
-                                                    {holidays.end.getUTCDate()}.{holidays.end.getUTCMonth() + 1}.{holidays.end.getUTCFullYear()}
-                                                    {" "} ({daysInDateRange(holidays.start, holidays.end)} days)
+                                                        className={styles.dates} disabled={!holiday.upcoming}>
+                                                    {startAndEndTimeJSX(holiday)}
                                                 </Button>
-                                                <Button onClick={() => confirmDeletion(holidays.id)}
+                                                <Button onClick={() => confirmDeletion(holiday)}
                                                         color={"primary"}
-                                                        disabled={!holidays.upcoming}
+                                                        // disabled={!holiday.upcoming}
                                                         endIcon={<ClearIcon/>}>Delete</Button>
                                             </ButtonGroup>
                                         ))}
