@@ -30,7 +30,7 @@ export default function TeamForm({emptySelections, selectedTeam, setSelectedTeam
 
         if (!isDuplicate) {
             axios
-                .post(`http://localhost:3001/teams/${team.id}`, newMember)
+                .post(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/teams/${team.id}`, newMember)
                 .then((response) => {
                     emptySelections();
                     setCompletedAction(!completedAction);
@@ -51,7 +51,7 @@ export default function TeamForm({emptySelections, selectedTeam, setSelectedTeam
         };
 
         axios
-            .post("http://localhost:3001/teams", teamToAdd)
+            .post(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/teams`, teamToAdd)
             .then((response) => {
                 emptySelections();
                 console.log(response);
@@ -65,7 +65,7 @@ export default function TeamForm({emptySelections, selectedTeam, setSelectedTeam
 
     const changeTeamName = (newName) => {
         axios
-            .patch(`http://localhost:3001/teams/${selectedTeam.id}`, {"newName": newName})
+            .patch(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/teams/${selectedTeam.id}`, {"newName": newName})
             .then((response) => {
                 console.log(response);
                 setCompletedAction(!completedAction);
@@ -81,7 +81,7 @@ export default function TeamForm({emptySelections, selectedTeam, setSelectedTeam
         console.log("deleting member", deletableMember)
 
         axios
-            .put(`http://localhost:3001/teams/members/${selectedTeam.id}`, deletableMember)
+            .put(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/teams/members/${selectedTeam.id}`, deletableMember)
             .then((response) => {
                 console.log(response);
                 setDeletableMember("");
@@ -97,7 +97,7 @@ export default function TeamForm({emptySelections, selectedTeam, setSelectedTeam
     const deleteTeam = () => {
         console.log("deleting team", selectedTeam)
         axios
-            .delete(`http://localhost:3001/teams/${selectedTeam.id}`)
+            .delete(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/teams/${selectedTeam.id}`)
             .then((response) => {
                 console.log(response);
                 emptySelections();
