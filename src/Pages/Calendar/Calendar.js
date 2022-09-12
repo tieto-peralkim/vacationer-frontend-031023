@@ -10,8 +10,9 @@ import {useLocation} from "react-router-dom";
 export default function Calendar(props) {
     const location = useLocation();
     const today = new Date();
-    const thisMonthFirst = new Date(today.getFullYear(), today.getMonth(), 1);
-
+    const thisMonthFirst = new Date(today.getFullYear(), today.getMonth(), 1, 15);
+    thisMonthFirst.setUTCHours(0,0,0,0)
+    console.log("thisMonthFirst", thisMonthFirst)
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
 
     const [holidayColor, setHolidayColor] = useState("#73D8FF");
@@ -422,8 +423,7 @@ export default function Calendar(props) {
             selectedDate.getMonth() + 1,
             1
         );
-
-        console.log("selectedDate, nextMonth", selectedDate, nextMonth);
+        nextMonth.setUTCHours(23,59,59,999)
 
         // Fetching total number of vacationers in DB
         axios
@@ -610,22 +610,25 @@ export default function Calendar(props) {
         },
     });
 
-    const goBackMonth = () => {
+    const changeMonth = (amount) => {
+        let newMonth;
+        if (amount > 0) {
+            newMonth = selectedDate.getMonth() + 1
+        }
+        else {
+            newMonth = selectedDate.getMonth() - 1
+        }
+
         let newDate = new Date(
             selectedDate.getFullYear(),
-            selectedDate.getMonth() - 1,
-            1
+            newMonth,
+            1,15
         );
+        newDate.setUTCHours(0,0,0,0)
+        console.log("newDate1", newDate);
+
         setSelectedDate(newDate);
-    };
-    const goForwardMonth = () => {
-        let newDate = new Date(
-            selectedDate.getFullYear(),
-            selectedDate.getMonth() + 1,
-            1
-        );
-        setSelectedDate(newDate);
-    };
+    }
 
     // Tätä voisi selkeyttää ja tehostaa
     const isCommonHoliday = (holiday, index) => {
@@ -755,7 +758,7 @@ export default function Calendar(props) {
                 <div className={styles.wholeCalendar}>
                     <Box className={styles.buttons}>
                         <Button
-                            onClick={() => goBackMonth()}
+                            onClick={() => changeMonth(-1)}
                             startIcon={<ArrowBackIosIcon />}>
                             Previous
                         </Button>
@@ -764,7 +767,7 @@ export default function Calendar(props) {
                             year: "numeric",
                         })}
                         <Button
-                            onClick={() => goForwardMonth()}
+                            onClick={() => changeMonth(1)}
                             endIcon={<ArrowForwardIosIcon />}>
                             Next
                         </Button>

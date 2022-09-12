@@ -154,9 +154,9 @@ export default function PickerModal({
         console.log("start1", start, end)
 
         setStartDate(start);
-        if (end !== null) {
-            end.setUTCHours(14)
-        }
+        start.setHours(15)
+        start.setUTCHours(0)
+
         setEndDate(end);
         console.log("start2", start, end)
         if (start !== null && end !== null) {

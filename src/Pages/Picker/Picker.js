@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import styles from "./picker.module.css";
 
 import fi from "date-fns/locale/fi";
-import {Button, ButtonGroup, Chip, FormControl, InputLabel, MenuItem, Select, Slider} from "@mui/material";
+import {Box, Button, ButtonGroup, Chip, FormControl, InputLabel, MenuItem, Select, Slider} from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
@@ -21,18 +21,13 @@ export default function Picker() {
     const NUMBER_OF_SHOWN_DEFAULT = 2;
     //  Dates are in UTC time
     const today = new Date();
+    const thisYear = today.getFullYear();
     today.setUTCHours(0, 0, 0)
-    const nextMonday = new Date();
-    nextMonday.setUTCDate(
-        today.getUTCDate() + ((1 + 7 - today.getUTCDay()) % 7 || 7)
-    );
-    nextMonday.setUTCHours(12, 0, 0, 0);
-    const nextSunday = new Date();
-    nextSunday.setTime(nextMonday.getTime() + 6 * 24 * 60 * 60 * 1000);
-    nextSunday.setUTCHours(12, 0, 0, 0);
 
-    const [startDate, setStartDate] = useState(new Date());
-    startDate.setUTCHours(10, 0, 0, 0);
+    const [startDate, setStartDate] = useState(null);
+
+    // const [startDate, setStartDate] = useState(new Date());
+    // startDate.setUTCHours(10, 0, 0, 0);
 
     const [endDate, setEndDate] = useState(null);
 
@@ -96,6 +91,7 @@ export default function Picker() {
         }
     }, [startDate]);
 
+    // Update list of employees and their vacations
     useEffect(() => {
         console.log("Saved!")
         axios
@@ -115,8 +111,11 @@ export default function Picker() {
             amountOfDays += daysInDateRange(holidays[i].start, holidays[i].end)
         }
         setDayAmount(amountOfDays);
+
+        // set existing holiday dates to be excluded in DatePicker
         setCalendarDaysExcluded(holidays)
     }, [holidays]);
+
 
     useEffect(() => {
         if (holidays.length - showPastVacations >= 0) {
@@ -130,8 +129,9 @@ export default function Picker() {
 
 
     const resetDates = () => {
-        setStartDate(new Date());
-        startDate.setUTCHours(10)
+        setStartDate(null);
+        // setStartDate(new Date());
+        // startDate.setUTCHours(10)
         setEndDate(null);
     }
 
@@ -146,7 +146,7 @@ export default function Picker() {
         handleOpenDeletionAlert()
     };
 
-    const handleDeletion = () => {
+    const deleteHoliday = () => {
         axios.delete(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`)
             .then(() => {
                 setSave(!save);
@@ -183,7 +183,6 @@ export default function Picker() {
         }
         setEditingSpace(true)
         setOpenCalendar(true)
-        console.log("chosenVacationer", chosenVacationer)
     }
 
     // UI Method for adding the extra day before holiday. Because Datepicker exclusion does not include the 1st day of date range
@@ -208,7 +207,7 @@ export default function Picker() {
     const setExcludedDates = (vacations) => {
         let pureVacations = [];
         for (let i = 0; i < vacations.length; i++) {
-            let holidayObject = new Object()
+            let holidayObject = {}
             holidayObject.start = new Date(vacations[i].start)
             holidayObject.end = new Date(vacations[i].end)
             holidayObject.comment = vacations[i].comment
@@ -242,6 +241,7 @@ export default function Picker() {
                 setChosenVacationer(vacationers[i])
                 console.log("selectVacationer", vacationers[i].vacations)
                 setExcludedDates(vacationers[i].vacations)
+                break;
             }
         }
     };
@@ -251,7 +251,6 @@ export default function Picker() {
         let daysInRange = Math.round(Math.abs((firstDate - secondDate) / millisecondsDay)) + 1;
         return daysInRange;
     }
-
 
     const calculatePerDay = (date1, date2) => {
         axios.get(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/timespan?start=${date1.toISOString()}&end=${date2.toISOString()}`)
@@ -318,12 +317,12 @@ export default function Picker() {
                     {/*    />*/}
                     {/*</Box>*/}
                     {/*{chosenVacationer &&*/}
-                    {/*    <div className={}>*/}
+                    {/*    <div>*/}
                     {/*        FOUND {holidays.length} HOLIDAYS ({dayAmount} DAYS)*/}
                     {/*        OF WHICH {calculateUpcomingHolidays()[0]} ({calculateUpcomingHolidays()[1]} DAYS) ARE*/}
                     {/*        STILL*/}
                     {/*        COMING<br/>*/}
-                    {/*        /!*HOLIDAYS LEFT {annualAmount - dayAmount}*!/*/}
+                    {/*        HOLIDAYS LEFT {annualAmount - dayAmount}*/}
                     {/*    </div>}*/}
                     <Button className={styles.extraMargin} variant="contained" color="primary"
                             disabled={!chosenVacationer}
@@ -434,7 +433,7 @@ export default function Picker() {
                     {chosenVacationer !== "" && holidays.length === 0 && <p>No vacations...</p>}
 
                     <AlertDialog openAlert={openDeletionAlert} handleCloseAlert={handleCloseDeletionAlert}
-                                 handleAction={handleDeletion}
+                                 handleAction={deleteHoliday}
                                  dialogTitle={"Delete holiday"}
                                  dialogContent={holidayToDelete.start && `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString("fi-FI")}
                                    - ${holidayToDelete.end.toLocaleDateString("fi-FI")} ?`}
