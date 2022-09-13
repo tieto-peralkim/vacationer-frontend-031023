@@ -33,7 +33,7 @@ on:
 
 env:
   AWS_REGION: eu-west-1                       # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: ecr-vacationer              # set this to your Amazon ECR repository name
+  ECR_REPOSITORY: ecr-vacationer-frontend     # set this to your Amazon ECR repository name
 
 permissions:
   contents: read
