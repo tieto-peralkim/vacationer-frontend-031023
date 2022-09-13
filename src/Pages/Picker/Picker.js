@@ -281,7 +281,6 @@ export default function Picker() {
 
     return (
         <div className={styles.mainView}>
-            <h1>Holiday Picker</h1>
             <div>
                 <form className={styles.form}>
                     <FormControl className={styles.nameSelectBox}>

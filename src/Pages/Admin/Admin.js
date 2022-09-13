@@ -97,7 +97,6 @@ export default function Admin() {
                 weekList[i][1] = "";
             }
         }
-
         console.log("weekList", weekList);
 
         axios.post(process.env.REACT_APP_SLACK_URI, JSON.stringify({
@@ -121,15 +120,14 @@ export default function Admin() {
                     .then((response) => {
                         console.log("response", response.data)
                         vacationersPerDay = response.data;
-                    })
-                    .then(() =>
                         slackMessage(numberOfVacationers, vacationersPerDay)
                             .then((response) => {
                                 console.log("response", response)
                             })
                             .catch((error) => {
                                 console.error("There was a Slack post error!", error);
-                            }))
+                            })
+                    })
                     .catch((error) => {
                         console.error("There was a timespan get error!", error);
                     })
