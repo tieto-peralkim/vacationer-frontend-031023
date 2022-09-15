@@ -70,7 +70,7 @@ jobs:
         # push it to ECR so that it can
         # be deployed to ECS.
         touch .env
-        echo "REACT_APP_DB_ADDRESS=${{ secrets.REACT_APP_DB_ADDRESS }}" >> .env
+        echo "REACT_APP_BACKEND_ADDRESS=${{ secrets.REACT_APP_BACKEND_ADDRESS }}" >> .env
         
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG

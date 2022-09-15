@@ -95,7 +95,7 @@ export default function Picker() {
     useEffect(() => {
         console.log("Saved!")
         axios
-            .get(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/vacationers`)
+            .get(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/vacationers`)
             .then((response) => {
                 setVacationers(response.data);
                 console.log("tallennettu, response.data:", response.data)
@@ -147,7 +147,7 @@ export default function Picker() {
     };
 
     const deleteHoliday = () => {
-        axios.delete(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`)
+        axios.delete(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`)
             .then(() => {
                 setSave(!save);
                 resetForm();
@@ -253,7 +253,7 @@ export default function Picker() {
     }
 
     const calculatePerDay = (date1, date2) => {
-        axios.get(`http://${process.env.REACT_APP_DB_ADDRESS}:3001/timespan?start=${date1.toISOString()}&end=${date2.toISOString()}`)
+        axios.get(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/timespan?start=${date1.toISOString()}&end=${date2.toISOString()}`)
             .then((response) => {
                 console.log("response", response.data)
                 setDailyVacationers(response.data);
