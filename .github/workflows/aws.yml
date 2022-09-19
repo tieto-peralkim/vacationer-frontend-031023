@@ -87,7 +87,8 @@ jobs:
         echo $
 
     - name: Allow Security group rule to connect Github to EC2
-      aws ec2 authorize-security-group-ingress --group-id sg-04127401a70f9646c  --protocol tcp --port 0-65535 --cidr ${{ secrets.KP_IP }}/32
+      run: |
+        aws ec2 authorize-security-group-ingress --group-id sg-04127401a70f9646c  --protocol tcp --port 0-65535 --cidr ${{ secrets.KP_IP }}/32
 
 #      env:
 #        PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
