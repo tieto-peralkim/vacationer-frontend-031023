@@ -120,7 +120,7 @@ export default function PickerModal({
             };
             console.log("newHoliday", newHoliday)
             axios
-                .post(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/vacationers/${chosenVacationer.id}`, newHoliday)
+                .post(`http://${process.env.REACT_APP_ADDRESS}:3001/vacationers/${chosenVacationer.id}`, newHoliday)
                 .then((response) => {
                     console.log(response)
                     resetForm();
@@ -172,7 +172,7 @@ export default function PickerModal({
             id: idToEdit
         };
         axios
-            .put(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/vacationers/${chosenVacationer.id}/${idToEdit}`, editedHoliday)
+            .put(`http://${process.env.REACT_APP_ADDRESS}:3001/vacationers/${chosenVacationer.id}/${idToEdit}`, editedHoliday)
             .then((response) => {
                 console.log(response)
                 resetForm();

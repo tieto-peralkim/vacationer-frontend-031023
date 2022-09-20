@@ -106,7 +106,7 @@ export default function Calendar(props) {
     // Fetching teams from DB
     useEffect(() => {
         axios
-            .get(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/teams`)
+            .get(`http://${process.env.REACT_APP_ADDRESS}:3001/teams`)
             .then((response) => {
                 setTeams(response.data);
                 console.log("TEAMS", response.data);
@@ -135,7 +135,7 @@ export default function Calendar(props) {
     const getHolidaysOfMonth = (nextMonth) => {
         axios
             .get(
-                `http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`
+                `http://${process.env.REACT_APP_ADDRESS}:3001/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`
             )
             .then((response) => {
                 setSelectedVacationers(response.data);
@@ -427,7 +427,7 @@ export default function Calendar(props) {
 
         // Fetching total number of vacationers in DB
         axios
-            .get(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/vacationers/total`)
+            .get(`http://${process.env.REACT_APP_ADDRESS}:3001/vacationers/total`)
             .then((response) => {
                 setTotalVacationers(response.data);
                 console.log("total response", response.data);

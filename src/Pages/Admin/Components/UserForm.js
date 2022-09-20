@@ -25,7 +25,7 @@ export default function UserForm({
     const deleteUser = () => {
         console.log("userID", selectedUser)
         axios
-            .delete(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/vacationers/${selectedUser.id}`)
+            .delete(`http://${process.env.REACT_APP_ADDRESS}:3001/vacationers/${selectedUser.id}`)
             .then((response) => {
                 setOpenDeleteUserAlert(false)
                 console.log(response)
@@ -39,7 +39,7 @@ export default function UserForm({
 
     const removeUserFromTeams = (removableUser) => {
         axios
-            .put(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/teams/members/all`, removableUser)
+            .put(`http://${process.env.REACT_APP_ADDRESS}:3001/teams/members/all`, removableUser)
             .then((response) => {
                 console.log("nyt response", response)
                 setCompletedAction(!completedAction)
@@ -54,7 +54,7 @@ export default function UserForm({
         console.log("selectedUser", selectedUser, "changeUserName", newName)
         if (newName.length >= 3) {
             axios
-                .patch(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/vacationers/${selectedUser.id}`, {"newName": newName})
+                .patch(`http://${process.env.REACT_APP_ADDRESS}:3001/vacationers/${selectedUser.id}`, {"newName": newName})
                 .then((response) => {
                     changeUserNameinTeams(selectedUser.id, newName);
                     console.log(response);
@@ -73,7 +73,7 @@ export default function UserForm({
     const changeUserNameinTeams = (memberId, newName) => {
         console.log("changeUserNameinTeams", memberId, newName)
         axios
-            .put(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/teams/membername/${memberId}`, {"newName": newName})
+            .put(`http://${process.env.REACT_APP_ADDRESS}:3001/teams/membername/${memberId}`, {"newName": newName})
             .then((response) => {
                 setCompletedAction(!completedAction)
             })
@@ -91,7 +91,7 @@ export default function UserForm({
             console.log("newVacation", newVacation);
 
             axios
-                .post(`http://${process.env.REACT_APP_BACKEND_ADDRESS}:3001/vacationers`, newVacation)
+                .post(`http://${process.env.REACT_APP_ADDRESS}:3001/vacationers`, newVacation)
                 .then((response) => {
                     console.log(response);
                     setCompletedAction(!completedAction);
