@@ -6,7 +6,7 @@
 * Admin features: CRUD-functions for users and teams
 
 ## NOTICE
-* No sign-in so: don't use full names, real customer names
+* No sign-in so don't use full names or real customer names
 
 ## TODO:
 **Calendar**
