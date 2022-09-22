@@ -22,8 +22,8 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment:
-      name: development
-      #name: production
+      #name: development
+      name: production
       url: http://vacationer-sandbox.cem.ninja/calendar
 
     steps:
