@@ -1,4 +1,4 @@
-# This workflow will build and push a new frontend container image to Amazon ECR and run the container in EC2,
+# This production workflow will build and push a new frontend container image to Amazon ECR and run the container in EC2,
 # when there is a push to the "main" branch.
 #
 
@@ -33,6 +33,7 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
+        role-skip-session-tagging: true
         role-to-assume: arn:aws:iam::422352941158:role/TietoCemAmsProduction
 #        role-to-assume: arn:aws:iam::629517020360:role/TietoCemAmsSandbox
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
