@@ -42,7 +42,6 @@ export default function PickerModal({
     const [openEditAlert, setOpenEditAlert] = useState(false);
     const [openAddAlert, setOpenAddAlert] = useState(false)
     const [overlapErrorMessage, setOverlapErrorMessage] = useState(false);
-    const [daysInPastErrorMessage, setDaysInPastErrorMessage] = useState(false);
     const [openRangeAlert, setOpenRangeAlert] = useState(false);
 
     const handleCloseCalendar = () => {
@@ -50,7 +49,6 @@ export default function PickerModal({
         setEditingSpace(false);
         setChangingStartedSpace(false);
         setOverlapErrorMessage(false);
-        setDaysInPastErrorMessage(false);
         setDailyVacationers([])
         setComment("")
         resetDates();
@@ -104,8 +102,6 @@ export default function PickerModal({
             return false;
         } else if (endDate === null) {
             return false
-        } else if (endDate < today) {
-            setDaysInPastErrorMessage(true);
         } else {
             return true;
         }
@@ -148,7 +144,6 @@ export default function PickerModal({
 
     const onChange = (dates) => {
         setOverlapErrorMessage(false);
-        setDaysInPastErrorMessage(false);
         const [start, end] = dates;
 
         console.log("start1", start, end)
@@ -265,9 +260,6 @@ export default function PickerModal({
                         {endDateErrorMessage && <Alert severity="info">Choose the end date!</Alert>}
 
                         {overlapErrorMessage && <Alert severity="warning">Dates overlap!</Alert>}
-
-                        {daysInPastErrorMessage && <Alert severity="warning">
-                            Dates are in the past! At least end date must be upcoming.</Alert>}
                     </Stack>
                 </Box>
             </Modal>

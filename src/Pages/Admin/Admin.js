@@ -108,7 +108,7 @@ export default function Admin() {
                 pe ${new Date(weekList[4][0]).toLocaleDateString("fi-FI")}  ${weekList[4][1]} - ${weekList[4][2]}`
         }))
             .then(response => {
-                console.log("Slack message sent:", response)
+                console.log("Slack message sent:", response.data)
             })
             .catch((error) => {
                 console.error("There was a slackMessage error!", error);
