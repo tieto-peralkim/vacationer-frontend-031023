@@ -107,6 +107,12 @@ export default function Admin() {
                 to ${new Date(weekList[3][0]).toLocaleDateString("fi-FI")}  ${weekList[3][1]} - ${weekList[3][2]}
                 pe ${new Date(weekList[4][0]).toLocaleDateString("fi-FI")}  ${weekList[4][1]} - ${weekList[4][2]}`
         }))
+            .then(response => {
+                console.log("Slack message sent:", response)
+            })
+            .catch((error) => {
+                console.error("There was a slackMessage error!", error);
+            })
     }
 
     const sendToSlack = () => {
@@ -121,12 +127,6 @@ export default function Admin() {
                         console.log("response", response.data)
                         vacationersPerDay = response.data;
                         slackMessage(numberOfVacationers, vacationersPerDay)
-                            .then((response) => {
-                                console.log("response", response)
-                            })
-                            .catch((error) => {
-                                console.error("There was a Slack post error!", error);
-                            })
                     })
                     .catch((error) => {
                         console.error("There was a timespan get error!", error);
