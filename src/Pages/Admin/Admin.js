@@ -70,7 +70,7 @@ export default function Admin() {
     }
 
     useEffect(() => {
-        axios.get(`http://${process.env.REACT_APP_ADDRESS}:3001/vacationers`).then((response) => {
+        axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers`).then((response) => {
             setVacationers(response.data);
             console.log("vacationers", response.data);
         })
@@ -81,7 +81,7 @@ export default function Admin() {
 
     useEffect(() => {
         axios
-            .get(`http://${process.env.REACT_APP_ADDRESS}:3001/teams`)
+            .get(`${process.env.REACT_APP_ADDRESS}/teams`)
             .then((response) => {
                 setTeams(response.data);
                 console.log("teams", response.data);
@@ -119,10 +119,10 @@ export default function Admin() {
         let numberOfVacationers = 0;
         let vacationersPerDay = []
 
-        axios.get(`http://${process.env.REACT_APP_ADDRESS}:3001/vacationeramount?start=${nextMonday.toISOString()}&end=${nextFriday.toISOString()}`)
+        axios.get(`${process.env.REACT_APP_ADDRESS}/vacationeramount?start=${nextMonday.toISOString()}&end=${nextFriday.toISOString()}`)
             .then((response) => {
                 numberOfVacationers = response.data.length;
-                axios.get(`http://${process.env.REACT_APP_ADDRESS}:3001/timespan?start=${nextMonday.toISOString()}&end=${nextFriday.toISOString()}`)
+                axios.get(`${process.env.REACT_APP_ADDRESS}/timespan?start=${nextMonday.toISOString()}&end=${nextFriday.toISOString()}`)
                     .then((response) => {
                         console.log("response", response.data)
                         vacationersPerDay = response.data;
