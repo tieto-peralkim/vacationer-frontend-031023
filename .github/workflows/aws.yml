@@ -38,7 +38,7 @@ jobs:
 
     - name: Retrieving secrets
       run: |
-        aws-vault exec ams-sandbox -- aws ssm get-parameters --name /sandbox/vacationer/test-uri --with-decryption --query 'Parameters[0].Value' > $SLACK_URI
+        aws ssm get-parameters --name /sandbox/vacationer/test-uri --with-decryption --query 'Parameters[0].Value' > $SLACK_URI
         echo $SLACK_URI
 
 #    - name: Login to Amazon ECR
