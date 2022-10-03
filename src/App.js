@@ -23,7 +23,7 @@ function App() {
                         <MenuIcon/>
                     </IconButton>
                     <Typography className={styles.headline} variant="h6">
-                        Holidaypicker
+                        Vacationer
                     </Typography>
                 </Toolbar>
             </AppBar>
