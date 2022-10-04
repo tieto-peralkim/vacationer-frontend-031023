@@ -27,18 +27,6 @@ export default function Admin() {
 
     const [holidaySymbol, setHolidaySymbol] = useState(true);
 
-    // Slack dates
-    const today = new Date();
-    today.setUTCHours(0, 0, 0)
-    const nextMonday = new Date();
-    nextMonday.setUTCDate(
-        today.getUTCDate() + ((1 + 7 - today.getUTCDay()) % 7 || 7)
-    );
-    nextMonday.setUTCHours(0, 0, 0, 0);
-    const nextFriday = new Date();
-    nextFriday.setTime(nextMonday.getTime() + 4 * 24 * 60 * 60 * 1000);
-    nextFriday.setUTCHours(0, 0, 0, 0);
-
     const emptySelections = () => {
         setSelectedMember("");
         setSelectedTeam("");
@@ -69,6 +57,17 @@ export default function Admin() {
         setWeekendHolidayColor(color.hex)
     }
 
+    const sendSlackMessage = () => {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/slack`)
+            .then((response) => {
+                console.log(response.data)
+            })
+            .catch((error) => {
+                console.error("There was a sendSlackMessage error!", error);
+            })
+    }
+
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers`).then((response) => {
             setVacationers(response.data);
@@ -91,53 +90,6 @@ export default function Admin() {
             });
     }, [completedAction]);
 
-    const slackMessage = (vacationerAmount, weekList) => {
-        for (let i=0; i < weekList.length; i++){
-            if (weekList[i][1] === 0){
-                weekList[i][1] = "";
-            }
-        }
-        console.log("weekList", weekList);
-
-        axios.post(process.env.REACT_APP_SLACK_URI, JSON.stringify({
-            "text": `Ensi viikolla yhteensä ${vacationerAmount} lomalaista:
-                ma ${new Date(weekList[0][0]).toLocaleDateString("fi-FI")}  ${weekList[0][1]} - ${weekList[0][2]}
-                ti ${new Date(weekList[1][0]).toLocaleDateString("fi-FI")}  ${weekList[1][1]} - ${weekList[1][2]}
-                ke ${new Date(weekList[2][0]).toLocaleDateString("fi-FI")}  ${weekList[2][1]} - ${weekList[2][2]}
-                to ${new Date(weekList[3][0]).toLocaleDateString("fi-FI")}  ${weekList[3][1]} - ${weekList[3][2]}
-                pe ${new Date(weekList[4][0]).toLocaleDateString("fi-FI")}  ${weekList[4][1]} - ${weekList[4][2]}`
-        }))
-            .then(response => {
-                console.log("Slack message sent:", response.data)
-            })
-            .catch((error) => {
-                console.error("There was a slackMessage error!", error);
-            })
-    }
-
-    const sendToSlack = () => {
-        let numberOfVacationers = 0;
-        let vacationersPerDay = []
-
-        axios.get(`${process.env.REACT_APP_ADDRESS}/vacationeramount?start=${nextMonday.toISOString()}&end=${nextFriday.toISOString()}`)
-            .then((response) => {
-                numberOfVacationers = response.data.length;
-                axios.get(`${process.env.REACT_APP_ADDRESS}/timespan?start=${nextMonday.toISOString()}&end=${nextFriday.toISOString()}`)
-                    .then((response) => {
-                        console.log("response", response.data)
-                        vacationersPerDay = response.data;
-                        slackMessage(numberOfVacationers, vacationersPerDay)
-                    })
-                    .catch((error) => {
-                        console.error("There was a timespan get error!", error);
-                    })
-            })
-            .catch((error) => {
-                console.error("There was a vacationeramount get error!", error);
-            })
-    }
-
-
     return (
         <>
             {/*<Box className={styles.sliderBox}>*/}
@@ -158,7 +110,7 @@ export default function Admin() {
             <TeamForm emptySelections={emptySelections} selectedTeam={selectedTeam} setSelectedTeam={setSelectedTeam} selectedMember={selectedMember} setSelectedMember={setSelectedMember} setCompletedAction={setCompletedAction} completedAction={completedAction} vacationers={vacationers} teams={teams}/>
             <div>
                 <InputLabel className={styles.extraMargin}>Test Slack</InputLabel>
-                <Button onClick={sendToSlack} variant={"contained"}>
+                <Button onClick={sendSlackMessage} variant={"contained"}>
                     Send to Slack!
                 </Button>
             </div>
