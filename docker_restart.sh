@@ -14,6 +14,7 @@ if [[ "$1" == "backend" ]] ; then
   envVariables="REACT_APP_ADDRESS=http://34.240.254.109:3001"
 else
   ports=80:80
+  envVariables=""
 fi
 docker run -d -p $ports -e $envVariables --name=vacationer-"$1" 629517020360.dkr.ecr.eu-west-1.amazonaws.com/ecr-vacationer-"$1":latest
 echo "Docker run done, exiting EC2"
