@@ -51,6 +51,9 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: latest
       run: |
+        touch .env
+        echo "REACT_APP_ADDRESS=http://${{ secrets.REACT_APP_ADDRESS }}:3001" >> .env
+        
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
