@@ -59,7 +59,7 @@ export default function Admin() {
 
     const sendSlackMessage = () => {
         axios
-            .get(`${process.env.REACT_APP_ADDRESS}/slack`)
+            .get(`${process.env.REACT_APP_ADDRESS}/slackMessageSender`)
             .then((response) => {
                 console.log(response.data)
             })
