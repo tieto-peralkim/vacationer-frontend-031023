@@ -17,8 +17,7 @@ if [[ "$1" == "backend" ]] ; then
   docker run -d -p $ports -e "${envVariable1[@]}" -e "${envVariable2[@]}" -e "${envVariable3[@]}" --name=vacationer-"$1" 629517020360.dkr.ecr.eu-west-1.amazonaws.com/ecr-vacationer-"$1":latest
 else
   ports=80:80
-  envVariable1=(REACT_APP_ADDRESS="$2")
-  docker run -d -p $ports -e "$envVariable1" --name=vacationer-"$1" 629517020360.dkr.ecr.eu-west-1.amazonaws.com/ecr-vacationer-"$1":latest
+  docker run -d -p $ports --name=vacationer-"$1" 629517020360.dkr.ecr.eu-west-1.amazonaws.com/ecr-vacationer-"$1":latest
 fi
 echo "Docker run done, exiting EC2"
 exit

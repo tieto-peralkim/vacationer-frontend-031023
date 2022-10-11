@@ -1,4 +1,5 @@
 FROM node:16-alpine AS builder
+ENV REACT_APP_ADDRESS http://34.240.254.109:3001
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
