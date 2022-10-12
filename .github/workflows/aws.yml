@@ -12,7 +12,6 @@ on:
 env:
   AWS_REGION: eu-west-1
   ECR_REPOSITORY: ecr-vacationer-frontend
-  IMAGE: frontend
 
 permissions:
   contents: read
@@ -68,7 +67,7 @@ jobs:
         PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
       run: |
         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-        ssh -o StrictHostKeyChecking=no -i private_key ubuntu@34.240.254.109 'bash -s' < docker_restart.sh $IMAGE
+        ssh -o StrictHostKeyChecking=no -i private_key ubuntu@34.240.254.109 'bash -s' < docker_frontend.sh
 
     - name: Remove Github Actions IP from Security group
       run: |
