@@ -1,17 +1,9 @@
 # Vacation app frontend
 
-* CRUD operations for vacations
-* Holidays calendar with team filtering
-* Notifications to Slack of upcoming holidays
-* Admin features: CRUD-functions for users and teams
-
-## NOTICE
-* No sign-in so don't use full names or real customer names
-
 ## Development instructions
-*Add one local environmental variable (e.g. by creating .env file to root of the repo): REACT_APP_ADDRESS=http://localhost:3001
+Add one local environmental variable (e.g. by creating .env file to root of the repo): REACT_APP_ADDRESS=http://localhost:3001
 
-*Normal process:
+Normal process:
 1. Start the frontend with "npm start"
 2. (Start the backend with "npm run dev")
 3. Go to http://localhost:3000
@@ -33,7 +25,7 @@
 
 **Admin**
 
-* -
+*
 
 **Stuff to add**
 
