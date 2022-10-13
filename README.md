@@ -1,7 +1,10 @@
 # Vacation app frontend
 
 ## Development instructions
-Add one local environmental variable (e.g. by creating .env file to root of the repo): REACT_APP_ADDRESS=http://localhost:3001
+Add local environmental variable (e.g. by creating .env file to root of the repo)
+```
+REACT_APP_ADDRESS=http://localhost:3001
+```
 
 Normal process:
 1. Start the frontend with "npm start"
