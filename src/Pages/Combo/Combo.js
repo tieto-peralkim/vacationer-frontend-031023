@@ -6,9 +6,9 @@ import {Divider} from "@mui/material";
 export default function Combo() {
     return (
         <div className={styles.content}>
-            <Picker/>
-            <Divider orientation={"vertical"} flexItem={true} absolute={false}/>
             <Calendar/>
+            <Divider orientation={"horizontal"} flexItem={true} absolute={false}/>
+            <Picker/>
         </div>
     )
 }

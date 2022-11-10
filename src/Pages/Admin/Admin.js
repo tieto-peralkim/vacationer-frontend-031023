@@ -25,7 +25,7 @@ export default function Admin() {
     const [selectedTeam, setSelectedTeam] = useState("");
     const [selectedUser, setSelectedUser] = useState("")
 
-    const [holidaySymbol, setHolidaySymbol] = useState(true);
+    const [holidaySymbol, setHolidaySymbol] = useState("X");
 
     const emptySelections = () => {
         setSelectedMember("");
@@ -42,9 +42,10 @@ export default function Admin() {
 
     const setAllColors = () => {
         navigate('/calendar',
-            {state: {"holidayColor": holidayColor, "weekendColor": weekendColor, "weekendHolidayColor": weekendHolidayColor}},
+            {state: {"holidayColor": holidayColor, "weekendColor": weekendColor, "weekendHolidayColor": weekendHolidayColor,
+                "holidaySymbol": holidaySymbol}},
             );
-        console.log("Värit", holidayColor, weekendColor, weekendHolidayColor)
+        console.log("SetColors and symbol", holidayColor, weekendColor, weekendHolidayColor, holidaySymbol)
     }
 
     const handleHolidayColorChange = (color) => {

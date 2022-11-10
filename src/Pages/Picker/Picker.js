@@ -13,7 +13,6 @@ import Typography from "@mui/material/Typography";
 
 registerLocale("fi", fi);
 
-// Time stamps should be checked
 export default function Picker() {
 
     // Max number of workers on holiday in a day
@@ -25,9 +24,6 @@ export default function Picker() {
     today.setUTCHours(0, 0, 0)
 
     const [startDate, setStartDate] = useState(null);
-
-    // const [startDate, setStartDate] = useState(new Date());
-    // startDate.setUTCHours(10, 0, 0, 0);
 
     const [endDate, setEndDate] = useState(null);
 
@@ -93,12 +89,11 @@ export default function Picker() {
 
     // Update list of employees and their vacations
     useEffect(() => {
-        console.log("Saved!")
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/vacationers`)
             .then((response) => {
                 setVacationers(response.data);
-                console.log("tallennettu, response.data:", response.data)
+                console.log("Saved, response.data:", response.data)
             })
             .catch((error) => {
                 console.log("There was a get error!", error)
@@ -123,7 +118,6 @@ export default function Picker() {
             console.log("slice", holidays.length - showPastVacations, holidays.length)
         } else {
             setShowHolidays(0)
-            console.log("slice 0", holidays.length)
         }
     }, [holidays, showPastVacations]);
 
@@ -361,33 +355,33 @@ export default function Picker() {
                                  calculatePerDay={calculatePerDay}/>
                     {holidays.length > 0 && (
                         <>
-                            <Chip
-                                // className={styles.}
-                                variant={(showPastVacations === 12) ? "" : "outlined"}
-                                label="Show 12 newest holidays"
-                                color="secondary"
-                                onClick={() => {
-                                    setShowPastVacations(12)
-                                }}
-                            />
-                            <Chip
-                                // className={styles.}
-                                variant={(showPastVacations === 8) ? "" : "outlined"}
-                                label="Show 8 newest holidays"
-                                color="secondary"
-                                onClick={() => {
-                                    setShowPastVacations(8)
-                                }}
-                            />
-                            <Chip
-                                // className={styles.}
-                                variant={(showPastVacations === 4) ? "" : "outlined"}
-                                label="Show 4 newest holidays"
-                                color="secondary"
-                                onClick={() => {
-                                    setShowPastVacations(4)
-                                }}
-                            />
+                            {/*<Chip*/}
+                            {/*    // className={styles.}*/}
+                            {/*    variant={(showPastVacations === 12) ? "" : "outlined"}*/}
+                            {/*    label="Show 12 newest holidays"*/}
+                            {/*    color="secondary"*/}
+                            {/*    onClick={() => {*/}
+                            {/*        setShowPastVacations(12)*/}
+                            {/*    }}*/}
+                            {/*/>*/}
+                            {/*<Chip*/}
+                            {/*    // className={styles.}*/}
+                            {/*    variant={(showPastVacations === 8) ? "" : "outlined"}*/}
+                            {/*    label="Show 8 newest holidays"*/}
+                            {/*    color="secondary"*/}
+                            {/*    onClick={() => {*/}
+                            {/*        setShowPastVacations(8)*/}
+                            {/*    }}*/}
+                            {/*/>*/}
+                            {/*<Chip*/}
+                            {/*    // className={styles.}*/}
+                            {/*    variant={(showPastVacations === 4) ? "" : "outlined"}*/}
+                            {/*    label="Show 4 newest holidays"*/}
+                            {/*    color="secondary"*/}
+                            {/*    onClick={() => {*/}
+                            {/*        setShowPastVacations(4)*/}
+                            {/*    }}*/}
+                            {/*/>*/}
                             <div>
 
                                 {holidays.length > NUMBER_OF_SHOWN_DEFAULT && (

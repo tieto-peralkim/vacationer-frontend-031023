@@ -18,11 +18,11 @@ export default function Calendar(props) {
     const [holidayColor, setHolidayColor] = useState("#73D8FF");
     const [weekendColor, setWeekendColor] = useState("#CCCCCC");
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("#666666");
-    const holidaySymbol = true;
+    const [holidaySymbol, setHolidaySymbol] = useState("X");
 
     const [replacementText, setReplacementText] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
-    const WORKER_TITLE = "Employees present";
+    const WORKER_TITLE = "Employees at work";
     const PRESENCE_PERCENTAGE = 0.5;
     const TODAY_COLOR = "#e30f2d";
 
@@ -84,10 +84,8 @@ export default function Calendar(props) {
             for (let i = 0; i < teamToShow.members.length; i++) {
                 // Filter the team's holidays from all the holidays of the month
                 const filteredVacation = selectedVacationers.filter(
-                    (vacationer) =>
-                        vacationer.name
-                            .split(" ")
-                            .indexOf(teamToShow.members[i].name) !== -1
+                    vacationer =>
+                        vacationer.name === teamToShow.members[i].name
                 );
                 if (filteredVacation.length !== 0) {
                     filteredVacations.push(filteredVacation);
@@ -829,7 +827,10 @@ export default function Calendar(props) {
                                                             fontWeight: setBold(
                                                                 cell.value
                                                             ),
-                                                            paddingTop: "6px",
+                                                            paddingTop: "0.5em",
+                                                            paddingBottom: "0.5em",
+                                                            paddingLeft: "0.5em",
+                                                            paddingRight: "0.5em",
                                                             height: "30px",
                                                             maxWidth: "100px",
                                                             border: setTodayColumn(
