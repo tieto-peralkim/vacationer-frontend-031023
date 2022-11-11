@@ -432,7 +432,7 @@ export default function Calendar(props) {
                 getHolidaysOfMonth(nextMonth);
             })
             .catch((error) => {
-                console.log("There was a totalvacationers get error!", error);
+                console.error("There was a totalvacationers get error!", error);
             });
     }, [selectedDate]);
 

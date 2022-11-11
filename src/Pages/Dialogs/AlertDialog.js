@@ -10,8 +10,8 @@ export default function AlertDialog({openAlert, handleAction, handleCloseAlert, 
                 {dialogContent}
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleCloseAlert}>{cancel}</Button>
-                <Button onClick={handleAction}>{confirm}</Button>
+                {cancel && <Button onClick={handleCloseAlert}>{cancel}</Button>}
+                {confirm && <Button onClick={handleAction}>{confirm}</Button>}
             </DialogActions>
         </Dialog>
     )

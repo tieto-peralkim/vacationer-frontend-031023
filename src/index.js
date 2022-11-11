@@ -15,8 +15,8 @@ ReactDOM.render(
             <Route path="/" element={<App/>}>
                 <Route path="picker" element={<Picker/>}/>
                 <Route path="calendar" element={<Calendar/>}/>
-                <Route path="admin" element={<Admin />}/>
-                <Route path="combo" element={<Combo />}/>
+                <Route path="admin" element={<Admin/>}/>
+                <Route path="combo" element={<Combo/>}/>
                 <Route
                     path="*"
                     element={

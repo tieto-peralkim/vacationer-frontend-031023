@@ -36,6 +36,7 @@ export default function PickerModal({
                                         resetForm,
                                         save,
                                         setSave,
+                                        handleOpenAPIError,
                                         calculatePerDay
                                     }) {
     const [alertingDates, setAlertingDates] = useState([])
@@ -121,13 +122,15 @@ export default function PickerModal({
                     console.log(response)
                     resetForm();
                     resetDates()
+                    handleCloseAddAlert()
+                    handleCloseCalendar()
+                    setSave(!save);
                 })
                 .catch((error) => {
                     console.error("There was a post new holiday error!", error);
+                    handleOpenAPIError()
                 });
-            handleCloseAddAlert()
-            handleCloseCalendar()
-            setSave(!save);
+
         }
     }
 
@@ -172,13 +175,14 @@ export default function PickerModal({
                 console.log(response)
                 resetForm();
                 resetDates()
+                handleCloseEditAlert()
+                handleCloseCalendar()
+                setSave(!save);
             })
             .catch((error) => {
                 console.error("There was a put error!", error);
-            });
-        handleCloseEditAlert()
-        handleCloseCalendar()
-        setSave(!save);
+                handleOpenAPIError()
+            })
     };
 
     return (

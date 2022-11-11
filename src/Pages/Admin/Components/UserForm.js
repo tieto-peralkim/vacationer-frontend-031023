@@ -15,7 +15,9 @@ export default function UserForm({
                                  }) {
 
     const [newUser, setNewUser] = useState([]);
-    const [userCreationError, setUserCreationError] = useState(false);
+    const [userCreated, setUserCreated] = useState(false);
+    const [userCreationMessage, setUserCreationMessage] = useState([]);
+
     const [userNameError, setUserNameError] = useState(false);
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false)
     const [openModifyUserAlert, setOpenModifyUserAlert] = useState(false)
@@ -61,9 +63,9 @@ export default function UserForm({
                     setOpenModifyUserAlert(false);
                     emptySelections();
                 })
-                .catch((error) => {
+                .catch(error => {
                     console.error("There was a put new name error!", error);
-                    setUserCreationError(true);
+                    setUserCreationMessage(error);
                 });
         } else {
             setUserNameError(true);
@@ -85,25 +87,27 @@ export default function UserForm({
     const createUser = (e) => {
         e.preventDefault();
         if (!nameError) {
-            const newVacation = {
+            const newVacationer = {
                 name: newUser,
             };
-            console.log("newVacation", newVacation);
+            console.log("newVacationer", newVacationer);
 
             axios
-                .post(`${process.env.REACT_APP_ADDRESS}/vacationers`, newVacation)
+                .post(`${process.env.REACT_APP_ADDRESS}/vacationers`, newVacationer)
                 .then((response) => {
                     console.log(response);
+                    setUserCreated(true);
                     setCompletedAction(!completedAction);
                     emptySelections();
+                    setNewUser("");
                 })
-                .catch((error) => {
+                .catch(error => {
                     console.error("There was a post error!", error);
-                    setUserCreationError(true)
+                    setUserCreationMessage(error.response.data);
                 });
-            setNewUser("");
         } else {
             console.log("Not valid, check!");
+            setUserNameError(true)
         }
     };
 
@@ -167,15 +171,17 @@ export default function UserForm({
                          dialogTitle={"Delete user"}
                          dialogContent={selectedUser && `Are you sure you want to delete the user ${selectedUser.name} ?`}
                          cancel={"No"} confirm={"Yes delete"}/>
-            <AlertDialog openAlert={userCreationError} handleCloseAlert={() => setUserCreationError(false)}
-                         handleAction={deleteUser}
-                         dialogTitle={"ERROR!"}
-                         dialogContent={"This username is already taken!"}
+            <AlertDialog openAlert={userCreationMessage !== ""} handleCloseAlert={() => setUserCreationMessage("")}
+                         dialogTitle={"API ERROR!"}
+                         dialogContent={userCreationMessage}
             />
             <AlertDialog openAlert={userNameError} handleCloseAlert={() => setUserNameError(false)}
-                         handleAction={deleteUser}
                          dialogTitle={"ERROR!"}
                          dialogContent={"This username is too short (less than 3 characters)!"}
+            />
+            <AlertDialog openAlert={userCreated} handleCloseAlert={() => setUserCreated(false)}
+                         dialogTitle={"Create user"}
+                         dialogContent={"User created!"}
             />
         </>
     )

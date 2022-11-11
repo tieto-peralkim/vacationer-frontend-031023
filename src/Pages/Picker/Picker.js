@@ -38,6 +38,7 @@ export default function Picker() {
 
     const [openCalendar, setOpenCalendar] = useState(false);
     const [openDeletionAlert, setOpenDeletionAlert] = useState(false);
+    const [openAPIError, setOpenAPIError] = useState(false);
 
     const [idToEdit, setIdToEdit] = useState()
     const [holidayToEdit, setHolidayToEdit] = useState({})
@@ -60,6 +61,13 @@ export default function Picker() {
     const handleOpenCalendar = () => {
         setOpenCalendar(true);
         updateExcludedDates(0)
+    };
+
+    const handleOpenAPIError = () => {
+        setOpenAPIError(true);
+    };
+    const handleCloseAPIError = () => {
+        setOpenAPIError(false);
     };
 
     const handleOpenDeletionAlert = () => {
@@ -96,7 +104,8 @@ export default function Picker() {
                 console.log("Saved, response.data:", response.data)
             })
             .catch((error) => {
-                console.log("There was a get error!", error)
+                console.error("There was a get error!", error)
+                handleOpenAPIError();
             });
     }, [save]);
 
@@ -149,9 +158,11 @@ export default function Picker() {
             })
             .catch((error) => {
                 console.error("There was a delete holiday error!", error);
+                handleOpenAPIError();
             })
-
-        handleCloseDeletionAlert();
+            .finally(() => {
+                handleCloseDeletionAlert();
+            })
     };
 
     const editHoliday = (id) => {
@@ -254,6 +265,7 @@ export default function Picker() {
             })
             .catch((error) => {
                 console.error("There was a timespan get error!", error);
+                handleOpenAPIError();
             })
     }
 
@@ -352,6 +364,7 @@ export default function Picker() {
                                  resetForm={resetForm}
                                  save={save}
                                  setSave={setSave}
+                                 handleOpenAPIError={handleOpenAPIError}
                                  calculatePerDay={calculatePerDay}/>
                     {holidays.length > 0 && (
                         <>
@@ -431,6 +444,12 @@ export default function Picker() {
                                  dialogContent={holidayToDelete.start && `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString("fi-FI")}
                                    - ${holidayToDelete.end.toLocaleDateString("fi-FI")} ?`}
                                  cancel={"No"} confirm={"Yes delete"}/>
+
+                    <AlertDialog openAlert={openAPIError} handleCloseAlert={handleCloseAPIError}
+                                 handleAction={handleCloseAPIError}
+                                 dialogTitle={"API Error"}
+                                 dialogContent={"No connection to API, try again later"}
+                                 confirm={"OK"}/>
                 </form>
             </div>
         </div>
