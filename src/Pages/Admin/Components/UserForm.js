@@ -16,7 +16,7 @@ export default function UserForm({
 
     const [newUser, setNewUser] = useState([]);
     const [userCreated, setUserCreated] = useState(false);
-    const [userCreationMessage, setUserCreationMessage] = useState([]);
+    const [userCreationMessage, setUserCreationMessage] = useState("");
 
     const [userNameError, setUserNameError] = useState(false);
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false)
@@ -64,7 +64,7 @@ export default function UserForm({
                     emptySelections();
                 })
                 .catch(error => {
-                    console.error("There was a put new name error!", error);
+                    console.error("There was a user name change error!", error);
                     setUserCreationMessage(error);
                 });
         } else {
@@ -102,7 +102,7 @@ export default function UserForm({
                     setNewUser("");
                 })
                 .catch(error => {
-                    console.error("There was a post error!", error);
+                    console.error("There was a user creation error!", error);
                     setUserCreationMessage(error.response.data);
                 });
         } else {

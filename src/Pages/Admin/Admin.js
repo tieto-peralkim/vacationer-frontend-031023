@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import UserForm from "./Components/UserForm";
 import {CompactPicker} from "react-color";
 import {useNavigate} from "react-router-dom";
+import AlertDialog from "../Dialogs/AlertDialog";
 
 // Tähän pitäisi lisätä työntekijämäärien asetukset (määrä, minimimäärä)
 export default function Admin() {
@@ -24,6 +25,7 @@ export default function Admin() {
     const [selectedMember, setSelectedMember] = useState("");
     const [selectedTeam, setSelectedTeam] = useState("");
     const [selectedUser, setSelectedUser] = useState("")
+    const [openAPIError, setOpenAPIError] = useState(false);
 
     const [holidaySymbol, setHolidaySymbol] = useState("X");
 
@@ -32,6 +34,13 @@ export default function Admin() {
         setSelectedTeam("");
         setSelectedUser("");
     }
+
+    const handleOpenAPIError = () => {
+        setOpenAPIError(true);
+    };
+    const handleCloseAPIError = () => {
+        setOpenAPIError(false);
+    };
 
     const handleColorPickerClick = () => {
         setDisplayColorPicker(prevValue => !prevValue)
@@ -66,6 +75,7 @@ export default function Admin() {
             })
             .catch((error) => {
                 console.error("There was a sendSlackMessage error!", error);
+                handleOpenAPIError();
             })
     }
 
@@ -75,7 +85,8 @@ export default function Admin() {
             console.log("vacationers", response.data);
         })
             .catch((error) => {
-                console.log("There was a vacationers get error!", error)
+                console.error("There was a vacationers get error!", error)
+                handleOpenAPIError();
             });
     }, [completedAction]);
 
@@ -87,7 +98,8 @@ export default function Admin() {
                 console.log("teams", response.data);
             })
             .catch((error) => {
-                console.log("There was a teams get error!", error)
+                console.error("There was a teams get error!", error)
+                handleOpenAPIError();
             });
     }, [completedAction]);
 
@@ -139,6 +151,11 @@ export default function Admin() {
                     }}/>
             </div> : null}
             <Button variant={"contained"} onClick={setAllColors}>Save calendar colors (for one session)</Button>
+            <AlertDialog openAlert={openAPIError} handleCloseAlert={handleCloseAPIError}
+                         handleAction={handleCloseAPIError}
+                         dialogTitle={"API Error"}
+                         dialogContent={"No connection to API, try again later"}
+                         confirm={"OK"}/>
         </>
     )
 }
