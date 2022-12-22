@@ -5,14 +5,19 @@ import { Box, Button, Chip, CircularProgress } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
-import {useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export default function Calendar(props) {
     const location = useLocation();
     const today = new Date();
-    const thisMonthFirst = new Date(today.getFullYear(), today.getMonth(), 1, 15);
-    thisMonthFirst.setUTCHours(0,0,0,0)
-    console.log("thisMonthFirst", thisMonthFirst)
+    const thisMonthFirst = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1,
+        15
+    );
+    thisMonthFirst.setUTCHours(0, 0, 0, 0);
+    console.log("thisMonthFirst", thisMonthFirst);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
 
     const [holidayColor, setHolidayColor] = useState("#73D8FF");
@@ -84,7 +89,7 @@ export default function Calendar(props) {
             for (let i = 0; i < teamToShow.members.length; i++) {
                 // Filter the team's holidays from all the holidays of the month
                 const filteredVacation = selectedVacationers.filter(
-                    vacationer =>
+                    (vacationer) =>
                         vacationer.name === teamToShow.members[i].name
                 );
                 if (filteredVacation.length !== 0) {
@@ -133,7 +138,9 @@ export default function Calendar(props) {
     const getHolidaysOfMonth = (nextMonth) => {
         axios
             .get(
-                `${process.env.REACT_APP_ADDRESS}/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`
+                `${
+                    process.env.REACT_APP_ADDRESS
+                }/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`
             )
             .then((response) => {
                 setSelectedVacationers(response.data);
@@ -238,7 +245,13 @@ export default function Calendar(props) {
             console.log("Total", total, teamToShow.members.length);
             return teamToShow.members.length - total;
         } else {
-            console.log("totalVacationers", key, ":", totalVacationers.length, total);
+            console.log(
+                "totalVacationers",
+                key,
+                ":",
+                totalVacationers.length,
+                total
+            );
             return totalVacationers.length - total;
         }
     };
@@ -408,7 +421,6 @@ export default function Calendar(props) {
                     break;
                 case 3:
                 case 5:
-                case 6:
                 case 8:
                 case 10:
                     setHiddenColumns(["thirtyone"]);
@@ -421,7 +433,7 @@ export default function Calendar(props) {
             selectedDate.getMonth() + 1,
             1
         );
-        nextMonth.setUTCHours(23,59,59,999)
+        nextMonth.setUTCHours(23, 59, 59, 999);
 
         // Fetching total number of vacationers in DB
         axios
@@ -611,22 +623,17 @@ export default function Calendar(props) {
     const changeMonth = (amount) => {
         let newMonth;
         if (amount > 0) {
-            newMonth = selectedDate.getMonth() + 1
-        }
-        else {
-            newMonth = selectedDate.getMonth() - 1
+            newMonth = selectedDate.getMonth() + 1;
+        } else {
+            newMonth = selectedDate.getMonth() - 1;
         }
 
-        let newDate = new Date(
-            selectedDate.getFullYear(),
-            newMonth,
-            1,15
-        );
-        newDate.setUTCHours(0,0,0,0)
+        let newDate = new Date(selectedDate.getFullYear(), newMonth, 1, 15);
+        newDate.setUTCHours(0, 0, 0, 0);
         console.log("newDate1", newDate);
 
         setSelectedDate(newDate);
-    }
+    };
 
     // Tätä voisi selkeyttää ja tehostaa
     const isCommonHoliday = (holiday, index) => {
@@ -757,7 +764,8 @@ export default function Calendar(props) {
                     <Box className={styles.buttons}>
                         <Button
                             onClick={() => changeMonth(-1)}
-                            startIcon={<ArrowBackIosIcon />}>
+                            startIcon={<ArrowBackIosIcon />}
+                        >
                             Previous
                         </Button>
                         {selectedDate.toLocaleString("en-GB", {
@@ -766,14 +774,16 @@ export default function Calendar(props) {
                         })}
                         <Button
                             onClick={() => changeMonth(1)}
-                            endIcon={<ArrowForwardIosIcon />}>
+                            endIcon={<ArrowForwardIosIcon />}
+                        >
                             Next
                         </Button>
                     </Box>
                     {allHolidaysSelectedTime.length > 0 && (
                         <table
                             {...getTableProps()}
-                            style={{ border: "solid 1px blue" }}>
+                            style={{ border: "solid 1px blue" }}
+                        >
                             <thead>
                                 {headerGroups.map((headerGroup) => (
                                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -787,7 +797,8 @@ export default function Calendar(props) {
                                                     color: "black",
                                                     width: "10px",
                                                     fontWeight: "bold",
-                                                }}>
+                                                }}
+                                            >
                                                 {column.render("Header")}
                                             </th>
                                         ))}
@@ -828,9 +839,12 @@ export default function Calendar(props) {
                                                                 cell.value
                                                             ),
                                                             paddingTop: "0.5em",
-                                                            paddingBottom: "0.5em",
-                                                            paddingLeft: "0.5em",
-                                                            paddingRight: "0.5em",
+                                                            paddingBottom:
+                                                                "0.5em",
+                                                            paddingLeft:
+                                                                "0.5em",
+                                                            paddingRight:
+                                                                "0.5em",
                                                             height: "30px",
                                                             maxWidth: "100px",
                                                             border: setTodayColumn(
@@ -841,7 +855,8 @@ export default function Calendar(props) {
                                                                     cell.value,
                                                                     index
                                                                 ),
-                                                        }}>
+                                                        }}
+                                                    >
                                                         {cell.render("Cell")}
                                                     </td>
                                                 );
@@ -859,7 +874,9 @@ export default function Calendar(props) {
                     )}
                 </div>
             </div>
-            <div>{location.state && `Väri: ${location.state.holidayColor}`}</div>
+            <div>
+                {location.state && `Väri: ${location.state.holidayColor}`}
+            </div>
         </>
     );
 }

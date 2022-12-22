@@ -1,29 +1,37 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import styles from "../picker.module.css";
 
-export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, workerLimit, dailyVacationers}) {
-    const [average, setAverage] = useState(0)
+export default function LimitSetter({
+    holidayToEdit,
+    endDate,
+    setAlertingDates,
+    workerLimit,
+    dailyVacationers,
+}) {
+    const [average, setAverage] = useState(0);
 
     // voiko endDaten poistaa riippuvuuksista?
     useEffect(() => {
-        let sumOfVacationers = 0
+        let sumOfVacationers = 0;
         for (let i = 0; i < dailyVacationers.length; i++) {
-            sumOfVacationers += dailyVacationers[i][1]
+            sumOfVacationers += dailyVacationers[i][1];
         }
         if (dailyVacationers.length !== 0) {
-            setAverage(Math.round((sumOfVacationers / dailyVacationers.length) * 2) / 2)
+            setAverage(
+                Math.round((sumOfVacationers / dailyVacationers.length) * 2) / 2
+            );
         }
-    }, [dailyVacationers, endDate])
+    }, [dailyVacationers, endDate]);
 
     useEffect(() => {
-        let tooManyVacationers = []
+        let tooManyVacationers = [];
         for (let i = 0; i < dailyVacationers.length; i++) {
             if (dailyVacationers[i][1] >= workerLimit) {
-                tooManyVacationers.push(dailyVacationers[i])
+                tooManyVacationers.push(dailyVacationers[i]);
             }
         }
-        setAlertingDates(tooManyVacationers)
-    }, [dailyVacationers, workerLimit])
+        setAlertingDates(tooManyVacationers);
+    }, [dailyVacationers, workerLimit]);
 
     return (
         <>
@@ -34,8 +42,12 @@ export default function LimitSetter({holidayToEdit, endDate, setAlertingDates, w
             {/*        )}*/}
             {/*</div>*/}
             <div>
-                Average: <b className={styles.averageNumber}>{endDate ? average : "?"}</b> people / day on holiday
+                Average:{" "}
+                <b className={styles.averageNumber}>
+                    {endDate ? average : "?"}
+                </b>{" "}
+                people / day on holiday
             </div>
         </>
-    )
+    );
 }

@@ -1,4 +1,4 @@
-# This production workflow will build and push a new frontend container image to Amazon ECR and run the container in EC2,
+# This QA workflow will build and push a new frontend container image to Amazon ECR and run the container in EC2,
 # when there is a push to the "main" branch.
 #
 
@@ -34,11 +34,6 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
-
-#    - name: Retrieving secrets
-#      run: |
-#        aws ssm get-parameters --name /sandbox/vacationer/test-uri --with-decryption --query 'Parameters[0].Value' >> $SLACK_URI
-#        echo $SLACK_URI
 
     - name: Login to Amazon ECR
       id: login-ecr
