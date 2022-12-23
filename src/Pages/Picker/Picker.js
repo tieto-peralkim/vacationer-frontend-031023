@@ -23,7 +23,7 @@ import Typography from "@mui/material/Typography";
 
 registerLocale("fi", fi);
 
-export default function Picker() {
+export default function Picker({ save, setSave }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
     const NUMBER_OF_SHOWN_DEFAULT = 2;
@@ -65,7 +65,6 @@ export default function Picker() {
 
     const [dayAmount, setDayAmount] = useState(0);
 
-    const [save, setSave] = useState(false);
     const [annualAmount, setAnnualAmount] = useState(20);
     const [holidaySeason, setHolidaySeason] = useState(2022);
 

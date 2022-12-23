@@ -7,7 +7,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
 import { useLocation } from "react-router-dom";
 
-export default function Calendar(props) {
+export default function Calendar({ save, setSave }) {
     const location = useLocation();
     const today = new Date();
     const thisMonthFirst = new Date(
@@ -446,7 +446,7 @@ export default function Calendar(props) {
             .catch((error) => {
                 console.error("There was a totalvacationers get error!", error);
             });
-    }, [selectedDate]);
+    }, [selectedDate, save]);
 
     // const EditableCell = ({
     //     value: initialValue,
