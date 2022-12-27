@@ -1,11 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useMemo, useState } from "react";
 import { useTable } from "react-table";
 import axios from "axios";
-import { Box, Button, Chip, CircularProgress } from "@mui/material";
+import {
+    Box,
+    Button,
+    Chip,
+    CircularProgress,
+    stepLabelClasses,
+} from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
 import { useLocation } from "react-router-dom";
+import DatePicker from "react-datepicker";
 
 export default function Calendar({ save, setSave }) {
     const location = useLocation();
@@ -22,10 +29,9 @@ export default function Calendar({ save, setSave }) {
 
     const [holidayColor, setHolidayColor] = useState("#73D8FF");
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] =
-        useState("#33FF3C");
-
-    const [weekendColor, setWeekendColor] = useState("#CCCCCC");
-    const [weekendHolidayColor, setWeekendHolidayColor] = useState("#666666");
+        useState("#64F3EA");
+    const [weekendColor, setWeekendColor] = useState("#928F8F");
+    const [weekendHolidayColor, setWeekendHolidayColor] = useState("#D8D8D8");
     const holidaySymbols = ["X", "Y"];
 
     const [replacementText, setReplacementText] = useState("");
@@ -739,41 +745,57 @@ export default function Calendar({ save, setSave }) {
             return "solid 1px black";
         }
     };
+
+    const MonthInputButton = forwardRef(({ value, onClick }) => (
+        <Button onClick={onClick}>
+            {selectedDate.toLocaleString("en-GB", {
+                month: "long",
+                year: "numeric",
+            })}
+        </Button>
+    ));
+
     return (
         <>
             <div className={styles.wholeCalendar}>
-                <div className={styles.teamChips}>
-                    <Chip
-                        className={styles.oneTeamChip}
-                        variant={!teamToShow ? "" : "outlined"}
-                        label="All teams"
-                        color="secondary"
-                        onClick={() => {
-                            setMonthsHolidays(allMonthsVacationers);
-                            setTeamToShow("");
-                        }}
-                    />
-                    {teams.map((team) => (
+                <div className={styles.header}>
+                    <div className={styles.teamChips}>
                         <Chip
                             className={styles.oneTeamChip}
-                            variant={
-                                teamToShow.title === team.title
-                                    ? ""
-                                    : "outlined"
-                            }
-                            color="primary"
-                            label={team.title}
+                            variant={!teamToShow ? "" : "outlined"}
+                            label="All teams"
+                            color="secondary"
                             onClick={() => {
-                                setTeamToShow(team);
-                                console.log("team", team);
+                                setMonthsHolidays(allMonthsVacationers);
+                                setTeamToShow("");
                             }}
                         />
-                    ))}
-                    {teamToShow &&
-                        teamToShow.members
-                            // some sorting?
-                            // .sort((v1, v2) => v1.name - v2.name)
-                            .map((member) => <Chip label={member.name} />)}
+                        Filter by team:
+                        {teams.map((team) => (
+                            <Chip
+                                className={styles.oneTeamChip}
+                                variant={
+                                    teamToShow.title === team.title
+                                        ? ""
+                                        : "outlined"
+                                }
+                                color="primary"
+                                label={team.title}
+                                onClick={() => {
+                                    setTeamToShow(team);
+                                    console.log("team", team);
+                                }}
+                            />
+                        ))}
+                        {teamToShow &&
+                            teamToShow.members
+                                // some sorting?
+                                // .sort((v1, v2) => v1.name - v2.name)
+                                .map((member) => <Chip label={member.name} />)}
+                    </div>
+                    <div className={styles.infoBox}>
+                        X = confirmed holiday <br /> Y = un-confirmed holiday
+                    </div>
                 </div>
                 <div className={styles.wholeCalendar}>
                     <Box className={styles.buttons}>
@@ -781,12 +803,19 @@ export default function Calendar({ save, setSave }) {
                             onClick={() => changeMonth(-1)}
                             startIcon={<ArrowBackIosIcon />}
                         >
-                            Previous
+                            Prev
                         </Button>
-                        {selectedDate.toLocaleString("en-GB", {
-                            month: "long",
-                            year: "numeric",
-                        })}
+                        <div className={styles.monthSelection}>
+                            <DatePicker
+                                selected={selectedDate}
+                                onChange={(date) => setSelectedDate(date)}
+                                dateFormat="MM/yyyy"
+                                showMonthYearPicker
+                                showFullMonthYearPicker
+                                showFourColumnMonthYearPicker
+                                customInput={<MonthInputButton />}
+                            />
+                        </div>
                         <Button
                             onClick={() => changeMonth(1)}
                             endIcon={<ArrowForwardIosIcon />}

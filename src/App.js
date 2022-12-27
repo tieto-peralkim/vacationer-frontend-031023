@@ -41,35 +41,6 @@ function App() {
             >
                 <Box>
                     <List>
-                        {/* Combo solution */}
-                        {/*<Link to="/picker">*/}
-                        {/*    <ListItem*/}
-                        {/*        className={styles.navigation}*/}
-                        {/*        button*/}
-                        {/*        onClick={() => setIsOpen(!isOpen)}*/}
-                        {/*    >*/}
-                        {/*        <ListItemIcon>*/}
-                        {/*            <BeachAccessIcon />*/}
-                        {/*        </ListItemIcon>*/}
-                        {/*        <div className={styles.navigationText}>*/}
-                        {/*            Pick a holiday*/}
-                        {/*        </div>*/}
-                        {/*    </ListItem>*/}
-                        {/*</Link>*/}
-                        {/*<Link to="/calendar">*/}
-                        {/*    <ListItem*/}
-                        {/*        className={styles.navigation}*/}
-                        {/*        button*/}
-                        {/*        onClick={() => setIsOpen(!isOpen)}*/}
-                        {/*    >*/}
-                        {/*        <ListItemIcon>*/}
-                        {/*            <CalendarTodayIcon />*/}
-                        {/*        </ListItemIcon>*/}
-                        {/*        <div className={styles.navigationText}>*/}
-                        {/*            Calendar*/}
-                        {/*        </div>*/}
-                        {/*    </ListItem>*/}
-                        {/*</Link>*/}
                         <Link to="/admin">
                             <ListItem
                                 className={styles.navigation}
@@ -84,17 +55,17 @@ function App() {
                                 </div>
                             </ListItem>
                         </Link>
-                        <Link to="/combo">
+                        <Link to="/picker">
                             <ListItem
                                 className={styles.navigation}
                                 button
                                 onClick={() => setIsOpen(!isOpen)}
                             >
                                 <ListItemIcon>
-                                    <Brightness7Icon />
+                                    <BeachAccessIcon />
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>
-                                    Combo
+                                    Picker
                                 </div>
                             </ListItem>
                         </Link>

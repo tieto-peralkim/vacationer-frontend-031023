@@ -6,9 +6,25 @@
 }
 .teamChips {
     padding-top: 20px;
+    float: left;
 }
 .oneTeamChip {
     margin: 10px;
+}
+.monthSelection {
+    margin-right: 1em;
+    margin-left: 1em;
+}
+.infoBox {
+    float: right;
+    border: 0.1em solid #2A55E7;
+    border-radius: 12px;
+    padding: 0.5em;
+    margin-top: 1em;
+    margin-right: 1em;
+}
+.header {
+    overflow: auto;
 }
 .wholeCalendar {
     display: flex;

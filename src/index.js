@@ -3,8 +3,6 @@ import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
 import App from "./App";
-import Picker from "./Pages/Picker/Picker";
-import Calendar from "./Pages/Calendar/Calendar";
 import reportWebVitals from "./reportWebVitals";
 import Admin from "./Pages/Admin/Admin";
 import Combo from "./Pages/Combo/Combo";
@@ -13,11 +11,8 @@ ReactDOM.render(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<App />}>
-                {/* Combo solution */}
-                {/*<Route path="picker" element={<Picker />} />*/}
-                {/*<Route path="calendar" element={<Calendar />} />*/}
                 <Route path="admin" element={<Admin />} />
-                <Route path="combo" element={<Combo />} />
+                <Route path="picker" element={<Combo />} />
                 <Route
                     path="*"
                     element={
