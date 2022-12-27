@@ -53,8 +53,11 @@ ul {
   margin-bottom: 1% !important;
 }
 .addHoliday {
-  display: flex;
+  /*display: flex;*/
   flex-direction: column;
+}
+.comment {
+  background-color: blanchedalmond;
 }
 .buttonStyle{
   margin: 8px

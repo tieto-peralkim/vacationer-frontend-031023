@@ -37,6 +37,7 @@ export default function Picker({ save, setSave }) {
     const [endDate, setEndDate] = useState(null);
 
     const [comment, setComment] = useState("");
+    const [confirmed, setConfirmed] = useState(false);
     const [vacationers, setVacationers] = useState([]);
     const [startDateErrorMessage, setStartDateErrorMessage] = useState(false);
     const [endDateErrorMessage, setEndDateErrorMessage] = useState(false);
@@ -144,8 +145,6 @@ export default function Picker({ save, setSave }) {
 
     const resetDates = () => {
         setStartDate(null);
-        // setStartDate(new Date());
-        // startDate.setUTCHours(10)
         setEndDate(null);
     };
 
@@ -192,6 +191,7 @@ export default function Picker({ save, setSave }) {
 
         updateExcludedDates(id);
         setComment(editedItem.comment);
+        setConfirmed(editedItem.confirmed);
         setStartDate(editedItem.start);
         setEndDate(editedItem.end);
         calculatePerDay(editedItem.start, editedItem.end);
@@ -232,7 +232,9 @@ export default function Picker({ save, setSave }) {
             holidayObject.start = new Date(vacations[i].start);
             holidayObject.end = new Date(vacations[i].end);
             holidayObject.comment = vacations[i].comment;
+            holidayObject.confirmed = vacations[i].confirmed;
             holidayObject.id = vacations[i]._id;
+
             if (holidayObject.start >= today || holidayObject.end >= today) {
                 holidayObject.upcoming = true;
             } else {
@@ -402,10 +404,12 @@ export default function Picker({ save, setSave }) {
                         setEditingSpace={setEditingSpace}
                         changingStartedSpace={changingStartedSpace}
                         today={today}
-                        setComment={setComment}
                         startDateErrorMessage={startDateErrorMessage}
                         endDateErrorMessage={endDateErrorMessage}
                         comment={comment}
+                        setComment={setComment}
+                        confirmed={confirmed}
+                        setConfirmed={setConfirmed}
                         idToEdit={idToEdit}
                         setHolidays={setHolidays}
                         setChangingStartedSpace={setChangingStartedSpace}

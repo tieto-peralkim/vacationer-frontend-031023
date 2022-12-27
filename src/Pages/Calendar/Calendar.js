@@ -21,9 +21,12 @@ export default function Calendar({ save, setSave }) {
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
 
     const [holidayColor, setHolidayColor] = useState("#73D8FF");
+    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] =
+        useState("#33FF3C");
+
     const [weekendColor, setWeekendColor] = useState("#CCCCCC");
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("#666666");
-    const [holidaySymbol, setHolidaySymbol] = useState("X");
+    const holidaySymbols = ["X", "Y"];
 
     const [replacementText, setReplacementText] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
@@ -159,8 +162,8 @@ export default function Calendar({ save, setSave }) {
         let pureVacations = [];
         for (let i = 0; i < vacationers.length; i++) {
             let holidayObject = {};
-            if (vacationers[i].name.length > 9) {
-                holidayObject.name = vacationers[i].name.slice(0, 9) + "...";
+            if (vacationers[i].name.length > 13) {
+                holidayObject.name = vacationers[i].name.slice(0, 13) + "...";
             } else {
                 holidayObject.name = vacationers[i].name;
             }
@@ -173,13 +176,15 @@ export default function Calendar({ save, setSave }) {
             repeatingHolidayer = pureVacations.find(
                 (holiday) => holiday.name === holidayObject.name
             );
-            console.log("repeatingHolidayer", repeatingHolidayer);
+            console.log("repeatingHolidayer", vacationers[i].vacations);
+            console.log("vacationers[i].vacations", vacationers[i].vacations);
 
             if (repeatingHolidayer) {
                 setNumbers(
                     repeatingHolidayer,
                     new Date(vacationers[i].vacations.start),
-                    new Date(vacationers[i].vacations.end)
+                    new Date(vacationers[i].vacations.end),
+                    vacationers[i].vacations.confirmed
                 );
                 let index = pureVacations.findIndex(
                     (holiday) => holiday.name === holidayObject.name
@@ -189,7 +194,8 @@ export default function Calendar({ save, setSave }) {
                 setNumbers(
                     holidayObject,
                     new Date(vacationers[i].vacations.start),
-                    new Date(vacationers[i].vacations.end)
+                    new Date(vacationers[i].vacations.end),
+                    vacationers[i].vacations.confirmed
                 );
                 pureVacations.push(holidayObject);
             }
@@ -236,7 +242,7 @@ export default function Calendar({ save, setSave }) {
     const getWorkerAmount = (data, key) => {
         let total = 0;
         for (let i = 0; i < data.length; i++) {
-            if (data[i][key] === holidaySymbol) {
+            if (holidaySymbols.includes(data[i][key])) {
                 total++;
             }
         }
@@ -257,11 +263,18 @@ export default function Calendar({ save, setSave }) {
     };
 
     // Sets the start and end date of holidays for shown calendar month
-    const setNumbers = (holidayObject, start, end) => {
-        console.log("setNumbers", start.getDate(), end);
+    const setNumbers = (holidayObject, start, end, confirmedHoliday) => {
+        console.log("setNumbers", start.getDate(), end, confirmedHoliday);
 
+        let symbolToUse;
         let startingNumber = 0;
         let endingNumber = 0;
+
+        if (!confirmedHoliday) {
+            symbolToUse = "Y";
+        } else {
+            symbolToUse = "X";
+        }
 
         // Voidaanko lyhentää?
         if (start.getMonth() === end.getMonth()) {
@@ -297,97 +310,97 @@ export default function Calendar({ save, setSave }) {
         for (let i = startingNumber; i <= endingNumber; i++) {
             switch (i) {
                 case 1:
-                    holidayObject.one = holidaySymbol;
+                    holidayObject.one = symbolToUse;
                     break;
                 case 2:
-                    holidayObject.two = holidaySymbol;
+                    holidayObject.two = symbolToUse;
                     break;
                 case 3:
-                    holidayObject.three = holidaySymbol;
+                    holidayObject.three = symbolToUse;
                     break;
                 case 4:
-                    holidayObject.four = holidaySymbol;
+                    holidayObject.four = symbolToUse;
                     break;
                 case 5:
-                    holidayObject.five = holidaySymbol;
+                    holidayObject.five = symbolToUse;
                     break;
                 case 6:
-                    holidayObject.six = holidaySymbol;
+                    holidayObject.six = symbolToUse;
                     break;
                 case 7:
-                    holidayObject.seven = holidaySymbol;
+                    holidayObject.seven = symbolToUse;
                     break;
                 case 8:
-                    holidayObject.eight = holidaySymbol;
+                    holidayObject.eight = symbolToUse;
                     break;
                 case 9:
-                    holidayObject.nine = holidaySymbol;
+                    holidayObject.nine = symbolToUse;
                     break;
                 case 10:
-                    holidayObject.ten = holidaySymbol;
+                    holidayObject.ten = symbolToUse;
                     break;
                 case 11:
-                    holidayObject.eleven = holidaySymbol;
+                    holidayObject.eleven = symbolToUse;
                     break;
                 case 12:
-                    holidayObject.twelve = holidaySymbol;
+                    holidayObject.twelve = symbolToUse;
                     break;
                 case 13:
-                    holidayObject.thirteen = holidaySymbol;
+                    holidayObject.thirteen = symbolToUse;
                     break;
                 case 14:
-                    holidayObject.fourteen = holidaySymbol;
+                    holidayObject.fourteen = symbolToUse;
                     break;
                 case 15:
-                    holidayObject.fifteen = holidaySymbol;
+                    holidayObject.fifteen = symbolToUse;
                     break;
                 case 16:
-                    holidayObject.sixteen = holidaySymbol;
+                    holidayObject.sixteen = symbolToUse;
                     break;
                 case 17:
-                    holidayObject.seventeen = holidaySymbol;
+                    holidayObject.seventeen = symbolToUse;
                     break;
                 case 18:
-                    holidayObject.eighteen = holidaySymbol;
+                    holidayObject.eighteen = symbolToUse;
                     break;
                 case 19:
-                    holidayObject.nineteen = holidaySymbol;
+                    holidayObject.nineteen = symbolToUse;
                     break;
                 case 20:
-                    holidayObject.twenty = holidaySymbol;
+                    holidayObject.twenty = symbolToUse;
                     break;
                 case 21:
-                    holidayObject.twentyone = holidaySymbol;
+                    holidayObject.twentyone = symbolToUse;
                     break;
                 case 22:
-                    holidayObject.twentytwo = holidaySymbol;
+                    holidayObject.twentytwo = symbolToUse;
                     break;
                 case 23:
-                    holidayObject.twentythree = holidaySymbol;
+                    holidayObject.twentythree = symbolToUse;
                     break;
                 case 24:
-                    holidayObject.twentyfour = holidaySymbol;
+                    holidayObject.twentyfour = symbolToUse;
                     break;
                 case 25:
-                    holidayObject.twentyfive = holidaySymbol;
+                    holidayObject.twentyfive = symbolToUse;
                     break;
                 case 26:
-                    holidayObject.twentysix = holidaySymbol;
+                    holidayObject.twentysix = symbolToUse;
                     break;
                 case 27:
-                    holidayObject.twentyseven = holidaySymbol;
+                    holidayObject.twentyseven = symbolToUse;
                     break;
                 case 28:
-                    holidayObject.twentyeight = holidaySymbol;
+                    holidayObject.twentyeight = symbolToUse;
                     break;
                 case 29:
-                    holidayObject.twentynine = holidaySymbol;
+                    holidayObject.twentynine = symbolToUse;
                     break;
                 case 30:
-                    holidayObject.thirty = holidaySymbol;
+                    holidayObject.thirty = symbolToUse;
                     break;
                 case 31:
-                    holidayObject.thirtyone = holidaySymbol;
+                    holidayObject.thirtyone = symbolToUse;
                     break;
             }
         }
@@ -644,8 +657,10 @@ export default function Calendar({ save, setSave }) {
             colorToAdd = "bisque";
         }
         if (index !== 0) {
-            if (holiday === holidaySymbol) {
+            if (holiday === "X") {
                 colorToAdd = holidayColor;
+            } else if (holiday === "Y") {
+                colorToAdd = unConfirmedHolidayColor;
             }
             let dateToCheck = new Date(
                 selectedDate.getFullYear(),
@@ -655,7 +670,7 @@ export default function Calendar({ save, setSave }) {
 
             // Saturday or Sunday
             if (dateToCheck.getDay() === 0 || dateToCheck.getDay() === 6) {
-                if (holiday === holidaySymbol) {
+                if (holidaySymbols.includes(holiday)) {
                     colorToAdd = weekendHolidayColor;
                 } else {
                     colorToAdd = weekendColor;
@@ -664,7 +679,7 @@ export default function Calendar({ save, setSave }) {
 
             // Public holidays
             if (publicHolidaysOfMonth.filter((e) => e === index).length > 0) {
-                if (holiday === holidaySymbol) {
+                if (holidaySymbols.includes(holiday)) {
                     colorToAdd = weekendHolidayColor;
                 } else {
                     colorToAdd = weekendColor;

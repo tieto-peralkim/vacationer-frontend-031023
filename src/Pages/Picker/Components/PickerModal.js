@@ -3,9 +3,12 @@ import {
     Alert,
     Box,
     Button,
+    Checkbox,
     Dialog,
     DialogContent,
     DialogTitle,
+    FormControlLabel,
+    FormGroup,
     Modal,
     Stack,
     TextField,
@@ -15,6 +18,7 @@ import DatePicker from "react-datepicker";
 import { useState } from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
+import st from "react-datepicker";
 
 export default function PickerModal({
     openCalendar,
@@ -33,10 +37,12 @@ export default function PickerModal({
     editingSpace,
     changingStartedSpace,
     today,
+    comment,
     setComment,
+    confirmed,
+    setConfirmed,
     startDateErrorMessage,
     endDateErrorMessage,
-    comment,
     idToEdit,
     setHolidays,
     setChangingStartedSpace,
@@ -62,6 +68,7 @@ export default function PickerModal({
         setOverlapErrorMessage(false);
         setDailyVacationers([]);
         setComment("");
+        setConfirmed(false);
         resetDates();
     };
 
@@ -132,6 +139,7 @@ export default function PickerModal({
                 start: startDate,
                 end: endDate,
                 comment: comment,
+                confirmed: confirmed,
             };
             console.log("newHoliday", newHoliday);
             axios
@@ -187,6 +195,7 @@ export default function PickerModal({
             start: startDate,
             end: endDate,
             comment: comment,
+            confirmed: confirmed,
             id: idToEdit,
         };
         axios
@@ -288,11 +297,22 @@ export default function PickerModal({
 
                     <div className={styles.addHoliday}>
                         <TextField
-                            label="Description"
-                            variant="outlined"
+                            className={styles.comment}
+                            label="Holiday comment"
+                            variant="filled"
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                         />
+                        <FormGroup>
+                            <FormControlLabel
+                                checked={confirmed}
+                                onChange={(e) => {
+                                    setConfirmed(!confirmed);
+                                }}
+                                control={<Checkbox color={"success"} />}
+                                label={"Confirmed holiday"}
+                            />
+                        </FormGroup>
                         {editingSpace ? (
                             <Button
                                 className={styles.buttonStyle}
