@@ -309,7 +309,7 @@ export default function PickerModal({
                                 onChange={(e) => {
                                     setConfirmed(!confirmed);
                                 }}
-                                control={<Checkbox color={"success"} />}
+                                control={<Checkbox color="success" />}
                                 label={"Confirmed holiday"}
                             />
                         </FormGroup>
