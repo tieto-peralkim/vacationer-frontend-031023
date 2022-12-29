@@ -12,15 +12,7 @@ ReactDOM.render(
         <Routes>
             <Route path="/" element={<App />}>
                 <Route path="admin" element={<Admin />} />
-                <Route path="picker" element={<Combo />} />
-                <Route
-                    path="*"
-                    element={
-                        <main>
-                            <p>Check the address!</p>
-                        </main>
-                    }
-                />
+                <Route path="*" element={<Combo />} />
             </Route>
         </Routes>
     </BrowserRouter>,

@@ -23,7 +23,13 @@ import Typography from "@mui/material/Typography";
 
 registerLocale("fi", fi);
 
-export default function Picker({ save, setSave }) {
+export default function Picker({
+    save,
+    setSave,
+    vacationers,
+    setVacationers,
+    handleOpenAPIError,
+}) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
     const NUMBER_OF_SHOWN_DEFAULT = 2;
@@ -38,7 +44,6 @@ export default function Picker({ save, setSave }) {
 
     const [comment, setComment] = useState("");
     const [confirmed, setConfirmed] = useState(false);
-    const [vacationers, setVacationers] = useState([]);
     const [startDateErrorMessage, setStartDateErrorMessage] = useState(false);
     const [endDateErrorMessage, setEndDateErrorMessage] = useState(false);
     const [showPastVacations, setShowPastVacations] = useState(
@@ -50,7 +55,6 @@ export default function Picker({ save, setSave }) {
 
     const [openCalendar, setOpenCalendar] = useState(false);
     const [openDeletionAlert, setOpenDeletionAlert] = useState(false);
-    const [openAPIError, setOpenAPIError] = useState(false);
 
     const [idToEdit, setIdToEdit] = useState();
     const [holidayToEdit, setHolidayToEdit] = useState({});
@@ -72,13 +76,6 @@ export default function Picker({ save, setSave }) {
     const handleOpenCalendar = () => {
         setOpenCalendar(true);
         updateExcludedDates(0);
-    };
-
-    const handleOpenAPIError = () => {
-        setOpenAPIError(true);
-    };
-    const handleCloseAPIError = () => {
-        setOpenAPIError(false);
     };
 
     const handleOpenDeletionAlert = () => {
@@ -104,20 +101,6 @@ export default function Picker({ save, setSave }) {
             setStartDateErrorMessage(false);
         }
     }, [startDate]);
-
-    // Update list of employees and their vacations
-    useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/vacationers`)
-            .then((response) => {
-                setVacationers(response.data);
-                console.log("Saved, response.data:", response.data);
-            })
-            .catch((error) => {
-                console.error("There was a get error!", error);
-                handleOpenAPIError();
-            });
-    }, [save]);
 
     useEffect(() => {
         let amountOfDays = 0;
@@ -387,7 +370,6 @@ export default function Picker({ save, setSave }) {
                     </Button>
                     <PickerModal
                         openCalendar={openCalendar}
-                        selectVacationer={selectVacationer}
                         chosenVacationer={chosenVacationer}
                         startDate={startDate}
                         setStartDate={setStartDate}
@@ -530,15 +512,6 @@ export default function Picker({ save, setSave }) {
                         }
                         cancel={"No"}
                         confirm={"Yes delete"}
-                    />
-
-                    <AlertDialog
-                        openAlert={openAPIError}
-                        handleCloseAlert={handleCloseAPIError}
-                        handleAction={handleCloseAPIError}
-                        dialogTitle={"API Error"}
-                        dialogContent={"No connection to API, try again later"}
-                        confirm={"OK"}
                     />
                 </form>
             </div>

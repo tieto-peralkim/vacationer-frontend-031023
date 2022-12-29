@@ -4,8 +4,11 @@ import axios from "axios";
 import {
     Box,
     Button,
+    Checkbox,
     Chip,
     CircularProgress,
+    FormControlLabel,
+    FormGroup,
     stepLabelClasses,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -14,7 +17,7 @@ import styles from "./calendar.module.css";
 import { useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 
-export default function Calendar({ save, setSave }) {
+export default function Calendar({ vacationersAmount, save }) {
     const location = useLocation();
     const today = new Date();
     const thisMonthFirst = new Date(
@@ -24,7 +27,6 @@ export default function Calendar({ save, setSave }) {
         15
     );
     thisMonthFirst.setUTCHours(0, 0, 0, 0);
-    console.log("thisMonthFirst", thisMonthFirst);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
 
     const [holidayColor, setHolidayColor] = useState("#73D8FF");
@@ -38,7 +40,7 @@ export default function Calendar({ save, setSave }) {
 
     const [replacementText, setReplacementText] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
-    const [holidayRow, setHolidayRow] = useState(false);
+    const [showAllVacationers, setShowAllVacationers] = useState(false);
     const WORKER_TITLE = "Working";
     const ON_HOLIDAY_TITLE = "On holiday";
     const PRESENCE_PERCENTAGE = 0.5;
@@ -57,8 +59,6 @@ export default function Calendar({ save, setSave }) {
     const [teams, setTeams] = useState([]);
     const [teamToShow, setTeamToShow] = useState("");
     const [selectedVacationers, setSelectedVacationers] = useState([]);
-    const [allMonthsVacationers, setAllMonthsVacationers] = useState([]);
-    const [totalVacationers, setTotalVacationers] = useState([]);
 
     useEffect(() => {
         if (location.state) {
@@ -95,29 +95,30 @@ export default function Calendar({ save, setSave }) {
     }, [selectedYear]);
 
     useEffect(() => {
-        if (teamToShow) {
-            console.log("filterByTeam:", teamToShow);
-
-            let filteredVacations = [];
-            for (let i = 0; i < teamToShow.members.length; i++) {
-                // Filter the team's holidays from all the holidays of the month
-                const filteredVacation = selectedVacationers.filter(
-                    (vacationer) =>
-                        vacationer.name === teamToShow.members[i].name
-                );
-                if (filteredVacation.length !== 0) {
-                    filteredVacations.push(filteredVacation);
-                }
-            }
-            // An array of arrays to an array
-            filteredVacations = filteredVacations.flat();
-            console.log("filteredVacations", filteredVacations);
-            setMonthsHolidays(filteredVacations);
-        } else {
-            console.log("filterByTeam: no");
+        // Showing all employees of the selected team, not only the ones with holiday
+        if (showAllVacationers && teamToShow) {
+            console.log("showAllVacationers && teamToShow", teamToShow);
+            setMonthsHolidays(filterHolidays(), teamToShow.members);
+        }
+        // Showing all vacationing employees of the selected team
+        else if (teamToShow) {
+            console.log("teamToShow:", teamToShow);
+            setMonthsHolidays(filterHolidays());
+        }
+        // Showing all employees, not only the ones with holiday
+        else if (showAllVacationers) {
+            setMonthsHolidays(selectedVacationers, vacationersAmount);
+        }
+        // Showing all vacationing employees
+        else {
             setMonthsHolidays(selectedVacationers);
         }
-    }, [teamToShow, selectedVacationers]);
+    }, [
+        showAllVacationers,
+        teamToShow,
+        selectedVacationers,
+        vacationersAmount,
+    ]);
 
     // Fetching teams from DB
     useEffect(() => {
@@ -148,16 +149,34 @@ export default function Calendar({ save, setSave }) {
         setPublicHolidaysOfMonth(publicMonthsHolidays);
     }, [selectedDate, publicHolidays]);
 
-    const getHolidaysOfMonth = (nextMonth) => {
+    const filterHolidays = () => {
+        console.log("flllt", selectedVacationers, teamToShow);
+        let filteredVacations = [];
+        for (let i = 0; i < teamToShow.members.length; i++) {
+            // Filter the team's holidays from all the holidays of the month
+            const filteredVacation = selectedVacationers.filter(
+                (vacationer) => vacationer.name === teamToShow.members[i].name
+            );
+            if (filteredVacation.length !== 0) {
+                filteredVacations.push(filteredVacation);
+            }
+        }
+        // An array of arrays to an array
+        filteredVacations = filteredVacations.flat();
+        console.log("filteredVacations", filteredVacations);
+        return filteredVacations;
+    };
+
+    // Retrieve the holidays of the selected month
+    const getHolidaysOfMonth = (selectedMonth) => {
         axios
             .get(
                 `${
                     process.env.REACT_APP_ADDRESS
-                }/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`
+                }/holidaysbetween?start=${selectedDate.toISOString()}&end=${selectedMonth.toISOString()}`
             )
             .then((response) => {
                 setSelectedVacationers(response.data);
-                setAllMonthsVacationers(response.data);
                 console.log("response:", response.data);
                 setShowSpinner(false);
             })
@@ -168,119 +187,156 @@ export default function Calendar({ save, setSave }) {
             });
     };
 
-    const setMonthsHolidays = (vacationers) => {
+    // Creates the employee rows, vacationingEmployees is the list of employees with holidays,
+    // allEmployees is the list of employees with and without holidays
+    const setMonthsHolidays = (vacationingEmployees, allEmployees) => {
+        console.log("vaca1tioningEmployees", vacationingEmployees);
+        console.log("vaca1llEmployees", allEmployees);
         let pureVacations = [];
-        for (let i = 0; i < vacationers.length; i++) {
+        for (let i = 0; i < vacationingEmployees.length; i++) {
             let holidayObject = {};
-            if (vacationers[i].name.length > 13) {
-                holidayObject.name = vacationers[i].name.slice(0, 13) + "...";
+            if (vacationingEmployees[i].name.length > 13) {
+                holidayObject.name =
+                    vacationingEmployees[i].name.slice(0, 13) + "...";
             } else {
-                holidayObject.name = vacationers[i].name;
+                holidayObject.name = vacationingEmployees[i].name;
             }
-            holidayObject.start = vacationers[i].vacations.start;
-            holidayObject.end = vacationers[i].vacations.end;
-            holidayObject.comment = vacationers[i].vacations.comment;
-            holidayObject.id = vacationers[i].vacations._id;
+
+            holidayObject.start = vacationingEmployees[i].vacations.start;
+            holidayObject.end = vacationingEmployees[i].vacations.end;
+            holidayObject.comment = vacationingEmployees[i].vacations.comment;
+            holidayObject.id = vacationingEmployees[i].vacations._id;
 
             let repeatingHolidayer;
             repeatingHolidayer = pureVacations.find(
                 (holiday) => holiday.name === holidayObject.name
             );
-            console.log("repeatingHolidayer", vacationers[i].vacations);
-            console.log("vacationers[i].vacations", vacationers[i].vacations);
+            // console.log("repeatingHolidayer", vacationingEmployees[i].vacations);
+            console.log(
+                "vacationingEmployees[i].vacations",
+                vacationingEmployees[i].vacations
+            );
 
+            // If there are multiple separate holidays for same vacationingEmployee during the month
             if (repeatingHolidayer) {
                 setNumbers(
                     repeatingHolidayer,
-                    new Date(vacationers[i].vacations.start),
-                    new Date(vacationers[i].vacations.end),
-                    vacationers[i].vacations.confirmed
+                    new Date(vacationingEmployees[i].vacations.start),
+                    new Date(vacationingEmployees[i].vacations.end),
+                    vacationingEmployees[i].vacations.confirmed
                 );
                 let index = pureVacations.findIndex(
                     (holiday) => holiday.name === holidayObject.name
                 );
                 pureVacations[index] = repeatingHolidayer;
+            } else if (!vacationingEmployees[i].vacations) {
+                pureVacations.push(holidayObject);
             } else {
                 setNumbers(
                     holidayObject,
-                    new Date(vacationers[i].vacations.start),
-                    new Date(vacationers[i].vacations.end),
-                    vacationers[i].vacations.confirmed
+                    new Date(vacationingEmployees[i].vacations.start),
+                    new Date(vacationingEmployees[i].vacations.end),
+                    vacationingEmployees[i].vacations.confirmed
                 );
                 pureVacations.push(holidayObject);
             }
         }
-        pureVacations.push({
+
+        // If "Show all employees" checkbox is selected, filter the employees without holidays and set only the name for those rows
+        if (allEmployees !== undefined) {
+            let employeesWithNoHolidays = allEmployees.filter(
+                (o1) => !vacationingEmployees.some((o2) => o1.name === o2.name)
+            );
+            console.log("eNoHolidays", employeesWithNoHolidays);
+
+            for (let i = 0; i < employeesWithNoHolidays.length; i++) {
+                let holidayObject = {};
+                if (employeesWithNoHolidays[i].name.length > 13) {
+                    holidayObject.name =
+                        employeesWithNoHolidays[i].name.slice(0, 13) + "...";
+                } else {
+                    holidayObject.name = employeesWithNoHolidays[i].name;
+                }
+
+                pureVacations.push(holidayObject);
+            }
+        }
+        addSummaryRows(pureVacations);
+    };
+
+    const addSummaryRows = (data) => {
+        // Second last row of the table: amount of employees on holiday
+        data.push({
             name: ON_HOLIDAY_TITLE,
-            one: getOnHolidayAmount(pureVacations, "one"),
-            two: getOnHolidayAmount(pureVacations, "two"),
-            three: getOnHolidayAmount(pureVacations, "three"),
-            four: getOnHolidayAmount(pureVacations, "four"),
-            five: getOnHolidayAmount(pureVacations, "five"),
-            six: getOnHolidayAmount(pureVacations, "six"),
-            seven: getOnHolidayAmount(pureVacations, "seven"),
-            eight: getOnHolidayAmount(pureVacations, "eight"),
-            nine: getOnHolidayAmount(pureVacations, "nine"),
-            ten: getOnHolidayAmount(pureVacations, "ten"),
-            eleven: getOnHolidayAmount(pureVacations, "eleven"),
-            twelve: getOnHolidayAmount(pureVacations, "twelve"),
-            thirteen: getOnHolidayAmount(pureVacations, "thirteen"),
-            fourteen: getOnHolidayAmount(pureVacations, "fourteen"),
-            fifteen: getOnHolidayAmount(pureVacations, "fifteen"),
-            sixteen: getOnHolidayAmount(pureVacations, "sixteen"),
-            seventeen: getOnHolidayAmount(pureVacations, "seventeen"),
-            eighteen: getOnHolidayAmount(pureVacations, "eighteen"),
-            nineteen: getOnHolidayAmount(pureVacations, "nineteen"),
-            twenty: getOnHolidayAmount(pureVacations, "twenty"),
-            twentyone: getOnHolidayAmount(pureVacations, "twentyone"),
-            twentytwo: getOnHolidayAmount(pureVacations, "twentytwo"),
-            twentythree: getOnHolidayAmount(pureVacations, "twentythree"),
-            twentyfour: getOnHolidayAmount(pureVacations, "twentyfour"),
-            twentyfive: getOnHolidayAmount(pureVacations, "twentyfive"),
-            twentysix: getOnHolidayAmount(pureVacations, "twentysix"),
-            twentyseven: getOnHolidayAmount(pureVacations, "twentyseven"),
-            twentyeight: getOnHolidayAmount(pureVacations, "twentyeight"),
-            twentynine: getOnHolidayAmount(pureVacations, "twentynine"),
-            thirty: getOnHolidayAmount(pureVacations, "thirty"),
-            thirtyone: getOnHolidayAmount(pureVacations, "thirtyone"),
+            one: getOnHolidayAmount(data, "one"),
+            two: getOnHolidayAmount(data, "two"),
+            three: getOnHolidayAmount(data, "three"),
+            four: getOnHolidayAmount(data, "four"),
+            five: getOnHolidayAmount(data, "five"),
+            six: getOnHolidayAmount(data, "six"),
+            seven: getOnHolidayAmount(data, "seven"),
+            eight: getOnHolidayAmount(data, "eight"),
+            nine: getOnHolidayAmount(data, "nine"),
+            ten: getOnHolidayAmount(data, "ten"),
+            eleven: getOnHolidayAmount(data, "eleven"),
+            twelve: getOnHolidayAmount(data, "twelve"),
+            thirteen: getOnHolidayAmount(data, "thirteen"),
+            fourteen: getOnHolidayAmount(data, "fourteen"),
+            fifteen: getOnHolidayAmount(data, "fifteen"),
+            sixteen: getOnHolidayAmount(data, "sixteen"),
+            seventeen: getOnHolidayAmount(data, "seventeen"),
+            eighteen: getOnHolidayAmount(data, "eighteen"),
+            nineteen: getOnHolidayAmount(data, "nineteen"),
+            twenty: getOnHolidayAmount(data, "twenty"),
+            twentyone: getOnHolidayAmount(data, "twentyone"),
+            twentytwo: getOnHolidayAmount(data, "twentytwo"),
+            twentythree: getOnHolidayAmount(data, "twentythree"),
+            twentyfour: getOnHolidayAmount(data, "twentyfour"),
+            twentyfive: getOnHolidayAmount(data, "twentyfive"),
+            twentysix: getOnHolidayAmount(data, "twentysix"),
+            twentyseven: getOnHolidayAmount(data, "twentyseven"),
+            twentyeight: getOnHolidayAmount(data, "twentyeight"),
+            twentynine: getOnHolidayAmount(data, "twentynine"),
+            thirty: getOnHolidayAmount(data, "thirty"),
+            thirtyone: getOnHolidayAmount(data, "thirtyone"),
         });
-        // Last row of the table: amount of working vacationers
-        pureVacations.push({
+        // Last row of the table: amount of working employee
+        data.push({
             name: WORKER_TITLE,
-            one: getWorkerAmount(pureVacations, "one"),
-            two: getWorkerAmount(pureVacations, "two"),
-            three: getWorkerAmount(pureVacations, "three"),
-            four: getWorkerAmount(pureVacations, "four"),
-            five: getWorkerAmount(pureVacations, "five"),
-            six: getWorkerAmount(pureVacations, "six"),
-            seven: getWorkerAmount(pureVacations, "seven"),
-            eight: getWorkerAmount(pureVacations, "eight"),
-            nine: getWorkerAmount(pureVacations, "nine"),
-            ten: getWorkerAmount(pureVacations, "ten"),
-            eleven: getWorkerAmount(pureVacations, "eleven"),
-            twelve: getWorkerAmount(pureVacations, "twelve"),
-            thirteen: getWorkerAmount(pureVacations, "thirteen"),
-            fourteen: getWorkerAmount(pureVacations, "fourteen"),
-            fifteen: getWorkerAmount(pureVacations, "fifteen"),
-            sixteen: getWorkerAmount(pureVacations, "sixteen"),
-            seventeen: getWorkerAmount(pureVacations, "seventeen"),
-            eighteen: getWorkerAmount(pureVacations, "eighteen"),
-            nineteen: getWorkerAmount(pureVacations, "nineteen"),
-            twenty: getWorkerAmount(pureVacations, "twenty"),
-            twentyone: getWorkerAmount(pureVacations, "twentyone"),
-            twentytwo: getWorkerAmount(pureVacations, "twentytwo"),
-            twentythree: getWorkerAmount(pureVacations, "twentythree"),
-            twentyfour: getWorkerAmount(pureVacations, "twentyfour"),
-            twentyfive: getWorkerAmount(pureVacations, "twentyfive"),
-            twentysix: getWorkerAmount(pureVacations, "twentysix"),
-            twentyseven: getWorkerAmount(pureVacations, "twentyseven"),
-            twentyeight: getWorkerAmount(pureVacations, "twentyeight"),
-            twentynine: getWorkerAmount(pureVacations, "twentynine"),
-            thirty: getWorkerAmount(pureVacations, "thirty"),
-            thirtyone: getWorkerAmount(pureVacations, "thirtyone"),
+            one: getWorkerAmount(data, "one"),
+            two: getWorkerAmount(data, "two"),
+            three: getWorkerAmount(data, "three"),
+            four: getWorkerAmount(data, "four"),
+            five: getWorkerAmount(data, "five"),
+            six: getWorkerAmount(data, "six"),
+            seven: getWorkerAmount(data, "seven"),
+            eight: getWorkerAmount(data, "eight"),
+            nine: getWorkerAmount(data, "nine"),
+            ten: getWorkerAmount(data, "ten"),
+            eleven: getWorkerAmount(data, "eleven"),
+            twelve: getWorkerAmount(data, "twelve"),
+            thirteen: getWorkerAmount(data, "thirteen"),
+            fourteen: getWorkerAmount(data, "fourteen"),
+            fifteen: getWorkerAmount(data, "fifteen"),
+            sixteen: getWorkerAmount(data, "sixteen"),
+            seventeen: getWorkerAmount(data, "seventeen"),
+            eighteen: getWorkerAmount(data, "eighteen"),
+            nineteen: getWorkerAmount(data, "nineteen"),
+            twenty: getWorkerAmount(data, "twenty"),
+            twentyone: getWorkerAmount(data, "twentyone"),
+            twentytwo: getWorkerAmount(data, "twentytwo"),
+            twentythree: getWorkerAmount(data, "twentythree"),
+            twentyfour: getWorkerAmount(data, "twentyfour"),
+            twentyfive: getWorkerAmount(data, "twentyfive"),
+            twentysix: getWorkerAmount(data, "twentysix"),
+            twentyseven: getWorkerAmount(data, "twentyseven"),
+            twentyeight: getWorkerAmount(data, "twentyeight"),
+            twentynine: getWorkerAmount(data, "twentynine"),
+            thirty: getWorkerAmount(data, "thirty"),
+            thirtyone: getWorkerAmount(data, "thirtyone"),
         });
-        console.log("pureVacations", pureVacations);
-        setAllHolidaysSelectedTime(pureVacations);
+        console.log("data", data);
+        setAllHolidaysSelectedTime(data);
     };
 
     const getOnHolidayAmount = (data, key) => {
@@ -310,20 +366,20 @@ export default function Calendar({ save, setSave }) {
             console.log("Total", peopleOnHoliday, teamToShow.members.length);
             return teamToShow.members.length - peopleOnHoliday;
         } else {
-            console.log(
-                "totalVacationers",
-                key,
-                ":",
-                totalVacationers.length,
-                peopleOnHoliday
-            );
-            return totalVacationers.length - peopleOnHoliday;
+            // console.log(
+            //     "vacationers",
+            //     key,
+            //     ":",
+            //     vacationersAmount.length,
+            //     peopleOnHoliday
+            // );
+            return vacationersAmount.length - peopleOnHoliday;
         }
     };
 
     // Sets the start and end date of holidays for shown calendar month
     const setNumbers = (holidayObject, start, end, confirmedHoliday) => {
-        console.log("setNumbers", start.getDate(), end, confirmedHoliday);
+        console.log("setNumbers", holidayObject, start, end, confirmedHoliday);
 
         let symbolToUse;
         let startingNumber = 0;
@@ -463,9 +519,10 @@ export default function Calendar({ save, setSave }) {
                     break;
             }
         }
+        console.log("juuss", holidayObject);
     };
 
-    // Hide last days depending on the month lengths (0-11)
+    // Hide last days depending on the month lengths (0-11) and update calendar view from db
     useEffect(() => {
         setShowSpinner(true);
         setReplacementText("");
@@ -506,18 +563,7 @@ export default function Calendar({ save, setSave }) {
             1
         );
         nextMonth.setUTCHours(23, 59, 59, 999);
-
-        // Fetching total number of vacationers in DB
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`)
-            .then((response) => {
-                setTotalVacationers(response.data);
-                console.log("total response", response.data);
-                getHolidaysOfMonth(nextMonth);
-            })
-            .catch((error) => {
-                console.error("There was a totalvacationers get error!", error);
-            });
+        getHolidaysOfMonth(nextMonth);
     }, [selectedDate, save]);
 
     // const EditableCell = ({
@@ -710,7 +756,7 @@ export default function Calendar({ save, setSave }) {
     // Tätä voisi selkeyttää ja tehostaa
     const isCommonHoliday = (value, index) => {
         let colorToAdd = null;
-        console.log("value, index", value, index);
+        // console.log("value, index", value, index);
 
         if (index !== 0 && typeof value !== "number") {
             if (value === "X") {
@@ -747,7 +793,7 @@ export default function Calendar({ save, setSave }) {
         //     colorToAdd = "bisque";
         //     if (
         //         !teamToShow &&
-        //         value < PRESENCE_PERCENTAGE * totalVacationers.length
+        //         value < PRESENCE_PERCENTAGE * vacationersAmount.length
         //     ) {
         //         colorToAdd = "orange";
         //     }
@@ -774,7 +820,7 @@ export default function Calendar({ save, setSave }) {
 
     // Setting the last two rows
     const checkRow = (rowValue) => {
-        console.log("rowValue:", rowValue);
+        // console.log("rowValue:", rowValue);
         if (rowValue === ON_HOLIDAY_TITLE) {
             return "lightgreen";
         } else if (rowValue === WORKER_TITLE) {
@@ -783,7 +829,7 @@ export default function Calendar({ save, setSave }) {
     };
 
     const setTodayHeader = (header) => {
-        console.log("setTodayHeader", header, selectedDate.getDate());
+        // console.log("setTodayHeader", header, selectedDate.getDate());
         if (
             today.getFullYear() === selectedDate.getFullYear() &&
             today.getMonth() === selectedDate.getMonth() &&
@@ -796,7 +842,7 @@ export default function Calendar({ save, setSave }) {
     };
 
     const setTodayColumn = (value) => {
-        console.log("setTodayColumn", value);
+        // console.log("setTodayColumn", value);
         if (
             today.getFullYear() === selectedDate.getFullYear() &&
             today.getMonth() === selectedDate.getMonth() &&
@@ -822,20 +868,21 @@ export default function Calendar({ save, setSave }) {
             <div className={styles.wholeCalendar}>
                 <div className={styles.header}>
                     <div className={styles.teamChips}>
+                        Filter by team:
                         <Chip
                             className={styles.oneTeamChip}
                             variant={!teamToShow ? "" : "outlined"}
                             label="All teams"
                             color="secondary"
                             onClick={() => {
-                                setMonthsHolidays(allMonthsVacationers);
+                                setMonthsHolidays(selectedVacationers);
                                 setTeamToShow("");
                             }}
                         />
-                        Filter by team:
                         {teams.map((team) => (
                             <Chip
                                 className={styles.oneTeamChip}
+                                key={team.id}
                                 variant={
                                     teamToShow.title === team.title
                                         ? ""
@@ -853,13 +900,28 @@ export default function Calendar({ save, setSave }) {
                             teamToShow.members
                                 // some sorting?
                                 // .sort((v1, v2) => v1.name - v2.name)
-                                .map((member) => <Chip label={member.name} />)}
+                                .map((member) => (
+                                    <Chip
+                                        label={member.name}
+                                        key={member.vacationerId}
+                                    />
+                                ))}
                     </div>
                     <div className={styles.infoBox}>
                         X = confirmed holiday <br /> Y = un-confirmed holiday
                     </div>
                 </div>
                 <div className={styles.wholeCalendar}>
+                    <FormGroup>
+                        <FormControlLabel
+                            checked={showAllVacationers}
+                            onChange={(e) => {
+                                setShowAllVacationers(!showAllVacationers);
+                            }}
+                            control={<Checkbox color="success" />}
+                            label={"Show all employees of team"}
+                        />
+                    </FormGroup>
                     <Box className={styles.buttons}>
                         <Button
                             onClick={() => changeMonth(-1)}
@@ -923,11 +985,11 @@ export default function Calendar({ save, setSave }) {
                                             }}
                                         >
                                             {row.cells.map((cell, index) => {
-                                                console.log(
-                                                    "info",
-                                                    cell.value,
-                                                    index
-                                                );
+                                                // console.log(
+                                                //     "info",
+                                                //     cell.value,
+                                                //     index
+                                                // );
                                                 return (
                                                     <td
                                                         {...cell.getCellProps({
