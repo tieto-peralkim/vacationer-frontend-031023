@@ -370,7 +370,6 @@ export default function Picker({
                     </Button>
                     <PickerModal
                         openCalendar={openCalendar}
-                        selectVacationer={selectVacationer}
                         chosenVacationer={chosenVacationer}
                         startDate={startDate}
                         setStartDate={setStartDate}

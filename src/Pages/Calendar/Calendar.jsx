@@ -17,7 +17,7 @@ import styles from "./calendar.module.css";
 import { useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 
-export default function Calendar({ vacationers, setVacationers }) {
+export default function Calendar({ vacationersAmount, save }) {
     const location = useLocation();
     const today = new Date();
     const thisMonthFirst = new Date(
@@ -105,13 +105,20 @@ export default function Calendar({ vacationers, setVacationers }) {
             console.log("teamToShow:", teamToShow);
             setMonthsHolidays(filterHolidays());
         }
-        // Showing all employees of the company, not only the ones with holiday
+        // Showing all employees, not only the ones with holiday
         else if (showAllVacationers) {
-            setMonthsHolidays(selectedVacationers, vacationers);
-        } else {
+            setMonthsHolidays(selectedVacationers, vacationersAmount);
+        }
+        // Showing all vacationing employees
+        else {
             setMonthsHolidays(selectedVacationers);
         }
-    }, [showAllVacationers, teamToShow, selectedVacationers, vacationers]);
+    }, [
+        showAllVacationers,
+        teamToShow,
+        selectedVacationers,
+        vacationersAmount,
+    ]);
 
     // Fetching teams from DB
     useEffect(() => {
@@ -160,12 +167,13 @@ export default function Calendar({ vacationers, setVacationers }) {
         return filteredVacations;
     };
 
-    const getHolidaysOfMonth = (nextMonth) => {
+    // Retrieve the holidays of the selected month
+    const getHolidaysOfMonth = (selectedMonth) => {
         axios
             .get(
                 `${
                     process.env.REACT_APP_ADDRESS
-                }/holidaysbetween?start=${selectedDate.toISOString()}&end=${nextMonth.toISOString()}`
+                }/holidaysbetween?start=${selectedDate.toISOString()}&end=${selectedMonth.toISOString()}`
             )
             .then((response) => {
                 setSelectedVacationers(response.data);
@@ -362,10 +370,10 @@ export default function Calendar({ vacationers, setVacationers }) {
             //     "vacationers",
             //     key,
             //     ":",
-            //     vacationers.length,
+            //     vacationersAmount.length,
             //     peopleOnHoliday
             // );
-            return vacationers.length - peopleOnHoliday;
+            return vacationersAmount.length - peopleOnHoliday;
         }
     };
 
@@ -514,7 +522,7 @@ export default function Calendar({ vacationers, setVacationers }) {
         console.log("juuss", holidayObject);
     };
 
-    // Hide last days depending on the month lengths (0-11)
+    // Hide last days depending on the month lengths (0-11) and update calendar view from db
     useEffect(() => {
         setShowSpinner(true);
         setReplacementText("");
@@ -556,7 +564,7 @@ export default function Calendar({ vacationers, setVacationers }) {
         );
         nextMonth.setUTCHours(23, 59, 59, 999);
         getHolidaysOfMonth(nextMonth);
-    }, [selectedDate]);
+    }, [selectedDate, save]);
 
     // const EditableCell = ({
     //     value: initialValue,
@@ -785,7 +793,7 @@ export default function Calendar({ vacationers, setVacationers }) {
         //     colorToAdd = "bisque";
         //     if (
         //         !teamToShow &&
-        //         value < PRESENCE_PERCENTAGE * vacationers.length
+        //         value < PRESENCE_PERCENTAGE * vacationersAmount.length
         //     ) {
         //         colorToAdd = "orange";
         //     }
@@ -860,6 +868,7 @@ export default function Calendar({ vacationers, setVacationers }) {
             <div className={styles.wholeCalendar}>
                 <div className={styles.header}>
                     <div className={styles.teamChips}>
+                        Filter by team:
                         <Chip
                             className={styles.oneTeamChip}
                             variant={!teamToShow ? "" : "outlined"}
@@ -870,7 +879,6 @@ export default function Calendar({ vacationers, setVacationers }) {
                                 setTeamToShow("");
                             }}
                         />
-                        Filter by team:
                         {teams.map((team) => (
                             <Chip
                                 className={styles.oneTeamChip}
@@ -911,7 +919,7 @@ export default function Calendar({ vacationers, setVacationers }) {
                                 setShowAllVacationers(!showAllVacationers);
                             }}
                             control={<Checkbox color="success" />}
-                            label={"Show all employees"}
+                            label={"Show all employees of team"}
                         />
                     </FormGroup>
                     <Box className={styles.buttons}>

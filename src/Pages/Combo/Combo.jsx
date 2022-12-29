@@ -12,6 +12,7 @@ export default function Combo() {
     const [openAPIError, setOpenAPIError] = useState(false);
 
     const [vacationers, setVacationers] = useState([]);
+    const [vacationersAmount, setVacationersAmount] = useState([]);
 
     const handleOpenAPIError = () => {
         setOpenAPIError(true);
@@ -20,13 +21,27 @@ export default function Combo() {
         setOpenAPIError(false);
     };
 
-    // Update list of employees and their vacations
+    // Update simple list of vacationers
     useEffect(() => {
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`)
             .then((response) => {
+                setVacationersAmount(response.data);
+                console.log("Saved, setVacationersAmount:", response.data);
+            })
+            .catch((error) => {
+                console.error("There was a get error!", error);
+                handleOpenAPIError();
+            });
+    }, [save]);
+
+    // Update full list of vacationers
+    useEffect(() => {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/vacationers`)
+            .then((response) => {
                 setVacationers(response.data);
-                console.log("Saved, response.data:", response.data);
+                console.log("Saved, setVacationers:", response.data);
             })
             .catch((error) => {
                 console.error("There was a get error!", error);
@@ -36,10 +51,7 @@ export default function Combo() {
 
     return (
         <div className={styles.content}>
-            <Calendar
-                vacationers={vacationers}
-                setVacationers={setVacationers}
-            />
+            <Calendar vacationersAmount={vacationersAmount} save={save} />
             <Divider
                 orientation={"horizontal"}
                 flexItem={true}

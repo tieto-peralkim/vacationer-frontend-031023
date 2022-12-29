@@ -17,7 +17,6 @@ import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import SettingsIcon from "@mui/icons-material/Settings";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
 
 function App() {
     const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +54,7 @@ function App() {
                                 </div>
                             </ListItem>
                         </Link>
-                        <Link to="/picker">
+                        <Link to="/app">
                             <ListItem
                                 className={styles.navigation}
                                 button
