@@ -32,11 +32,15 @@ export default function Calendar({ save, setSave }) {
         useState("#64F3EA");
     const [weekendColor, setWeekendColor] = useState("#928F8F");
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("#D8D8D8");
+
+    // HolidaySymbol can not be a number!
     const holidaySymbols = ["X", "Y"];
 
     const [replacementText, setReplacementText] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
-    const WORKER_TITLE = "Employees at work";
+    const [holidayRow, setHolidayRow] = useState(false);
+    const WORKER_TITLE = "Working";
+    const ON_HOLIDAY_TITLE = "On holiday";
     const PRESENCE_PERCENTAGE = 0.5;
     const TODAY_COLOR = "#e30f2d";
 
@@ -206,6 +210,40 @@ export default function Calendar({ save, setSave }) {
                 pureVacations.push(holidayObject);
             }
         }
+        pureVacations.push({
+            name: ON_HOLIDAY_TITLE,
+            one: getOnHolidayAmount(pureVacations, "one"),
+            two: getOnHolidayAmount(pureVacations, "two"),
+            three: getOnHolidayAmount(pureVacations, "three"),
+            four: getOnHolidayAmount(pureVacations, "four"),
+            five: getOnHolidayAmount(pureVacations, "five"),
+            six: getOnHolidayAmount(pureVacations, "six"),
+            seven: getOnHolidayAmount(pureVacations, "seven"),
+            eight: getOnHolidayAmount(pureVacations, "eight"),
+            nine: getOnHolidayAmount(pureVacations, "nine"),
+            ten: getOnHolidayAmount(pureVacations, "ten"),
+            eleven: getOnHolidayAmount(pureVacations, "eleven"),
+            twelve: getOnHolidayAmount(pureVacations, "twelve"),
+            thirteen: getOnHolidayAmount(pureVacations, "thirteen"),
+            fourteen: getOnHolidayAmount(pureVacations, "fourteen"),
+            fifteen: getOnHolidayAmount(pureVacations, "fifteen"),
+            sixteen: getOnHolidayAmount(pureVacations, "sixteen"),
+            seventeen: getOnHolidayAmount(pureVacations, "seventeen"),
+            eighteen: getOnHolidayAmount(pureVacations, "eighteen"),
+            nineteen: getOnHolidayAmount(pureVacations, "nineteen"),
+            twenty: getOnHolidayAmount(pureVacations, "twenty"),
+            twentyone: getOnHolidayAmount(pureVacations, "twentyone"),
+            twentytwo: getOnHolidayAmount(pureVacations, "twentytwo"),
+            twentythree: getOnHolidayAmount(pureVacations, "twentythree"),
+            twentyfour: getOnHolidayAmount(pureVacations, "twentyfour"),
+            twentyfive: getOnHolidayAmount(pureVacations, "twentyfive"),
+            twentysix: getOnHolidayAmount(pureVacations, "twentysix"),
+            twentyseven: getOnHolidayAmount(pureVacations, "twentyseven"),
+            twentyeight: getOnHolidayAmount(pureVacations, "twentyeight"),
+            twentynine: getOnHolidayAmount(pureVacations, "twentynine"),
+            thirty: getOnHolidayAmount(pureVacations, "thirty"),
+            thirtyone: getOnHolidayAmount(pureVacations, "thirtyone"),
+        });
         // Last row of the table: amount of working vacationers
         pureVacations.push({
             name: WORKER_TITLE,
@@ -245,26 +283,41 @@ export default function Calendar({ save, setSave }) {
         setAllHolidaysSelectedTime(pureVacations);
     };
 
-    const getWorkerAmount = (data, key) => {
-        let total = 0;
+    const getOnHolidayAmount = (data, key) => {
+        let peopleOnHoliday = 0;
         for (let i = 0; i < data.length; i++) {
             if (holidaySymbols.includes(data[i][key])) {
-                total++;
+                peopleOnHoliday++;
             }
         }
         // If a team has been selected
         if (teamToShow) {
-            console.log("Total", total, teamToShow.members.length);
-            return teamToShow.members.length - total;
+            return peopleOnHoliday;
+        } else {
+            return peopleOnHoliday;
+        }
+    };
+
+    const getWorkerAmount = (data, key) => {
+        let peopleOnHoliday = 0;
+        for (let i = 0; i < data.length; i++) {
+            if (holidaySymbols.includes(data[i][key])) {
+                peopleOnHoliday++;
+            }
+        }
+        // If a team has been selected
+        if (teamToShow) {
+            console.log("Total", peopleOnHoliday, teamToShow.members.length);
+            return teamToShow.members.length - peopleOnHoliday;
         } else {
             console.log(
                 "totalVacationers",
                 key,
                 ":",
                 totalVacationers.length,
-                total
+                peopleOnHoliday
             );
-            return totalVacationers.length - total;
+            return totalVacationers.length - peopleOnHoliday;
         }
     };
 
@@ -655,17 +708,14 @@ export default function Calendar({ save, setSave }) {
     };
 
     // Tätä voisi selkeyttää ja tehostaa
-    const isCommonHoliday = (holiday, index) => {
+    const isCommonHoliday = (value, index) => {
         let colorToAdd = null;
-        console.log("holiday, index", holiday, index);
+        console.log("value, index", value, index);
 
-        if (holiday === WORKER_TITLE) {
-            colorToAdd = "bisque";
-        }
-        if (index !== 0) {
-            if (holiday === "X") {
+        if (index !== 0 && typeof value !== "number") {
+            if (value === "X") {
                 colorToAdd = holidayColor;
-            } else if (holiday === "Y") {
+            } else if (value === "Y") {
                 colorToAdd = unConfirmedHolidayColor;
             }
             let dateToCheck = new Date(
@@ -676,7 +726,7 @@ export default function Calendar({ save, setSave }) {
 
             // Saturday or Sunday
             if (dateToCheck.getDay() === 0 || dateToCheck.getDay() === 6) {
-                if (holidaySymbols.includes(holiday)) {
+                if (holidaySymbols.includes(value)) {
                     colorToAdd = weekendHolidayColor;
                 } else {
                     colorToAdd = weekendColor;
@@ -685,39 +735,51 @@ export default function Calendar({ save, setSave }) {
 
             // Public holidays
             if (publicHolidaysOfMonth.filter((e) => e === index).length > 0) {
-                if (holidaySymbols.includes(holiday)) {
+                if (holidaySymbols.includes(value)) {
                     colorToAdd = weekendHolidayColor;
                 } else {
                     colorToAdd = weekendColor;
                 }
             }
-
-            // Employees row
-
-            if (typeof holiday === "number") {
-                colorToAdd = "bisque";
-                if (
-                    !teamToShow &&
-                    holiday < PRESENCE_PERCENTAGE * totalVacationers.length
-                ) {
-                    colorToAdd = "orange";
-                }
-                if (
-                    teamToShow &&
-                    holiday < PRESENCE_PERCENTAGE * teamToShow.members.length
-                ) {
-                    colorToAdd = "orange";
-                }
-            }
         }
+        // Not working with two last rows
+        // else if (typeof value === "number") {
+        //     colorToAdd = "bisque";
+        //     if (
+        //         !teamToShow &&
+        //         value < PRESENCE_PERCENTAGE * totalVacationers.length
+        //     ) {
+        //         colorToAdd = "orange";
+        //     }
+        //     if (
+        //         teamToShow &&
+        //         value < PRESENCE_PERCENTAGE * teamToShow.members.length
+        //     ) {
+        //         colorToAdd = "orange";
+        //     }
+        // }
         return colorToAdd;
     };
 
     const setBold = (value) => {
-        if (typeof value === "number" || value === WORKER_TITLE) {
+        if (
+            typeof value === "number" ||
+            value === WORKER_TITLE ||
+            value == ON_HOLIDAY_TITLE
+        ) {
             return "bold";
         }
         return null;
+    };
+
+    // Setting the last two rows
+    const checkRow = (rowValue) => {
+        console.log("rowValue:", rowValue);
+        if (rowValue === ON_HOLIDAY_TITLE) {
+            return "lightgreen";
+        } else if (rowValue === WORKER_TITLE) {
+            return "lightblue";
+        }
     };
 
     const setTodayHeader = (header) => {
@@ -746,8 +808,8 @@ export default function Calendar({ save, setSave }) {
         }
     };
 
-    const MonthInputButton = forwardRef(({ value, onClick }) => (
-        <Button onClick={onClick}>
+    const MonthInputButton = forwardRef(({ value, onClick }, ref) => (
+        <Button onClick={onClick} ref={ref}>
             {selectedDate.toLocaleString("en-GB", {
                 month: "long",
                 year: "numeric",
@@ -826,7 +888,7 @@ export default function Calendar({ save, setSave }) {
                     {allHolidaysSelectedTime.length > 0 && (
                         <table
                             {...getTableProps()}
-                            style={{ border: "solid 1px blue" }}
+                            style={{ border: "solid 0.1em #73D8FF" }}
                         >
                             <thead>
                                 {headerGroups.map((headerGroup) => (
@@ -839,8 +901,7 @@ export default function Calendar({ save, setSave }) {
                                                         column.Header
                                                     ),
                                                     color: "black",
-                                                    width: "10px",
-                                                    fontWeight: "bold",
+                                                    width: "1em",
                                                 }}
                                             >
                                                 {column.render("Header")}
@@ -853,7 +914,14 @@ export default function Calendar({ save, setSave }) {
                                 {rows.map((row) => {
                                     prepareRow(row);
                                     return (
-                                        <tr {...row.getRowProps()}>
+                                        <tr
+                                            {...row.getRowProps()}
+                                            style={{
+                                                backgroundColor: checkRow(
+                                                    row.cells[0].value
+                                                ),
+                                            }}
+                                        >
                                             {row.cells.map((cell, index) => {
                                                 console.log(
                                                     "info",
@@ -882,15 +950,10 @@ export default function Calendar({ save, setSave }) {
                                                             fontWeight: setBold(
                                                                 cell.value
                                                             ),
-                                                            paddingTop: "0.5em",
-                                                            paddingBottom:
-                                                                "0.5em",
                                                             paddingLeft:
                                                                 "0.5em",
-                                                            paddingRight:
-                                                                "0.5em",
-                                                            height: "30px",
-                                                            maxWidth: "100px",
+                                                            height: "2em",
+                                                            maxWidth: "3em",
                                                             border: setTodayColumn(
                                                                 cell.column
                                                             ),
@@ -917,9 +980,6 @@ export default function Calendar({ save, setSave }) {
                         <p>{replacementText}</p>
                     )}
                 </div>
-            </div>
-            <div>
-                {location.state && `Väri: ${location.state.holidayColor}`}
             </div>
         </>
     );
