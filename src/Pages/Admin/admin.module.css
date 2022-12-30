@@ -9,7 +9,7 @@
     margin-bottom: 1% !important;
 }
 .nameSelectBox {
-    width: 300px;
+    width: 17em;
     display: inline-block;
 }
 .deleteRow {
@@ -25,16 +25,36 @@
 }
 .content {
     display: flex;
+    flex-direction: column;
 }
-.popover {
-    position: absolute;
-    z-index: 2;
+.columnFlex {
+    margin-top: 0.5em;
+    display: flex;
+    flex-direction: column;
+    margin-left: 2em;
+}
+.topMargin {
+    margin-top: 1em;
+}
+.topButton {
+    margin-top: 1em;
+    margin-right: 2em;
+}
+.bottomButton {
+    margin-top: 1em;
+    margin-right: 1em;
+    margin-bottom: 1em;
+}
+.rowFlex {
+    margin-top: 0.5em;
+    display: flex;
+    flex-direction: row;
 }
 .cover {
     position: fixed;
 }
 .colorPickers {
     display: flex;
-    justify-content: space-evenly;
-    margin: 10px;
+    flex-direction: column;
+    width: auto;
 }

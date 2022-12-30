@@ -17,8 +17,11 @@ import styles from "./calendar.module.css";
 import { useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 
-export default function Calendar({ vacationersAmount, save }) {
-    const location = useLocation();
+export default function Calendar({
+    vacationersAmount,
+    save,
+    chosenVacationer,
+}) {
     const today = new Date();
     const thisMonthFirst = new Date(
         today.getFullYear(),
@@ -29,14 +32,29 @@ export default function Calendar({ vacationersAmount, save }) {
     thisMonthFirst.setUTCHours(0, 0, 0, 0);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
 
-    const [holidayColor, setHolidayColor] = useState("#73D8FF");
-    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] =
-        useState("#64F3EA");
-    const [weekendColor, setWeekendColor] = useState("#928F8F");
-    const [weekendHolidayColor, setWeekendHolidayColor] = useState("#D8D8D8");
+    const DEFAULT_SYMBOLS = ["X", "Y"];
 
     // HolidaySymbol can not be a number!
-    const holidaySymbols = ["X", "Y"];
+    const [holidaySymbols, setHolidaySymbols] = useState(DEFAULT_SYMBOLS);
+
+    const DEFAULT_COLOURS = {
+        holidayColor: "#73D8FF",
+        unConfirmedHolidayColor: "#68CCCA",
+        weekendColor: "#808080",
+        weekendHolidayColor: "#CCCCCC",
+    };
+    const [holidayColor, setHolidayColor] = useState(
+        DEFAULT_COLOURS.holidayColor
+    );
+    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState(
+        DEFAULT_COLOURS.unConfirmedHolidayColor
+    );
+    const [weekendColor, setWeekendColor] = useState(
+        DEFAULT_COLOURS.weekendColor
+    );
+    const [weekendHolidayColor, setWeekendHolidayColor] = useState(
+        DEFAULT_COLOURS.weekendHolidayColor
+    );
 
     const [replacementText, setReplacementText] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
@@ -59,14 +77,6 @@ export default function Calendar({ vacationersAmount, save }) {
     const [teams, setTeams] = useState([]);
     const [teamToShow, setTeamToShow] = useState("");
     const [selectedVacationers, setSelectedVacationers] = useState([]);
-
-    useEffect(() => {
-        if (location.state) {
-            setHolidayColor(location.state.holidayColor);
-            setWeekendHolidayColor(location.state.weekendHolidayColor);
-            setWeekendColor(location.state.weekendColor);
-        }
-    }, []);
 
     // Fetching Finnish public holidays from Public holiday API (https://date.nager.at/)
     useEffect(() => {
@@ -118,7 +128,36 @@ export default function Calendar({ vacationersAmount, save }) {
         teamToShow,
         selectedVacationers,
         vacationersAmount,
+        holidaySymbols,
     ]);
+
+    // Setting calendar settings of selected user
+    useEffect(() => {
+        if (chosenVacationer && chosenVacationer.calendarSettings[0]) {
+            setHolidayColor(chosenVacationer.calendarSettings[0].holidayColor);
+            setUnConfirmedHolidayColor(
+                chosenVacationer.calendarSettings[0].unConfirmedHolidayColor
+            );
+            setWeekendColor(chosenVacationer.calendarSettings[0].weekendColor);
+            setWeekendHolidayColor(
+                chosenVacationer.calendarSettings[0].weekendHolidayColor
+            );
+            let newHolidaySymbols = [];
+            newHolidaySymbols.push(
+                chosenVacationer.calendarSettings[0].holidaySymbol
+            );
+            newHolidaySymbols.push(
+                chosenVacationer.calendarSettings[0].unConfirmedHolidaySymbol
+            );
+            setHolidaySymbols(newHolidaySymbols);
+        } else {
+            setHolidaySymbols(DEFAULT_SYMBOLS);
+            setHolidayColor(DEFAULT_COLOURS.holidayColor);
+            setUnConfirmedHolidayColor(DEFAULT_COLOURS.unConfirmedHolidayColor);
+            setWeekendColor(DEFAULT_COLOURS.weekendColor);
+            setWeekendHolidayColor(DEFAULT_COLOURS.weekendHolidayColor);
+        }
+    }, [chosenVacationer]);
 
     // Fetching teams from DB
     useEffect(() => {
@@ -386,12 +425,12 @@ export default function Calendar({ vacationersAmount, save }) {
         let endingNumber = 0;
 
         if (!confirmedHoliday) {
-            symbolToUse = "Y";
+            symbolToUse = holidaySymbols[1];
         } else {
-            symbolToUse = "X";
+            symbolToUse = holidaySymbols[0];
         }
 
-        // Voidaanko lyhentää?
+        // Can this be shortened?
         if (start.getMonth() === end.getMonth()) {
             startingNumber = start.getDate();
             endingNumber = end.getDate();
@@ -748,20 +787,20 @@ export default function Calendar({ vacationersAmount, save }) {
 
         let newDate = new Date(selectedDate.getFullYear(), newMonth, 1, 15);
         newDate.setUTCHours(0, 0, 0, 0);
-        console.log("newDate1", newDate);
+        console.log("newDate1", newDate, holidaySymbols);
 
         setSelectedDate(newDate);
     };
 
-    // Tätä voisi selkeyttää ja tehostaa
+    // This part could be refactored
     const isCommonHoliday = (value, index) => {
         let colorToAdd = null;
         // console.log("value, index", value, index);
 
         if (index !== 0 && typeof value !== "number") {
-            if (value === "X") {
+            if (value === holidaySymbols[0]) {
                 colorToAdd = holidayColor;
-            } else if (value === "Y") {
+            } else if (value === holidaySymbols[1]) {
                 colorToAdd = unConfirmedHolidayColor;
             }
             let dateToCheck = new Date(

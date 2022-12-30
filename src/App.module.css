@@ -38,7 +38,7 @@
 }
 
 .outlet {
-  margin-top: 50px;
+  margin-top: 3em;
 }
 
 .headline {
@@ -58,6 +58,6 @@
 
 .navigationText {
   text-decoration: none;
-  padding: 30px;
+  padding: 2em;
   color: #3383e7;
 }

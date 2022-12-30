@@ -29,6 +29,8 @@ export default function Picker({
     vacationers,
     setVacationers,
     handleOpenAPIError,
+    chosenVacationer,
+    setChosenVacationer,
 }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
@@ -60,7 +62,6 @@ export default function Picker({
     const [holidayToEdit, setHolidayToEdit] = useState({});
     const [holidayToDelete, setHolidayToDelete] = useState({});
 
-    const [chosenVacationer, setChosenVacationer] = useState("");
     const [editingSpace, setEditingSpace] = useState(false);
     const [changingStartedSpace, setChangingStartedSpace] = useState(false);
 
