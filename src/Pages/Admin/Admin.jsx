@@ -5,28 +5,19 @@ import styles from "./admin.module.css";
 import TeamForm from "./Components/TeamForm";
 import Typography from "@mui/material/Typography";
 import UserForm from "./Components/UserForm";
-import { CompactPicker } from "react-color";
-import { useNavigate } from "react-router-dom";
 import AlertDialog from "../Dialogs/AlertDialog";
 
-// Tähän pitäisi lisätä työntekijämäärien asetukset (määrä, minimimäärä)
+// TODO: add employee amount and minimum amount
 export default function Admin() {
-    const navigate = useNavigate();
     const [vacationers, setVacationers] = useState([]);
     const [teams, setTeams] = useState([]);
     const WORKER_LIMIT_DEFAULT = 12;
     const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
     const [completedAction, setCompletedAction] = useState(false);
-    const [displayColorPicker, setDisplayColorPicker] = useState(true);
-    const [holidayColor, setHolidayColor] = useState("#73D8FF");
-    const [weekendColor, setWeekendColor] = useState("#CCCCCC");
-    const [weekendHolidayColor, setWeekendHolidayColor] = useState("#666666");
     const [selectedMember, setSelectedMember] = useState("");
     const [selectedTeam, setSelectedTeam] = useState("");
     const [selectedUser, setSelectedUser] = useState("");
     const [openAPIError, setOpenAPIError] = useState(false);
-
-    const [holidaySymbol, setHolidaySymbol] = useState("X");
 
     const emptySelections = () => {
         setSelectedMember("");
@@ -39,41 +30,6 @@ export default function Admin() {
     };
     const handleCloseAPIError = () => {
         setOpenAPIError(false);
-    };
-
-    const handleColorPickerClick = () => {
-        setDisplayColorPicker((prevValue) => !prevValue);
-    };
-    const handleColorPickerClose = () => {
-        setDisplayColorPicker(false);
-    };
-
-    const setAllColors = () => {
-        navigate("/calendar", {
-            state: {
-                holidayColor: holidayColor,
-                weekendColor: weekendColor,
-                weekendHolidayColor: weekendHolidayColor,
-                holidaySymbol: holidaySymbol,
-            },
-        });
-        console.log(
-            "SetColors and symbol",
-            holidayColor,
-            weekendColor,
-            weekendHolidayColor,
-            holidaySymbol
-        );
-    };
-
-    const handleHolidayColorChange = (color) => {
-        setHolidayColor(color.hex);
-    };
-    const handleWeekendColorChange = (color) => {
-        setWeekendColor(color.hex);
-    };
-    const handleWeekendHolidayColorChange = (color) => {
-        setWeekendHolidayColor(color.hex);
     };
 
     const sendSlackMessage = () => {
@@ -157,54 +113,6 @@ export default function Admin() {
                     Send to Slack!
                 </Button>
             </div>
-            {/*<Button onClick={handleColorPickerClick}>Holidaycolor</Button>*/}
-            {displayColorPicker ? (
-                <div
-                // className={styles.popover}
-                >
-                    <div
-                        className={styles.cover}
-                        onClick={handleColorPickerClose}
-                    />
-                    <div className={styles.colorPickers}>
-                        <div>
-                            <h3>Holiday color</h3>
-                            <CompactPicker
-                                color={holidayColor}
-                                onChangeComplete={handleHolidayColorChange}
-                            />
-                        </div>
-                        <div>
-                            <h3>Weekend color</h3>
-                            <CompactPicker
-                                color={weekendColor}
-                                onChangeComplete={handleWeekendColorChange}
-                            />
-                        </div>
-                        <div>
-                            <h3>Weekend holiday color</h3>
-                            <CompactPicker
-                                color={weekendHolidayColor}
-                                onChangeComplete={
-                                    handleWeekendHolidayColorChange
-                                }
-                            />
-                        </div>
-                    </div>
-                    <TextField
-                        // className={styles.}
-                        label="Holiday symbol"
-                        variant="outlined"
-                        value={holidaySymbol}
-                        onChange={(e) => {
-                            setHolidaySymbol(e.target.value);
-                        }}
-                    />
-                </div>
-            ) : null}
-            <Button variant={"contained"} onClick={setAllColors}>
-                Save calendar colors (for one session)
-            </Button>
             <AlertDialog
                 openAlert={openAPIError}
                 handleCloseAlert={handleCloseAPIError}

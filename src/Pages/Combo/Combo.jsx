@@ -10,6 +10,7 @@ import AlertDialog from "../Dialogs/AlertDialog";
 export default function Combo() {
     const [save, setSave] = useState(false);
     const [openAPIError, setOpenAPIError] = useState(false);
+    const [chosenVacationer, setChosenVacationer] = useState("");
 
     const [vacationers, setVacationers] = useState([]);
     const [vacationersAmount, setVacationersAmount] = useState([]);
@@ -51,13 +52,19 @@ export default function Combo() {
 
     return (
         <div className={styles.content}>
-            <Calendar vacationersAmount={vacationersAmount} save={save} />
+            <Calendar
+                vacationersAmount={vacationersAmount}
+                save={save}
+                chosenVacationer={chosenVacationer}
+            />
             <Divider
                 orientation={"horizontal"}
                 flexItem={true}
                 absolute={false}
             />
             <Picker
+                chosenVacationer={chosenVacationer}
+                setChosenVacationer={setChosenVacationer}
                 handleOpenAPIError={handleOpenAPIError}
                 vacationers={vacationers}
                 setVacationers={setVacationers}

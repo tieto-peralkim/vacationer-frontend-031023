@@ -12,6 +12,7 @@ import {
     ListItemIcon,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import PeopleIcon from "@mui/icons-material/People";
 import MenuIcon from "@mui/icons-material/Menu";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -40,21 +41,7 @@ function App() {
             >
                 <Box>
                     <List>
-                        <Link to="/admin">
-                            <ListItem
-                                className={styles.navigation}
-                                button
-                                onClick={() => setIsOpen(!isOpen)}
-                            >
-                                <ListItemIcon>
-                                    <SettingsIcon />
-                                </ListItemIcon>
-                                <div className={styles.navigationText}>
-                                    Admin
-                                </div>
-                            </ListItem>
-                        </Link>
-                        <Link to="/app">
+                        <Link to="/">
                             <ListItem
                                 className={styles.navigation}
                                 button
@@ -65,6 +52,20 @@ function App() {
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>
                                     Picker
+                                </div>
+                            </ListItem>
+                        </Link>
+                        <Link to="/user">
+                            <ListItem
+                                className={styles.navigation}
+                                button
+                                onClick={() => setIsOpen(!isOpen)}
+                            >
+                                <ListItemIcon>
+                                    <PeopleIcon />
+                                </ListItemIcon>
+                                <div className={styles.navigationText}>
+                                    User
                                 </div>
                             </ListItem>
                         </Link>

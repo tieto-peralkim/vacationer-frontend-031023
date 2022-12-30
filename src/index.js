@@ -6,12 +6,14 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import Admin from "./Pages/Admin/Admin";
 import Combo from "./Pages/Combo/Combo";
+import UserForm from "./Pages/Admin/Components/UserForm";
 
 ReactDOM.render(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<App />}>
                 <Route index element={<Combo />} />
+                <Route path="user" element={<UserForm />} />
                 <Route path="admin" element={<Admin />} />
                 <Route path="*" element={<Combo />} />
             </Route>
