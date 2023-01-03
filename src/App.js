@@ -69,6 +69,20 @@ function App() {
                                 </div>
                             </ListItem>
                         </Link>
+                        <Link to="/team">
+                            <ListItem
+                                className={styles.navigation}
+                                button
+                                onClick={() => setIsOpen(!isOpen)}
+                            >
+                                <ListItemIcon>
+                                    <PeopleIcon />
+                                </ListItemIcon>
+                                <div className={styles.navigationText}>
+                                    Team
+                                </div>
+                            </ListItem>
+                        </Link>
                     </List>
                 </Box>
             </Drawer>

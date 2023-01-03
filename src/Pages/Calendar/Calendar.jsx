@@ -9,12 +9,10 @@ import {
     CircularProgress,
     FormControlLabel,
     FormGroup,
-    stepLabelClasses,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
-import { useLocation } from "react-router-dom";
 import DatePicker from "react-datepicker";
 
 export default function Calendar({
@@ -31,18 +29,21 @@ export default function Calendar({
     );
     thisMonthFirst.setUTCHours(0, 0, 0, 0);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
-
-    const DEFAULT_SYMBOLS = ["X", "Y"];
-
-    // HolidaySymbol can not be a number!
-    const [holidaySymbols, setHolidaySymbols] = useState(DEFAULT_SYMBOLS);
-
     const DEFAULT_COLOURS = {
         holidayColor: "#73D8FF",
         unConfirmedHolidayColor: "#68CCCA",
         weekendColor: "#808080",
         weekendHolidayColor: "#CCCCCC",
     };
+    const WORKER_TITLE = "Working";
+    const ON_HOLIDAY_TITLE = "On holiday";
+    const PRESENCE_PERCENTAGE = 0.5;
+    const TODAY_COLOR = "#e30f2d";
+    const DEFAULT_SYMBOLS = ["X", "Y"];
+
+    // HolidaySymbol can not be a number!
+    const [holidaySymbols, setHolidaySymbols] = useState(DEFAULT_SYMBOLS);
+
     const [holidayColor, setHolidayColor] = useState(
         DEFAULT_COLOURS.holidayColor
     );
@@ -59,10 +60,6 @@ export default function Calendar({
     const [replacementText, setReplacementText] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(false);
-    const WORKER_TITLE = "Working";
-    const ON_HOLIDAY_TITLE = "On holiday";
-    const PRESENCE_PERCENTAGE = 0.5;
-    const TODAY_COLOR = "#e30f2d";
 
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst);
     const [selectedYear, setSelectedYear] = useState(
@@ -947,7 +944,8 @@ export default function Calendar({
                                 ))}
                     </div>
                     <div className={styles.infoBox}>
-                        X = confirmed holiday <br /> Y = un-confirmed holiday
+                        {holidaySymbols[0]} = confirmed holiday <br />{" "}
+                        {holidaySymbols[1]} = un-confirmed holiday
                     </div>
                 </div>
                 <div className={styles.wholeCalendar}>
