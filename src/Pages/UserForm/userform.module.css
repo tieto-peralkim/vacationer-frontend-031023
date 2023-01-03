@@ -7,18 +7,10 @@
     padding: 1.3em;
     margin: 0.3em;
     height: max-content;
-    width: max-content;
 }
 .nameSelectBox {
     min-width: 15em;
     margin-bottom: 2em;
-    margin-top: 0.7em;
-}
-.topMargin {
-    margin-top: 2em;
-}
-.belowMargin {
-    margin-bottom: 4em;
 }
 .allButtons {
     display: flex;
@@ -26,4 +18,23 @@
     align-items: flex-start;
     gap: 0.7em;
     margin-bottom: 2em;
+}
+.colorPickers {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+}
+.rowFlex {
+    margin-top: 0.5em;
+    display: flex;
+    flex-direction: row;
+}
+.columnFlex {
+    margin-top: 0.2em;
+    display: flex;
+    flex-direction: column;
+    margin-right: 1em;
+}
+.belowButton {
+    margin-top: 2em;
 }

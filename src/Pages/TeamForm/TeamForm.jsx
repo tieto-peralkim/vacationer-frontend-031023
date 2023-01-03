@@ -10,23 +10,24 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
-import styles from "../admin.module.css";
+import styles from "./teamform.module.css";
 import axios from "axios";
-import AlertDialog from "../../Dialogs/AlertDialog";
-import ModifyDialog from "../../Dialogs/ModifyDialog";
+import AlertDialog from "../Dialogs/AlertDialog";
+import ModifyDialog from "../Dialogs/ModifyDialog";
 
-export default function TeamForm({
-    emptySelections,
-    selectedTeam,
-    setSelectedTeam,
-    selectedMember,
-    setSelectedMember,
-    setCompletedAction,
-    completedAction,
-    vacationers,
-    teams,
-}) {
+export default function TeamForm({}) {
+    const TITLE = "Create team";
+
+    const [teams, setTeams] = useState([]);
+    const [vacationers, setVacationers] = useState([]);
+
+    const [selectedTeam, setSelectedTeam] = useState("");
+    const [selectedMember, setSelectedMember] = useState("");
     const [deletableMember, setDeletableMember] = useState("");
+
+    const [completedAction, setCompletedAction] = useState(false);
+    const [openAPIError, setOpenAPIError] = useState(false);
+
     const [newTeam, setNewTeam] = useState([]);
     const [isEmpty, setIsEmpty] = useState(true);
     const [memberExistsError, setMemberExistsError] = useState(false);
@@ -34,7 +35,48 @@ export default function TeamForm({
     const [openModifyTeamAlert, setOpenModifyTeamAlert] = useState(false);
     const [openDeleteMemberAlert, setOpenDeleteMemberAlert] = useState(false);
     const [teamCreated, setTeamCreated] = useState(false);
-    const TITLE = "Create team";
+    const [teamNameError, setTeamNameError] = useState(false);
+    const nameError = newTeam.length < 3;
+
+    const handleOpenAPIError = () => {
+        setOpenAPIError(true);
+    };
+    const handleCloseAPIError = () => {
+        setOpenAPIError(false);
+    };
+
+    useEffect(() => {
+        emptySelections();
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/teams`)
+            .then((response) => {
+                setTeams(response.data);
+                console.log("teams", response.data);
+            })
+            .catch((error) => {
+                console.error("There was a teams get error!", error);
+                if (!openAPIError) {
+                    handleOpenAPIError();
+                }
+            });
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`)
+            .then((response) => {
+                setVacationers(response.data);
+                console.log("vacationers", response.data);
+            })
+            .catch((error) => {
+                console.error("There was a vacationers get error!", error);
+                if (!openAPIError) {
+                    handleOpenAPIError();
+                }
+            });
+    }, [completedAction]);
+
+    const emptySelections = () => {
+        setSelectedMember("");
+        setSelectedTeam("");
+    };
 
     const addToTeam = (newMember, team) => {
         console.log("newMember", newMember, "team", team);
@@ -54,7 +96,6 @@ export default function TeamForm({
                     newMember
                 )
                 .then((response) => {
-                    emptySelections();
                     setCompletedAction(!completedAction);
                     setIsEmpty(true);
                     setMemberExistsError(false);
@@ -66,24 +107,27 @@ export default function TeamForm({
             setMemberExistsError(true);
         }
     };
-    const createTeam = (teamName) => {
-        console.log("createTeam", teamName);
-        const teamToAdd = {
-            title: teamName,
-        };
+    const createTeam = () => {
+        if (!nameError) {
+            console.log("createTeam", newTeam);
+            const teamToAdd = {
+                title: newTeam,
+            };
 
-        axios
-            .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd)
-            .then((response) => {
-                emptySelections();
-                setTeamCreated(true);
-                console.log(response);
-                setCompletedAction(!completedAction);
-            })
-            .catch((error) => {
-                console.error("There was a post error!", error);
-            })
-            .finally(() => setNewTeam(""));
+            axios
+                .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd)
+                .then((response) => {
+                    setTeamCreated(true);
+                    console.log(response);
+                    setCompletedAction(!completedAction);
+                })
+                .catch((error) => {
+                    console.error("There was a post error!", error);
+                })
+                .finally(() => setNewTeam(""));
+        } else {
+            setTeamNameError(true);
+        }
     };
 
     const changeTeamName = (newName) => {
@@ -98,7 +142,6 @@ export default function TeamForm({
                 console.log(response);
                 setCompletedAction(!completedAction);
                 setOpenModifyTeamAlert(false);
-                emptySelections();
             })
             .catch((error) => {
                 console.error("There was a put new name error!", error);
@@ -118,7 +161,6 @@ export default function TeamForm({
                 setDeletableMember("");
                 setCompletedAction(!completedAction);
                 setOpenDeleteMemberAlert(false);
-                emptySelections();
             })
             .catch((error) => {
                 console.error("There was a delete member error!", error);
@@ -128,10 +170,11 @@ export default function TeamForm({
     const deleteTeam = () => {
         console.log("deleting team", selectedTeam);
         axios
-            .delete(`${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`)
+            .put(
+                `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}/delete`
+            )
             .then((response) => {
                 console.log(response);
-                emptySelections();
                 setCompletedAction(!completedAction);
                 setOpenDeleteTeamAlert(false);
             })
@@ -150,72 +193,80 @@ export default function TeamForm({
     return (
         <>
             <div className={styles.content}>
+                {/* Add minimum amount of workers for team (LimitSetter -> workerlimit
+                <div>Worker limit</div>*/}
                 <div className={styles.borderedBox}>
-                    <InputLabel className={styles.extraMargin}>
-                        {TITLE}
-                    </InputLabel>
-                    <TextField
-                        style={{ display: "block" }}
-                        className={styles.extraMargin}
-                        required
-                        label="Team"
-                        variant="outlined"
-                        error={false}
-                        value={newTeam}
-                        helperText={""}
-                        onChange={(e) => setNewTeam(e.target.value)}
-                    />
-                    <Button
-                        className={styles.extraMargin}
-                        style={{ display: "block" }}
-                        onClick={(e) => {
-                            createTeam(newTeam);
-                        }}
-                        variant={"contained"}
-                    >
-                        {TITLE}
-                    </Button>
+                    <InputLabel>{TITLE}</InputLabel>
+                    <div className={styles.topMargin}>
+                        <TextField
+                            required
+                            inputProps={{ minLength: 3 }}
+                            label="Team name"
+                            variant="outlined"
+                            error={nameError}
+                            value={newTeam}
+                            helperText={
+                                nameError &&
+                                "Name must be at least 3 characters"
+                            }
+                            onChange={(e) => setNewTeam(e.target.value)}
+                        />
+                    </div>
+                    <div className={styles.topMargin}>
+                        <Button
+                            onClick={() => {
+                                createTeam();
+                            }}
+                            variant={"contained"}
+                        >
+                            {TITLE}
+                        </Button>
+                    </div>
                 </div>
                 <div className={styles.borderedBox}>
-                    <InputLabel className={styles.extraMargin}>
-                        Team list
-                    </InputLabel>
-                    <FormControl className={styles.nameSelectBox}>
-                        <InputLabel>Choose team</InputLabel>
-                        <Select
-                            displayEmpty={true}
-                            value={selectedTeam}
-                            onChange={(e) => {
-                                setSelectedTeam(e.target.value);
+                    <InputLabel>Team list</InputLabel>
+                    <div className={styles.topMargin}>
+                        <FormControl>
+                            <InputLabel>Choose team</InputLabel>
+                            <Select
+                                className={styles.nameSelectBox}
+                                displayEmpty={true}
+                                value={selectedTeam}
+                                onChange={(e) => {
+                                    setSelectedTeam(e.target.value);
+                                }}
+                            >
+                                {teams.map((team) => (
+                                    <MenuItem key={team.id} value={team}>
+                                        {team.title}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div className={styles.allButtons}>
+                        <Button
+                            disabled={!selectedTeam}
+                            onClick={() => {
+                                setOpenModifyTeamAlert(true);
                             }}
+                            variant={"contained"}
                         >
-                            {teams.map((team) => (
-                                <MenuItem key={team.id} value={team}>
-                                    {team.title}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <Button
-                        disabled={!selectedTeam}
-                        onClick={() => {
-                            setOpenModifyTeamAlert(true);
-                        }}
-                        variant={"contained"}
-                    >
-                        Change team name
-                    </Button>
-                    <Button
-                        disabled={!selectedTeam}
-                        onClick={() => {
-                            setOpenDeleteTeamAlert(true);
-                        }}
-                        variant={"contained"}
-                    >
-                        Delete team!
-                    </Button>
-                    <div className={styles.extraMargin}>
-                        Members:{" "}
+                            Change team name
+                        </Button>
+                        <Button
+                            disabled={!selectedTeam}
+                            onClick={() => {
+                                setOpenDeleteTeamAlert(true);
+                            }}
+                            variant={"contained"}
+                            color={"error"}
+                        >
+                            Delete team
+                        </Button>
+                    </div>
+                    <div>
+                        <InputLabel>Members: </InputLabel>
                         {selectedTeam &&
                             selectedTeam.members
                                 // some sorting?
@@ -232,10 +283,11 @@ export default function TeamForm({
                                     />
                                 ))}
                     </div>
-                    <div>
-                        <FormControl className={styles.nameSelectBox}>
+                    <div className={styles.topMargin}>
+                        <FormControl>
                             <InputLabel>Add new team member</InputLabel>
                             <Select
+                                className={styles.nameSelectBox}
                                 value={selectedMember}
                                 onChange={(e) => {
                                     setSelectedMember(e.target.value);
@@ -251,7 +303,7 @@ export default function TeamForm({
                                 ))}
                             </Select>
                         </FormControl>
-                        <div className={styles.extraMargin}>
+                        <div>
                             <Button
                                 disabled={isEmpty}
                                 onClick={(e) => {
@@ -311,6 +363,22 @@ export default function TeamForm({
                 handleCloseAlert={() => setTeamCreated(false)}
                 dialogTitle={"Create team"}
                 dialogContent={"Team created!"}
+            />
+            <AlertDialog
+                openAlert={teamNameError}
+                handleCloseAlert={() => setTeamNameError(false)}
+                dialogTitle={"ERROR!"}
+                dialogContent={
+                    "This team name is too short (less than 3 characters)!"
+                }
+            />
+            <AlertDialog
+                openAlert={openAPIError}
+                handleCloseAlert={handleCloseAPIError}
+                handleAction={handleCloseAPIError}
+                dialogTitle={"API Error"}
+                dialogContent={"No connection to API, try again later"}
+                confirm={"OK"}
             />
         </>
     );

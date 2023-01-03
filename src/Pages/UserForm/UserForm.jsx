@@ -6,44 +6,56 @@ import {
     Select,
     TextField,
 } from "@mui/material";
-import styles from "../admin.module.css";
-import AlertDialog from "../../Dialogs/AlertDialog";
+import styles from "./userform.module.css";
+import AlertDialog from "../Dialogs/AlertDialog";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import ModifyDialog from "../../Dialogs/ModifyDialog";
+import ModifyDialog from "../Dialogs/ModifyDialog";
 import { CompactPicker } from "react-color";
 
 export default function UserForm({}) {
-    const [holidayColor, setHolidayColor] = useState("#73D8FF");
-    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] =
-        useState("#68CCCA");
-    const [weekendColor, setWeekendColor] = useState("#808080");
-    const [weekendHolidayColor, setWeekendHolidayColor] = useState("#CCCCCC");
-    const [holidaySymbol, setHolidaySymbol] = useState("X");
-    const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
-        useState("Y");
+    const DEFAULT_COLOURS = {
+        holidayColor: "#73D8FF",
+        unConfirmedHolidayColor: "#68CCCA",
+        weekendColor: "#808080",
+        weekendHolidayColor: "#CCCCCC",
+    };
+    const DEFAULT_SYMBOLS = ["X", "Y"];
+
+    const [holidayColor, setHolidayColor] = useState(
+        DEFAULT_COLOURS.holidayColor
+    );
+    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState(
+        DEFAULT_COLOURS.unConfirmedHolidayColor
+    );
+    const [weekendColor, setWeekendColor] = useState(
+        DEFAULT_COLOURS.weekendColor
+    );
+    const [weekendHolidayColor, setWeekendHolidayColor] = useState(
+        DEFAULT_COLOURS.weekendHolidayColor
+    );
+    const [holidaySymbol, setHolidaySymbol] = useState(DEFAULT_SYMBOLS[0]);
+    const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] = useState(
+        DEFAULT_SYMBOLS[1]
+    );
 
     const [vacationers, setVacationers] = useState([]);
-    const [deletedVacationers, setDeletedVacationers] = useState([]);
     const [selectedUser, setSelectedUser] = useState("");
-    const [selectedDeletedUser, setSelectedDeletedUser] = useState("");
     const [completedAction, setCompletedAction] = useState(false);
 
-    const [newUser, setNewUser] = useState([]);
+    const [newUser, setNewUser] = useState("");
     const [userCreated, setUserCreated] = useState(false);
     const [userCreationMessage, setUserCreationMessage] = useState("");
 
     const [userNameError, setUserNameError] = useState(false);
     const [symbolAlarmError, setSymbolAlarmError] = useState(false);
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
-    const [openFinalDeleteUserAlert, setOpenFinalDeleteUserAlert] =
-        useState(false);
-    const [openReturnUserAlert, setOpenReturnUserAlert] = useState(false);
 
     const [openModifyUserAlert, setOpenModifyUserAlert] = useState(false);
     const nameError = newUser.length < 3;
-    const symbolError = !isNaN(holidaySymbol);
+    const symbolNumberError = !isNaN(holidaySymbol);
     const unconfirmedSymbolError = !isNaN(unconfirmedHolidaySymbol);
+
     const CREATE_TITLE = "Create user";
     const [openAPIError, setOpenAPIError] = useState(false);
 
@@ -65,13 +77,12 @@ export default function UserForm({}) {
 
     const emptySelections = () => {
         setSelectedUser("");
-        setSelectedDeletedUser("");
-        setHolidayColor("");
-        setUnConfirmedHolidayColor("");
-        setWeekendColor("");
-        setWeekendHolidayColor("");
-        setHolidaySymbol("X");
-        setUnconfirmedHolidaySymbol("Y");
+        setHolidayColor(DEFAULT_COLOURS.holidayColor);
+        setUnConfirmedHolidayColor(DEFAULT_COLOURS.unConfirmedHolidayColor);
+        setWeekendColor(DEFAULT_COLOURS.weekendColor);
+        setWeekendHolidayColor(DEFAULT_COLOURS.weekendHolidayColor);
+        setHolidaySymbol(DEFAULT_SYMBOLS[0]);
+        setUnconfirmedHolidaySymbol(DEFAULT_SYMBOLS[1]);
     };
 
     const handleOpenAPIError = () => {
@@ -91,20 +102,9 @@ export default function UserForm({}) {
             })
             .catch((error) => {
                 console.error("There was a vacationers get error!", error);
-                handleOpenAPIError();
-            });
-    }, [completedAction]);
-
-    useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/vacationers/deletedUsers`)
-            .then((response) => {
-                setDeletedVacationers(response.data);
-                console.log("deletedUsers", response.data);
-            })
-            .catch((error) => {
-                console.error("There was a vacationers get error!", error);
-                handleOpenAPIError();
+                if (!openAPIError) {
+                    handleOpenAPIError();
+                }
             });
     }, [completedAction]);
 
@@ -136,42 +136,11 @@ export default function UserForm({}) {
             .then((response) => {
                 setOpenDeleteUserAlert(false);
                 console.log(response);
-                setCompletedAction(!completedAction);
                 removeUserFromTeams(selectedUser);
+                setCompletedAction(!completedAction);
             })
             .catch((error) => {
                 console.error("There was a delete user error!", error);
-            });
-    };
-
-    // For removing the user from the database
-    const finalDeleteUser = () => {
-        axios
-            .delete(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedDeletedUser.id}`
-            )
-            .then((response) => {
-                setOpenFinalDeleteUserAlert(false);
-                console.log(response);
-                setCompletedAction(!completedAction);
-            })
-            .catch((error) => {
-                console.error("There was a final delete user error!", error);
-            });
-    };
-
-    const returnUser = () => {
-        axios
-            .put(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedDeletedUser.id}/undelete`
-            )
-            .then((response) => {
-                setOpenReturnUserAlert(false);
-                console.log(response);
-                setCompletedAction(!completedAction);
-            })
-            .catch((error) => {
-                console.error("There was a return user error!", error);
             });
     };
 
@@ -233,7 +202,7 @@ export default function UserForm({}) {
     };
 
     const updateCalendarSettings = () => {
-        if (!symbolError && !unconfirmedSymbolError) {
+        if (!symbolNumberError && !unconfirmedSymbolError) {
             let changedCalendarSettings = {
                 holidaySymbol: holidaySymbol,
                 unConfirmedHolidaySymbol: unconfirmedHolidaySymbol,
@@ -270,12 +239,14 @@ export default function UserForm({}) {
                 name: newUser,
                 calendarSettings: [
                     {
-                        holidayColor: "#73D8FF",
-                        unConfirmedHolidayColor: "#64F3EA",
-                        weekendColor: "#928F8F",
-                        weekendHolidayColor: "#D8D8D8",
-                        holidaySymbol: "X",
-                        unConfirmedHolidaySymbol: "Y",
+                        holidayColor: DEFAULT_COLOURS.holidayColor,
+                        unConfirmedHolidayColor:
+                            DEFAULT_COLOURS.unConfirmedHolidayColor,
+                        weekendColor: DEFAULT_COLOURS.weekendColor,
+                        weekendHolidayColor:
+                            DEFAULT_COLOURS.weekendHolidayColor,
+                        holidaySymbol: DEFAULT_SYMBOLS[0],
+                        unConfirmedHolidaySymbol: DEFAULT_SYMBOLS[1],
                     },
                 ],
                 deletedUser: false,
@@ -298,7 +269,6 @@ export default function UserForm({}) {
                     setUserCreationMessage(error.response.data);
                 });
         } else {
-            console.log("Not valid, check!");
             setUserNameError(true);
         }
     };
@@ -307,33 +277,31 @@ export default function UserForm({}) {
         <>
             <div className={styles.content}>
                 <div className={styles.borderedBox}>
-                    <InputLabel className={styles.extraMargin}>
-                        {CREATE_TITLE}
-                    </InputLabel>
-                    <TextField
-                        style={{ display: "block" }}
-                        className={styles.extraMargin}
-                        required
-                        label="Username"
-                        variant="outlined"
-                        error={nameError}
-                        value={newUser}
-                        helperText={
-                            nameError && "Name must be at least 3 characters"
-                        }
-                        onChange={(e) => setNewUser(e.target.value)}
-                    />
+                    <InputLabel>{CREATE_TITLE}</InputLabel>
+                    <div>
+                        <TextField
+                            required
+                            label="Username"
+                            variant="outlined"
+                            error={nameError}
+                            value={newUser}
+                            helperText={
+                                nameError &&
+                                "Name must be at least 3 characters"
+                            }
+                            onChange={(e) => setNewUser(e.target.value)}
+                        />
+                    </div>
                     <Button onClick={createUser} variant="contained">
                         {CREATE_TITLE}
                     </Button>
                 </div>
                 <div className={styles.borderedBox}>
-                    <InputLabel className={styles.extraMargin}>
-                        User list
-                    </InputLabel>
-                    <FormControl className={styles.nameSelectBox}>
+                    <InputLabel>User list</InputLabel>
+                    <FormControl>
                         <InputLabel>Choose user</InputLabel>
                         <Select
+                            className={styles.nameSelectBox}
                             displayEmpty={true}
                             value={selectedUser}
                             onChange={(e) => {
@@ -350,9 +318,8 @@ export default function UserForm({}) {
                             ))}
                         </Select>
                     </FormControl>
-                    <div className={styles.topMargin}>
+                    <div className={styles.allButtons}>
                         <Button
-                            className={styles.topButton}
                             disabled={!selectedUser}
                             onClick={() => {
                                 setOpenModifyUserAlert(true);
@@ -362,23 +329,14 @@ export default function UserForm({}) {
                             Change user's name
                         </Button>
                         <Button
-                            className={styles.topButton}
                             disabled={!selectedUser}
                             onClick={() => {
                                 setOpenDeleteUserAlert(true);
                             }}
                             variant={"contained"}
+                            color={"error"}
                         >
-                            Delete user!
-                        </Button>
-                    </div>
-                    <div className={styles.bottomButton}>
-                        <Button
-                            disabled={!selectedUser}
-                            onClick={updateCalendarSettings}
-                            variant="contained"
-                        >
-                            Save Calendar settings
+                            Delete user
                         </Button>
                     </div>
                     <div className={styles.colorPickers}>
@@ -386,14 +344,14 @@ export default function UserForm({}) {
                             <TextField
                                 label="Holiday symbol"
                                 variant="outlined"
-                                error={symbolError}
+                                error={symbolNumberError}
                                 value={holidaySymbol}
                                 onChange={(e) => {
                                     setHolidaySymbol(e.target.value);
                                 }}
+                                inputProps={{ maxLength: 2 }}
                             />
                             <TextField
-                                inputProps={{ pattern: "[a-z]{1,2}" }}
                                 label="Un-confirmed holiday symbol"
                                 error={unconfirmedSymbolError}
                                 variant="outlined"
@@ -401,6 +359,7 @@ export default function UserForm({}) {
                                 onChange={(e) => {
                                     setUnconfirmedHolidaySymbol(e.target.value);
                                 }}
+                                inputProps={{ maxLength: 2 }}
                             />
                         </div>
                         <div className={styles.rowFlex}>
@@ -444,47 +403,13 @@ export default function UserForm({}) {
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className={styles.borderedBox}>
-                    <InputLabel className={styles.extraMargin}>
-                        Deleted users list
-                    </InputLabel>
-                    <FormControl className={styles.nameSelectBox}>
-                        <InputLabel>Choose user</InputLabel>
-                        <Select
-                            displayEmpty={true}
-                            value={selectedDeletedUser}
-                            onChange={(e) => {
-                                setSelectedDeletedUser(e.target.value);
-                            }}
-                        >
-                            {deletedVacationers.map((vacationer) => (
-                                <MenuItem
-                                    key={vacationer.id}
-                                    value={vacationer}
-                                >
-                                    {vacationer.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
                     <Button
-                        disabled={!selectedDeletedUser}
-                        onClick={() => {
-                            setOpenFinalDeleteUserAlert(true);
-                        }}
-                        variant={"contained"}
+                        className={styles.belowButton}
+                        disabled={!selectedUser}
+                        onClick={updateCalendarSettings}
+                        variant="contained"
                     >
-                        Delete user FOR GOOD!
-                    </Button>
-                    <Button
-                        disabled={!selectedDeletedUser}
-                        onClick={() => {
-                            setOpenReturnUserAlert(true);
-                        }}
-                        variant={"contained"}
-                    >
-                        Return user
+                        Save Calendar settings
                     </Button>
                 </div>
             </div>
@@ -509,30 +434,6 @@ export default function UserForm({}) {
                 }
                 cancel={"No"}
                 confirm={"Yes delete"}
-            />
-            <AlertDialog
-                openAlert={openFinalDeleteUserAlert}
-                handleCloseAlert={() => setOpenFinalDeleteUserAlert(false)}
-                handleAction={finalDeleteUser}
-                dialogTitle={"Delete user for good"}
-                dialogContent={
-                    selectedDeletedUser &&
-                    `Are you sure you want to delete the user ${selectedDeletedUser.name} for good? THIS CAN NOT BE UN-DONE!`
-                }
-                cancel={"No"}
-                confirm={"Yes delete"}
-            />
-            <AlertDialog
-                openAlert={openReturnUserAlert}
-                handleCloseAlert={() => setOpenReturnUserAlert(false)}
-                handleAction={returnUser}
-                dialogTitle={"Return the user"}
-                dialogContent={
-                    selectedDeletedUser &&
-                    `Are you sure you want to return the user ${selectedDeletedUser.name}`
-                }
-                cancel={"No"}
-                confirm={"Yes return"}
             />
             <AlertDialog
                 openAlert={userCreationMessage !== ""}
