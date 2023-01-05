@@ -4,7 +4,6 @@ import styles from "./App.module.css";
 import {
     AppBar,
     Box,
-    Button,
     Drawer,
     IconButton,
     List,
@@ -13,6 +12,8 @@ import {
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import PeopleIcon from "@mui/icons-material/People";
+import PersonIcon from "@mui/icons-material/Person";
+import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import MenuIcon from "@mui/icons-material/Menu";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -62,7 +63,7 @@ function App() {
                                 onClick={() => setIsOpen(!isOpen)}
                             >
                                 <ListItemIcon>
-                                    <PeopleIcon />
+                                    <PersonIcon />
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>
                                     User
@@ -76,7 +77,7 @@ function App() {
                                 onClick={() => setIsOpen(!isOpen)}
                             >
                                 <ListItemIcon>
-                                    <PeopleIcon />
+                                    <WorkspacesIcon />
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>
                                     Team

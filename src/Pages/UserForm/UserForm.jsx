@@ -249,7 +249,7 @@ export default function UserForm({}) {
                         unConfirmedHolidaySymbol: DEFAULT_SYMBOLS[1],
                     },
                 ],
-                deletedUser: false,
+                deletedVacationer: false,
             };
             console.log("newVacationer", newVacationer);
 
