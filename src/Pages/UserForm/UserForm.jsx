@@ -403,14 +403,15 @@ export default function UserForm({}) {
                             </div>
                         </div>
                     </div>
-                    <Button
-                        className={styles.belowButton}
-                        disabled={!selectedUser}
-                        onClick={updateCalendarSettings}
-                        variant="contained"
-                    >
-                        Save Calendar settings
-                    </Button>
+                    <div className={styles.belowButton}>
+                        <Button
+                            disabled={!selectedUser}
+                            onClick={updateCalendarSettings}
+                            variant="contained"
+                        >
+                            Save Calendar settings
+                        </Button>
+                    </div>
                 </div>
             </div>
             <ModifyDialog
