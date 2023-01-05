@@ -34,6 +34,7 @@ export default function Admin() {
 
     const emptySelections = () => {
         setSelectedDeletedUser("");
+        setSelectedDeletedTeam("");
     };
 
     // For returning the user to the user list
