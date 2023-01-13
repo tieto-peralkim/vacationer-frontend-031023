@@ -167,7 +167,7 @@ export default function Calendar({
             .catch((error) => {
                 console.log("There was a teams get error!", error);
             });
-    }, []);
+    }, [save]);
 
     useEffect(() => {
         // If year changes, fetch public holidays
@@ -300,6 +300,7 @@ export default function Calendar({
         addSummaryRows(pureVacations);
     };
 
+    // Two last rows of the table
     const addSummaryRows = (data) => {
         // Second last row of the table: amount of employees on holiday
         data.push({
@@ -555,10 +556,10 @@ export default function Calendar({
                     break;
             }
         }
-        console.log("juuss", holidayObject);
     };
 
-    // Hide last days depending on the month lengths (0-11) and update calendar view from db
+    // When save is called (holiday added for vacationer) update calendar view from db
+    // Hide last days depending on the month lengths (0-11)
     useEffect(() => {
         setShowSpinner(true);
         setReplacementText("");
@@ -902,9 +903,8 @@ export default function Calendar({
     return (
         <>
             <div className={styles.wholeCalendar}>
-                <div className={styles.header}>
+                <div>
                     <div className={styles.teamChips}>
-                        Filter by team:
                         <Chip
                             className={styles.oneTeamChip}
                             variant={!teamToShow ? "" : "outlined"}
@@ -938,6 +938,7 @@ export default function Calendar({
                                 // .sort((v1, v2) => v1.name - v2.name)
                                 .map((member) => (
                                     <Chip
+                                        className={styles.oneTeamChip}
                                         label={member.name}
                                         key={member.vacationerId}
                                     />
@@ -956,7 +957,11 @@ export default function Calendar({
                                 setShowAllVacationers(!showAllVacationers);
                             }}
                             control={<Checkbox color="success" />}
-                            label={"Show all employees of team"}
+                            label={
+                                teamToShow
+                                    ? `Show all employees of team ${teamToShow.title} `
+                                    : "Show all employees"
+                            }
                         />
                     </FormGroup>
                     <Box className={styles.buttons}>

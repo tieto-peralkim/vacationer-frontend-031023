@@ -31,6 +31,7 @@ export default function LimitSetter({
             }
         }
         setAlertingDates(tooManyVacationers);
+        console.log("tooManyVacationers", tooManyVacationers);
     }, [dailyVacationers, workerLimit]);
 
     return (
@@ -41,7 +42,7 @@ export default function LimitSetter({
             {/*            )*/}
             {/*        )}*/}
             {/*</div>*/}
-            <div>
+            <div className={styles.averageText}>
                 Average:{" "}
                 <b className={styles.averageNumber}>
                     {endDate ? average : "?"}
