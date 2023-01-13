@@ -272,7 +272,7 @@ export default function Picker({
                 }/timespan?start=${date1.toISOString()}&end=${date2.toISOString()}`
             )
             .then((response) => {
-                console.log("response", response.data);
+                console.log("setDailyVacationers", response.data);
                 setDailyVacationers(response.data);
             })
             .catch((error) => {
@@ -282,7 +282,6 @@ export default function Picker({
     };
 
     const startAndEndTimeJSX = (holiday) => {
-        console.log("pituus", holiday.start, holiday.end);
         if (
             holiday.start.getDate() === holiday.end.getDate() &&
             holiday.start.getMonth() === holiday.end.getMonth() &&

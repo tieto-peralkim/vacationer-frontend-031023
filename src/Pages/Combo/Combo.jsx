@@ -55,6 +55,7 @@ export default function Combo() {
             <Calendar
                 vacationersAmount={vacationersAmount}
                 save={save}
+                setSave={setSave}
                 chosenVacationer={chosenVacationer}
             />
             <Divider

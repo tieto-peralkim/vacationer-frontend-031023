@@ -1,4 +1,4 @@
-import styles from "../picker.module.css";
+import styles from "./pickermodal.module.css";
 import {
     Alert,
     Box,
@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import LimitSetter from "./LimitSetter";
 import DatePicker from "react-datepicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import st from "react-datepicker";
@@ -58,8 +58,11 @@ export default function PickerModal({
     const [alertingDates, setAlertingDates] = useState([]);
     const [openEditAlert, setOpenEditAlert] = useState(false);
     const [openAddAlert, setOpenAddAlert] = useState(false);
+    const [tooManyWarning, setTooManyWarning] = useState(false);
+
+    const [warningStartDate, setWarningStartDate] = useState(new Date());
+    const [warningEndDate, setWarningEndDate] = useState(new Date());
     const [overlapErrorMessage, setOverlapErrorMessage] = useState(false);
-    const [openRangeAlert, setOpenRangeAlert] = useState(false);
 
     const handleCloseCalendar = () => {
         setOpenCalendar(false);
@@ -70,7 +73,11 @@ export default function PickerModal({
         setComment("");
         setConfirmed(false);
         resetDates();
+        setTooManyWarning(false);
     };
+
+    const disabledConditions =
+        !endDate || alertingDates.length !== 0 || overlapErrorMessage;
 
     const handleOpenAddAlert = () => {
         setOpenAddAlert(true);
@@ -84,10 +91,6 @@ export default function PickerModal({
     };
     const handleCloseEditAlert = () => {
         setOpenEditAlert(false);
-    };
-    const handleCloseRangeAlert = () => {
-        setOpenRangeAlert(false);
-        resetDates();
     };
 
     const calendarDatesOverlap = () => {
@@ -119,22 +122,31 @@ export default function PickerModal({
         }
     };
 
-    const validateCalendar = () => {
+    useEffect(() => {
+        if (alertingDates.length > 0) {
+            setWarningStartDate(startDate);
+            setWarningEndDate(endDate);
+            resetDates();
+            setTooManyWarning(true);
+        }
+    }, [alertingDates]);
+
+    // When endDate has been chosen
+    useEffect(() => {
         if (calendarDatesOverlap()) {
             setOverlapErrorMessage(true);
-            return false;
-        } else if (alertingDates.length > 0) {
-            setOpenRangeAlert(true);
-            return false;
-        } else if (endDate === null) {
-            return false;
-        } else {
-            return true;
         }
-    };
+    }, [endDate]);
+
+    // When startDate has been chosen
+    useEffect(() => {
+        if (startDate !== null) {
+            setTooManyWarning(false);
+        }
+    }, [startDate]);
 
     const addHoliday = () => {
-        if (validateCalendar()) {
+        if (!overlapErrorMessage) {
             let newHoliday = {
                 start: startDate,
                 end: endDate,
@@ -163,12 +175,12 @@ export default function PickerModal({
     };
 
     const confirmEdit = () => {
-        if (validateCalendar()) {
+        if (!overlapErrorMessage) {
             handleOpenEditAlert();
         }
     };
     const confirmAdd = () => {
-        if (validateCalendar()) {
+        if (!overlapErrorMessage) {
             handleOpenAddAlert();
         }
     };
@@ -186,6 +198,7 @@ export default function PickerModal({
         setEndDate(end);
         console.log("start2", start, end);
         if (start !== null && end !== null) {
+            // does not work with long span, TODO: check what is wrong
             calculatePerDay(start, end);
         }
     };
@@ -225,33 +238,119 @@ export default function PickerModal({
                 onClose={handleCloseCalendar}
             >
                 <Box className={styles.box}>
-                    <h2>
-                        Chosen dates:
-                        <br />
-                        {startDate && (
-                            <>
-                                {startDate.getUTCDate()}.
-                                {startDate.getUTCMonth() + 1}.
-                                {startDate.getUTCFullYear()}
-                            </>
+                    <div>
+                        <Stack spacing={1} direction="row">
+                            {!tooManyWarning ? (
+                                <Alert
+                                    severity="success"
+                                    className={styles.topAlert}
+                                >
+                                    Holiday dates:{"  "}
+                                    {startDate && (
+                                        <>
+                                            {startDate.getUTCDate()}.
+                                            {startDate.getUTCMonth() + 1}.
+                                            {startDate.getUTCFullYear()}
+                                            {"  "} -{" "}
+                                        </>
+                                    )}
+                                    {endDate && (
+                                        <>
+                                            {endDate.getUTCDate()}.
+                                            {endDate.getUTCMonth() + 1}.
+                                            {endDate.getUTCFullYear()}
+                                            {", "}
+                                            {daysInDateRange(
+                                                startDate,
+                                                endDate
+                                            )}{" "}
+                                            {daysInDateRange(
+                                                startDate,
+                                                endDate
+                                            ) === 1
+                                                ? "day"
+                                                : "days"}
+                                        </>
+                                    )}
+                                </Alert>
+                            ) : (
+                                <Alert
+                                    severity="warning"
+                                    className={styles.topAlert}
+                                >
+                                    Too many vacationers{" "}
+                                    {warningStartDate.getUTCDate()}.
+                                    {warningStartDate.getUTCMonth() + 1}.
+                                    {warningStartDate.getUTCFullYear()} -{" "}
+                                    {warningEndDate.getUTCDate()}.
+                                    {warningEndDate.getUTCMonth() + 1}.
+                                    {warningEndDate.getUTCFullYear()}!
+                                    <ul>
+                                        {/*{alertingDates.map((daily, index) => (*/}
+                                        {/*    <li*/}
+                                        {/*        className={styles.alertingDates}*/}
+                                        {/*        key={index}*/}
+                                        {/*    >*/}
+                                        {/*        {new Date(*/}
+                                        {/*            daily[0]*/}
+                                        {/*        ).toLocaleDateString("fi-FI")}{" "}*/}
+                                        {/*        ({daily[1]}){" "}*/}
+                                        {/*    </li>*/}
+                                        {/*))}*/}
+                                    </ul>
+                                </Alert>
+                            )}
+                        </Stack>
+                    </div>
+                    <Stack spacing={1} direction="row">
+                        {startDateErrorMessage ? (
+                            <Alert
+                                severity="warning"
+                                className={styles.bottomAlert}
+                            >
+                                Pick start date
+                            </Alert>
+                        ) : (
+                            <Alert
+                                severity="success"
+                                className={styles.bottomAlert}
+                            >
+                                Start date
+                            </Alert>
                         )}
-                        {"  "} -{" "}
-                        {endDate && (
-                            <>
-                                {endDate.getUTCDate()}.
-                                {endDate.getUTCMonth() + 1}.
-                                {endDate.getUTCFullYear()}
-                            </>
+
+                        {endDateErrorMessage ? (
+                            <Alert
+                                severity="warning"
+                                className={styles.bottomAlert}
+                            >
+                                Pick end date
+                            </Alert>
+                        ) : (
+                            <Alert
+                                severity="success"
+                                className={styles.bottomAlert}
+                            >
+                                End date
+                            </Alert>
                         )}
-                        <div>
-                            {endDate
-                                ? daysInDateRange(startDate, endDate)
-                                : "?"}{" "}
-                            {daysInDateRange(startDate, endDate) === 1
-                                ? "day"
-                                : "days"}
-                        </div>
-                    </h2>
+
+                        {overlapErrorMessage ? (
+                            <Alert
+                                severity="warning"
+                                className={styles.bottomAlert}
+                            >
+                                Dates overlap
+                            </Alert>
+                        ) : (
+                            <Alert
+                                severity="success"
+                                className={styles.bottomAlert}
+                            >
+                                Dates ok!
+                            </Alert>
+                        )}
+                    </Stack>
                     <LimitSetter
                         holidayToEdit={holidayToEdit}
                         endDate={endDate}
@@ -260,7 +359,7 @@ export default function PickerModal({
                         workerLimit={workerLimit}
                         dailyVacationers={dailyVacationers}
                     />
-                    <div>
+                    <div className={styles.datePicker}>
                         <DatePicker
                             locale="en"
                             selected={startDate}
@@ -272,7 +371,7 @@ export default function PickerModal({
                             minDate={!changingStartedSpace && today}
                             dateFormat="dd.MM.yyyy"
                             calendarStartDay={1}
-                            monthsShown={3}
+                            monthsShown={2}
                             showWeekNumbers
                             disabledKeyboardNavigation
                             inline
@@ -285,27 +384,20 @@ export default function PickerModal({
                             }
                         />
                     </div>
-                    <Dialog
-                        open={openRangeAlert}
-                        onClose={handleCloseRangeAlert}
-                    >
-                        <DialogTitle>
-                            Time range you selected has full days!
-                        </DialogTitle>
-                        <DialogContent>Recheck your dates!</DialogContent>
-                    </Dialog>
 
-                    <div className={styles.addHoliday}>
+                    <div className={styles.rowStyle}>
                         <TextField
                             className={styles.comment}
                             label="Holiday comment"
                             variant="filled"
                             value={comment}
+                            disabled={disabledConditions}
                             onChange={(e) => setComment(e.target.value)}
                         />
                         <FormGroup>
                             <FormControlLabel
                                 checked={confirmed}
+                                disabled={disabledConditions}
                                 onChange={(e) => {
                                     setConfirmed(!confirmed);
                                 }}
@@ -313,12 +405,11 @@ export default function PickerModal({
                                 label={"Confirmed holiday"}
                             />
                         </FormGroup>
+                    </div>
+                    <div className={styles.buttonStyle}>
                         {editingSpace ? (
                             <Button
-                                className={styles.buttonStyle}
-                                disabled={
-                                    !endDate || alertingDates.length !== 0
-                                }
+                                disabled={disabledConditions}
                                 onClick={confirmEdit}
                                 variant="contained"
                             >
@@ -326,9 +417,10 @@ export default function PickerModal({
                             </Button>
                         ) : (
                             <Button
-                                className={styles.buttonStyle}
                                 disabled={
-                                    !endDate || alertingDates.length !== 0
+                                    !endDate ||
+                                    alertingDates.length !== 0 ||
+                                    overlapErrorMessage
                                 }
                                 onClick={confirmAdd}
                                 variant="contained"
@@ -337,40 +429,6 @@ export default function PickerModal({
                             </Button>
                         )}
                     </div>
-                    <Stack sx={{ width: "100%" }} spacing={2}>
-                        {alertingDates.length > 0 && (
-                            <Alert severity="info">
-                                Choose new dates! Too many people on holiday!
-                                <ul>
-                                    {alertingDates.map((daily, index) => (
-                                        <li
-                                            className={styles.alertingDates}
-                                            key={index}
-                                        >
-                                            {new Date(
-                                                daily[0]
-                                            ).toLocaleDateString("fi-FI")}{" "}
-                                            ({daily[1]}){" "}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </Alert>
-                        )}
-
-                        {startDateErrorMessage && (
-                            <Alert severity="info">
-                                Choose the start date!
-                            </Alert>
-                        )}
-
-                        {endDateErrorMessage && (
-                            <Alert severity="info">Choose the end date!</Alert>
-                        )}
-
-                        {overlapErrorMessage && (
-                            <Alert severity="warning">Dates overlap!</Alert>
-                        )}
-                    </Stack>
                 </Box>
             </Modal>
             <AlertDialog

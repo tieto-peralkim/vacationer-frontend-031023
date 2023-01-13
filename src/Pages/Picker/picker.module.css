@@ -8,9 +8,11 @@ body {
 }
 .averageNumber {
   color: red;
-  font-size: xx-large;
+  font-size: medium;
 }
-
+.averageText {
+  margin-top: 0.5em;
+}
 .marginTop {
   margin-top: 30px;
 }
@@ -19,19 +21,6 @@ ul {
   list-style-type: none;
 }
 
-.modal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.box {
-  border-style: solid;
-  border-width: 3px;
-  border-color: black;
-  background-color: lightgray;
-  padding: 30px;
-  height: 80%;
-}
 .form {
   display: flex;
   flex-direction: column;
@@ -52,16 +41,6 @@ ul {
   margin-top: 2% !important;
   margin-bottom: 1% !important;
 }
-.addHoliday {
-  /*display: flex;*/
-  flex-direction: column;
-}
-.comment {
-  background-color: blanchedalmond;
-}
-.buttonStyle{
-  margin: 8px
-}
 .nameSelectBox {
   width: 400px;
   display: inline-block;
@@ -72,7 +51,4 @@ ul {
   justify-content: center;
   flex-direction: column;
   display: flex;
-}
-.alertingDates {
-  display: inline;
 }
