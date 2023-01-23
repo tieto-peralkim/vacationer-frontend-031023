@@ -61,3 +61,8 @@
   padding: 2em;
   color: #3383e7;
 }
+
+.title {
+  text-decoration: none;
+  color: white;
+}

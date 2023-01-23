@@ -31,7 +31,9 @@ function App() {
                         <MenuIcon />
                     </IconButton>
                     <Typography className={styles.headline} variant="h6">
-                        Vacationer
+                        <Link to="/" className={styles.title}>
+                            Vacationer
+                        </Link>
                     </Typography>
                 </Toolbar>
             </AppBar>
