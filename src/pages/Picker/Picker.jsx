@@ -24,20 +24,22 @@ import Typography from "@mui/material/Typography";
 registerLocale("fi", fi);
 
 export default function Picker({
+    user,
     save,
     setSave,
+    setUpdate,
     vacationers,
     setVacationers,
     handleOpenAPIError,
-    chosenVacationer,
-    setChosenVacationer,
+    APIError,
+    // chosenVacationer,
+    // setChosenVacationer,
 }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
     const NUMBER_OF_SHOWN_DEFAULT = 2;
     //  Dates are in UTC time
     const today = new Date();
-    const thisYear = today.getFullYear();
     today.setUTCHours(0, 0, 0);
 
     const [startDate, setStartDate] = useState(null);
@@ -69,11 +71,6 @@ export default function Picker({
 
     const [calendarDaysExcluded, setCalendarDaysExcluded] = useState([]);
 
-    const [dayAmount, setDayAmount] = useState(0);
-
-    const [annualAmount, setAnnualAmount] = useState(20);
-    const [holidaySeason, setHolidaySeason] = useState(2022);
-
     const handleOpenCalendar = () => {
         setOpenCalendar(true);
         updateExcludedDates(0);
@@ -86,6 +83,25 @@ export default function Picker({
         setOpenDeletionAlert(false);
         resetDates();
     };
+
+    useEffect(() => {
+        if (user.name) {
+            setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
+            setExcludedDates(user.vacations);
+        }
+    }, [user]);
+
+    // const selectVacationer = (name) => {
+    //     setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
+    //     for (let i = 0; i < vacationers.length; i++) {
+    //         if (vacationers[i].name === name) {
+    //             setChosenVacationer(vacationers[i]);
+    //             console.log("selectVacationer", vacationers[i].vacations);
+    //             setExcludedDates(vacationers[i].vacations);
+    //             break;
+    //         }
+    //     }
+    // };
 
     useEffect(() => {
         if (endDate === null) {
@@ -104,11 +120,7 @@ export default function Picker({
     }, [startDate]);
 
     useEffect(() => {
-        let amountOfDays = 0;
-        for (let i = 0; i < holidays.length; i++) {
-            amountOfDays += daysInDateRange(holidays[i].start, holidays[i].end);
-        }
-        setDayAmount(amountOfDays);
+        console.log("user Picker", user);
 
         // set existing holiday dates to be excluded in DatePicker
         setCalendarDaysExcluded(holidays);
@@ -134,7 +146,7 @@ export default function Picker({
 
     const resetForm = () => {
         setHolidays([]);
-        setChosenVacationer("");
+        // setChosenVacationer("");
     };
 
     const confirmDeletion = (holiday) => {
@@ -146,11 +158,13 @@ export default function Picker({
     const deleteHoliday = () => {
         axios
             .delete(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/${chosenVacationer.id}/${holidayToDelete.id}`
+                `${process.env.REACT_APP_ADDRESS}/vacationers/${user.id}/${holidayToDelete.id}`,
+                { withCredentials: true }
             )
             .then(() => {
                 setSave(!save);
-                resetForm();
+                // Not used with Github authentication
+                // resetForm();
                 resetDates();
             })
             .catch((error) => {
@@ -244,17 +258,17 @@ export default function Picker({
         return [numberOfUpcomingHolidays, numberOfDays];
     };
 
-    const selectVacationer = (name) => {
-        setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
-        for (let i = 0; i < vacationers.length; i++) {
-            if (vacationers[i].name === name) {
-                setChosenVacationer(vacationers[i]);
-                console.log("selectVacationer", vacationers[i].vacations);
-                setExcludedDates(vacationers[i].vacations);
-                break;
-            }
-        }
-    };
+    // const selectVacationer = (name) => {
+    //     setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
+    //     for (let i = 0; i < vacationers.length; i++) {
+    //         if (vacationers[i].name === name) {
+    //             setChosenVacationer(vacationers[i]);
+    //             console.log("selectVacationer", vacationers[i].vacations);
+    //             setExcludedDates(vacationers[i].vacations);
+    //             break;
+    //         }
+    //     }
+    // };
 
     const daysInDateRange = (firstDate, secondDate) => {
         let millisecondsDay = 24 * 60 * 60 * 1000;
@@ -269,7 +283,8 @@ export default function Picker({
             .get(
                 `${
                     process.env.REACT_APP_ADDRESS
-                }/timespan?start=${date1.toISOString()}&end=${date2.toISOString()}`
+                }/timespan?start=${date1.toISOString()}&end=${date2.toISOString()}`,
+                { withCredentials: true }
             )
             .then((response) => {
                 console.log("setDailyVacationers", response.data);
@@ -313,64 +328,33 @@ export default function Picker({
         <div className={styles.mainView}>
             <div>
                 <form className={styles.form}>
-                    <FormControl className={styles.nameSelectBox}>
-                        <InputLabel>Choose your name</InputLabel>
-                        <Select
-                            defaultValue={
-                                chosenVacationer ? chosenVacationer.name : ""
-                            }
-                            value={
-                                chosenVacationer ? chosenVacationer.name : ""
-                            }
-                            onChange={(e) => selectVacationer(e.target.value)}
-                        >
-                            {vacationers.map((h) => (
-                                <MenuItem key={h.id} value={h.name}>
-                                    {h.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    {/*<Typography>*/}
-                    {/*    Holiday season (accrued 1.4.{holidaySeason - 1} - 31.3.{holidaySeason})*/}
-                    {/*</Typography>*/}
-                    {/*<Select value={holidaySeason} onChange={e => setHolidaySeason(e.target.value)}>*/}
-                    {/*    <MenuItem key={thisYear + 1} value={thisYear + 1}>{thisYear + 1}</MenuItem>*/}
-                    {/*    <MenuItem key={thisYear} value={thisYear}>{thisYear}</MenuItem>*/}
-                    {/*    <MenuItem key={thisYear - 1} value={thisYear - 1}>{thisYear - 1}</MenuItem>*/}
-                    {/*</Select>*/}
-                    {/*<Box className={styles.sliderBox}>*/}
-                    {/*    <Typography>*/}
-                    {/*        Holidays in season <b>{annualAmount}</b>*/}
-                    {/*    </Typography>*/}
-                    {/*    <Slider*/}
-                    {/*        className={styles.slider}*/}
-                    {/*        value={annualAmount}*/}
-                    {/*        min={0}*/}
-                    {/*        max={50}*/}
-                    {/*        onChange={(e) => setAnnualAmount(e.target.value)}*/}
-                    {/*    />*/}
-                    {/*</Box>*/}
-                    {/*{chosenVacationer &&*/}
-                    {/*    <div>*/}
-                    {/*        FOUND {holidays.length} HOLIDAYS ({dayAmount} DAYS)*/}
-                    {/*        OF WHICH {calculateUpcomingHolidays()[0]} ({calculateUpcomingHolidays()[1]} DAYS) ARE*/}
-                    {/*        STILL*/}
-                    {/*        COMING<br/>*/}
-                    {/*        HOLIDAYS LEFT {annualAmount - dayAmount}*/}
-                    {/*    </div>}*/}
+                    {/*<FormControl className={styles.nameSelectBox}>*/}
+                    {/*    <InputLabel>Choose your name</InputLabel>*/}
+                    {/*    <Select*/}
+                    {/*        defaultValue={user ? user.name : ""}*/}
+                    {/*        value={user ? user.name : ""}*/}
+                    {/*        disabled={APIError}*/}
+                    {/*        onChange={(e) => selectVacationer(e.target.value)}*/}
+                    {/*    >*/}
+                    {/*        {vacationers.map((h) => (*/}
+                    {/*            <MenuItem key={h.id} value={h.name}>*/}
+                    {/*                {h.name}*/}
+                    {/*            </MenuItem>*/}
+                    {/*        ))}*/}
+                    {/*    </Select>*/}
+                    {/*</FormControl>*/}
                     <Button
                         className={styles.extraMargin}
                         variant="contained"
                         color="primary"
-                        disabled={!chosenVacationer}
+                        disabled={!user.name}
                         onClick={handleOpenCalendar}
                     >
                         Add a holiday
                     </Button>
                     <PickerModal
                         openCalendar={openCalendar}
-                        chosenVacationer={chosenVacationer}
+                        chosenUser={user}
                         startDate={startDate}
                         setStartDate={setStartDate}
                         endDate={endDate}
@@ -397,7 +381,6 @@ export default function Picker({
                         setChangingStartedSpace={setChangingStartedSpace}
                         setOpenCalendar={setOpenCalendar}
                         resetDates={resetDates}
-                        resetForm={resetForm}
                         save={save}
                         setSave={setSave}
                         handleOpenAPIError={handleOpenAPIError}
@@ -492,7 +475,7 @@ export default function Picker({
                             </div>
                         </>
                     )}
-                    {chosenVacationer !== "" && holidays.length === 0 && (
+                    {user.name && holidays.length === 0 && (
                         <p>No vacations...</p>
                     )}
 

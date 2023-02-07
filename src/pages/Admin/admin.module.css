@@ -1,5 +1,7 @@
 .content {
     display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 .borderedBox {
     border: solid 1px blue;

@@ -1,5 +1,7 @@
 .content {
     display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .borderedBox {
     border: solid 1px blue;
@@ -20,6 +22,7 @@
     margin-bottom: 2em;
 }
 .colorPickers {
+    margin-top: 2em;
     display: flex;
     flex-direction: column;
     width: auto;
@@ -37,4 +40,8 @@
 }
 .belowButton {
     margin-top: 2em;
+}
+.alertAPI {
+    justify-content: center;
+    width: 100%;
 }

@@ -18,11 +18,10 @@ import DatePicker from "react-datepicker";
 import { useEffect, useState } from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
-import st from "react-datepicker";
 
 export default function PickerModal({
     openCalendar,
-    chosenVacationer,
+    chosenUser,
     startDate,
     setStartDate,
     endDate,
@@ -49,7 +48,6 @@ export default function PickerModal({
     setEditingSpace,
     setOpenCalendar,
     resetDates,
-    resetForm,
     save,
     setSave,
     handleOpenAPIError,
@@ -156,12 +154,12 @@ export default function PickerModal({
             console.log("newHoliday", newHoliday);
             axios
                 .post(
-                    `${process.env.REACT_APP_ADDRESS}/vacationers/${chosenVacationer.id}`,
-                    newHoliday
+                    `${process.env.REACT_APP_ADDRESS}/vacationers/${chosenUser.id}`,
+                    newHoliday,
+                    { withCredentials: true }
                 )
                 .then((response) => {
                     console.log(response);
-                    resetForm();
                     resetDates();
                     handleCloseAddAlert();
                     handleCloseCalendar();
@@ -169,6 +167,7 @@ export default function PickerModal({
                 })
                 .catch((error) => {
                     console.error("There was a post new holiday error!", error);
+
                     handleOpenAPIError();
                 });
         }
@@ -198,7 +197,6 @@ export default function PickerModal({
         setEndDate(end);
         console.log("start2", start, end);
         if (start !== null && end !== null) {
-            // does not work with long span, TODO: check what is wrong
             calculatePerDay(start, end);
         }
     };
@@ -213,12 +211,12 @@ export default function PickerModal({
         };
         axios
             .put(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/${chosenVacationer.id}/${idToEdit}`,
-                editedHoliday
+                `${process.env.REACT_APP_ADDRESS}/vacationers/${chosenUser.id}/${idToEdit}`,
+                editedHoliday,
+                { withCredentials: true }
             )
             .then((response) => {
                 console.log(response);
-                resetForm();
                 resetDates();
                 handleCloseEditAlert();
                 handleCloseCalendar();

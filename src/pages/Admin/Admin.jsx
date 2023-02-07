@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
+    Alert,
     Box,
     Button,
     FormControl,
@@ -11,19 +12,29 @@ import {
     TextField,
 } from "@mui/material";
 import styles from "./admin.module.css";
-import TeamForm from "../TeamForm/TeamForm";
-import Typography from "@mui/material/Typography";
-import UserForm from "../UserForm/UserForm";
 import AlertDialog from "../Dialogs/AlertDialog";
+import ApiAlert from "../../components/ApiAlert";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
-    const [openAPIError, setOpenAPIError] = useState(false);
+    const [APIError, setAPIError] = useState(false);
     const [selectedDeletedUser, setSelectedDeletedUser] = useState("");
     const [selectedDeletedTeam, setSelectedDeletedTeam] = useState("");
+    const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
+
     const [deletedVacationers, setDeletedVacationers] = useState([]);
     const [deletedTeams, setDeletedTeams] = useState([]);
+    const [selectedUser, setSelectedUser] = useState("");
+    const [userCreated, setUserCreated] = useState(false);
+    const [userNameError, setUserNameError] = useState(false);
+    const [userCreationMessage, setUserCreationMessage] = useState("");
 
+    const [vacationers, setVacationers] = useState([]);
+    const [newUser, setNewUser] = useState("");
+    const nameError = newUser.length < 3;
+
+    // // CONTEXT
+    // const [user, setUser] = useOutletContext();
     const [completedAction, setCompletedAction] = useState(false);
     const [openFinalDeleteUserAlert, setOpenFinalDeleteUserAlert] =
         useState(false);
@@ -31,17 +42,39 @@ export default function Admin() {
         useState(false);
     const [openReturnUserAlert, setOpenReturnUserAlert] = useState(false);
     const [openReturnTeamAlert, setOpenReturnTeamAlert] = useState(false);
+    const CREATE_TITLE = "Create user";
 
     const emptySelections = () => {
         setSelectedDeletedUser("");
         setSelectedDeletedTeam("");
     };
 
+    useEffect(() => {
+        emptySelections();
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/vacationers`, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                setAPIError(false);
+                setVacationers(response.data);
+                console.log("vacationers", response.data);
+            })
+            .catch((error) => {
+                console.error("There was a vacationers get error!", error);
+                if (!APIError) {
+                    setAPIError(true);
+                }
+            });
+    }, [completedAction]);
+
     // For returning the user to the user list
     const returnUser = () => {
         axios
             .put(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedDeletedUser.id}/undelete`
+                `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedDeletedUser.id}/undelete`,
+                {},
+                { withCredentials: true }
             )
             .then((response) => {
                 setOpenReturnUserAlert(false);
@@ -49,7 +82,7 @@ export default function Admin() {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
-                console.error("There was a return user error!", error);
+                console.error("There was a return user error:", error);
             });
     };
 
@@ -57,7 +90,9 @@ export default function Admin() {
     const returnTeam = () => {
         axios
             .put(
-                `${process.env.REACT_APP_ADDRESS}/teams/${selectedDeletedTeam.id}/undelete`
+                `${process.env.REACT_APP_ADDRESS}/teams/${selectedDeletedTeam.id}/undelete`,
+                {},
+                { withCredentials: true }
             )
             .then((response) => {
                 setOpenReturnTeamAlert(false);
@@ -65,7 +100,7 @@ export default function Admin() {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
-                console.error("There was a return team error!", error);
+                console.error("There was a return team error:", error);
             });
     };
 
@@ -73,7 +108,8 @@ export default function Admin() {
     const finalDeleteUser = () => {
         axios
             .delete(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedDeletedUser.id}`
+                `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedDeletedUser.id}`,
+                { withCredentials: true }
             )
             .then((response) => {
                 setOpenFinalDeleteUserAlert(false);
@@ -81,7 +117,7 @@ export default function Admin() {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
-                console.error("There was a final delete user error!", error);
+                console.error("There was a final delete user error:", error);
             });
     };
 
@@ -90,7 +126,8 @@ export default function Admin() {
         console.log("deleting team", selectedDeletedTeam);
         axios
             .delete(
-                `${process.env.REACT_APP_ADDRESS}/teams/${selectedDeletedTeam.id}`
+                `${process.env.REACT_APP_ADDRESS}/teams/${selectedDeletedTeam.id}`,
+                { withCredentials: true }
             )
             .then((response) => {
                 setOpenFinalDeleteTeamAlert(false);
@@ -98,19 +135,22 @@ export default function Admin() {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
-                console.error("There was a delete error!", error);
+                console.error("There was a delete error:", error);
             });
     };
 
     useEffect(() => {
         emptySelections();
         Promise.all([
-            axios.get(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/deletedVacationers`
-            ),
-            axios.get(`${process.env.REACT_APP_ADDRESS}/teams/deletedTeams`),
+            axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers/deleted`, {
+                withCredentials: true,
+            }),
+            axios.get(`${process.env.REACT_APP_ADDRESS}/teams/deleted`, {
+                withCredentials: true,
+            }),
         ])
             .then((response) => {
+                setAPIError(false);
                 console.log(
                     "response.data",
                     response[0].data,
@@ -120,35 +160,161 @@ export default function Admin() {
                 setDeletedTeams(response[1].data);
             })
             .catch((error) => {
-                if (!openAPIError) {
-                    handleOpenAPIError();
+                if (!APIError) {
+                    setAPIError(true);
                 }
                 console.error("There was a vacationers get error!", error);
             });
     }, [completedAction]);
 
-    const handleOpenAPIError = () => {
-        setOpenAPIError(true);
-    };
-    const handleCloseAPIError = () => {
-        setOpenAPIError(false);
-    };
-
     const sendSlackMessage = () => {
         axios
-            .get(`${process.env.REACT_APP_ADDRESS}/slackMessageSender`)
+            .get(`${process.env.REACT_APP_ADDRESS}/slackMessageSender`, {
+                withCredentials: true,
+            })
             .then((response) => {
                 console.log(response.data);
             })
             .catch((error) => {
                 console.error("There was a sendSlackMessage error!", error);
-                handleOpenAPIError();
+                if (!APIError) {
+                    setAPIError(true);
+                }
+            });
+    };
+
+    const createUser = (e) => {
+        e.preventDefault();
+        if (!nameError) {
+            const newVacationer = {
+                name: newUser,
+                nameId: newUser,
+            };
+            console.log("newVacationer", newVacationer);
+
+            axios
+                .post(
+                    `${process.env.REACT_APP_ADDRESS}/vacationers`,
+                    newVacationer,
+                    { withCredentials: true }
+                )
+                .then((response) => {
+                    console.log(response);
+                    setUserCreated(true);
+                    setCompletedAction(!completedAction);
+                    setNewUser("");
+                })
+                .catch((error) => {
+                    console.error("There was a user creation error!", error);
+                    setUserCreationMessage(error.response.data);
+                });
+        } else {
+            setUserNameError(true);
+        }
+    };
+
+    // For adding the user to the deleted list
+    const deleteUser = () => {
+        console.log("selected", selectedUser);
+        axios
+            .put(
+                `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedUser.id}/delete`,
+                {},
+                { withCredentials: true }
+            )
+            .then((response) => {
+                setOpenDeleteUserAlert(false);
+                console.log(response);
+                removeUserFromTeams(selectedUser);
+            })
+            .catch((error) => {
+                console.error("There was a delete user error!", error);
+            });
+    };
+
+    const removeUserFromTeams = (removableUser) => {
+        axios
+            .put(
+                `${process.env.REACT_APP_ADDRESS}/teams/members/all`,
+                removableUser,
+                { withCredentials: true }
+            )
+            .then((response) => {
+                setCompletedAction(!completedAction);
+            })
+            .catch((error) => {
+                console.error(
+                    "There was a delete user from all teams error!",
+                    error
+                );
             });
     };
 
     return (
         <>
+            {APIError && <ApiAlert />}
             <div className={styles.content}>
+                <div className={styles.borderedBox}>
+                    <InputLabel>{CREATE_TITLE}</InputLabel>
+                    <div>
+                        <TextField
+                            required
+                            label="Username"
+                            disabled={APIError}
+                            variant="outlined"
+                            error={nameError}
+                            value={newUser}
+                            helperText={
+                                nameError &&
+                                "Name must be at least 3 characters"
+                            }
+                            onChange={(e) => setNewUser(e.target.value)}
+                        />
+                        <div>
+                            <Button
+                                onClick={createUser}
+                                variant="contained"
+                                disabled={APIError}
+                            >
+                                {CREATE_TITLE}
+                            </Button>
+                        </div>
+                    </div>
+                    <div className={styles.nameSelectBox}>
+                        <InputLabel>User list</InputLabel>
+                        <FormControl>
+                            <InputLabel>Choose user</InputLabel>
+                            <Select
+                                disabled={APIError}
+                                className={styles.nameSelectBox}
+                                displayEmpty={true}
+                                value={selectedUser}
+                                onChange={(e) => {
+                                    setSelectedUser(e.target.value);
+                                }}
+                            >
+                                {vacationers.map((vacationer) => (
+                                    <MenuItem
+                                        key={vacationer.id}
+                                        value={vacationer}
+                                    >
+                                        {vacationer.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                            <Button
+                                disabled={!selectedUser}
+                                onClick={() => {
+                                    setOpenDeleteUserAlert(true);
+                                }}
+                                variant={"contained"}
+                                color={"error"}
+                            >
+                                Delete user
+                            </Button>
+                        </FormControl>
+                    </div>
+                </div>
                 <div className={styles.borderedBox}>
                     <h3>User</h3>
                     <InputLabel>Deleted users list</InputLabel>
@@ -158,6 +324,7 @@ export default function Admin() {
                             <Select
                                 className={styles.nameSelectBox}
                                 displayEmpty={true}
+                                disabled={APIError}
                                 value={selectedDeletedUser}
                                 onChange={(e) => {
                                     setSelectedDeletedUser(e.target.value);
@@ -204,6 +371,7 @@ export default function Admin() {
                         <FormControl>
                             <InputLabel>Choose team</InputLabel>
                             <Select
+                                disabled={APIError}
                                 className={styles.nameSelectBox}
                                 displayEmpty={true}
                                 value={selectedDeletedTeam}
@@ -243,20 +411,17 @@ export default function Admin() {
                     </div>
                 </div>
             </div>
-            <h3>Test Slack</h3>
-            <div>
-                <Button onClick={sendSlackMessage} variant={"contained"}>
-                    Send to Slack!
-                </Button>
+            <div className={styles.content}>
+                <div>
+                    <Button
+                        onClick={sendSlackMessage}
+                        variant={"contained"}
+                        disabled={APIError}
+                    >
+                        Send a test message to Slack!
+                    </Button>
+                </div>
             </div>
-            <AlertDialog
-                openAlert={openAPIError}
-                handleCloseAlert={handleCloseAPIError}
-                handleAction={handleCloseAPIError}
-                dialogTitle={"API Error"}
-                dialogContent={"No connection to API, try again later"}
-                confirm={"OK"}
-            />
             <AlertDialog
                 openAlert={openFinalDeleteUserAlert}
                 handleCloseAlert={() => setOpenFinalDeleteUserAlert(false)}
@@ -304,6 +469,38 @@ export default function Admin() {
                 }
                 cancel={"No"}
                 confirm={"Yes return"}
+            />
+            <AlertDialog
+                openAlert={userCreated}
+                handleCloseAlert={() => setUserCreated(false)}
+                dialogTitle={"Create user"}
+                dialogContent={"User created!"}
+            />
+            <AlertDialog
+                openAlert={userNameError}
+                handleCloseAlert={() => setUserNameError(false)}
+                dialogTitle={"ERROR!"}
+                dialogContent={
+                    "This username is too short (less than 3 characters)!"
+                }
+            />
+            <AlertDialog
+                openAlert={userCreationMessage !== ""}
+                handleCloseAlert={() => setUserCreationMessage("")}
+                dialogTitle={"API ERROR!"}
+                dialogContent={userCreationMessage}
+            />
+            <AlertDialog
+                openAlert={openDeleteUserAlert}
+                handleCloseAlert={() => setOpenDeleteUserAlert(false)}
+                handleAction={deleteUser}
+                dialogTitle={"Delete user"}
+                dialogContent={
+                    selectedUser &&
+                    `Are you sure you want to delete the user ${selectedUser.name} ?`
+                }
+                cancel={"No"}
+                confirm={"Yes delete"}
             />
         </>
     );

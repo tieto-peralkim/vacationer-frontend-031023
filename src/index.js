@@ -4,19 +4,21 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import Admin from "./Pages/Admin/Admin";
-import Combo from "./Pages/Combo/Combo";
-import UserForm from "./Pages/UserForm/UserForm";
-import TeamForm from "./Pages/TeamForm/TeamForm";
+import Admin from "./pages/Admin/Admin";
+import Combo from "./pages/Combo/Combo";
+import UserForm from "./pages/UserForm/UserForm";
+import TeamForm from "./pages/TeamForm/TeamForm";
+import LoginFailed from "./pages/Login/LoginFailed";
 
 ReactDOM.render(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<App />}>
                 <Route index element={<Combo />} />
-                <Route path="user" element={<UserForm />} />
+                <Route path="settings" element={<UserForm />} />
                 <Route path="team" element={<TeamForm />} />
                 <Route path="admin" element={<Admin />} />
+                <Route path="loginFailed" element={<LoginFailed />} />
                 <Route path="*" element={<Combo />} />
             </Route>
         </Routes>

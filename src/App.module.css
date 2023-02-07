@@ -38,7 +38,7 @@
 }
 
 .outlet {
-  margin-top: 3em;
+  margin-top: 0.5em;
 }
 
 .headline {
@@ -65,4 +65,16 @@
 .title {
   text-decoration: none;
   color: white;
+}
+.loginTitle{
+  text-decoration: none;
+  color: white;
+}
+.rightPart {
+  position: absolute;
+  right: 5%;
+}
+.leftPart {
+  position: absolute;
+  left: 15%;
 }
