@@ -15,11 +15,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
 
-export default function Calendar({
-    vacationersAmount,
-    save,
-    chosenVacationer,
-}) {
+export default function Calendar({ user, vacationersAmount, save, APIError }) {
     const today = new Date();
     const thisMonthFirst = new Date(
         today.getFullYear(),
@@ -29,35 +25,19 @@ export default function Calendar({
     );
     thisMonthFirst.setUTCHours(0, 0, 0, 0);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
-    const DEFAULT_COLOURS = {
-        holidayColor: "#73D8FF",
-        unConfirmedHolidayColor: "#68CCCA",
-        weekendColor: "#808080",
-        weekendHolidayColor: "#CCCCCC",
-    };
     const WORKER_TITLE = "Working";
     const ON_HOLIDAY_TITLE = "On holiday";
     const PRESENCE_PERCENTAGE = 0.5;
     const TODAY_COLOR = "#e30f2d";
-    const DEFAULT_SYMBOLS = ["X", "Y"];
 
     // HolidaySymbol can not be a number!
-    const [holidaySymbols, setHolidaySymbols] = useState(DEFAULT_SYMBOLS);
+    const [holidaySymbols, setHolidaySymbols] = useState([]);
 
-    const [holidayColor, setHolidayColor] = useState(
-        DEFAULT_COLOURS.holidayColor
-    );
-    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState(
-        DEFAULT_COLOURS.unConfirmedHolidayColor
-    );
-    const [weekendColor, setWeekendColor] = useState(
-        DEFAULT_COLOURS.weekendColor
-    );
-    const [weekendHolidayColor, setWeekendHolidayColor] = useState(
-        DEFAULT_COLOURS.weekendHolidayColor
-    );
+    const [holidayColor, setHolidayColor] = useState("");
+    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
+    const [weekendColor, setWeekendColor] = useState("");
+    const [weekendHolidayColor, setWeekendHolidayColor] = useState("");
 
-    const [replacementText, setReplacementText] = useState("");
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(false);
 
@@ -97,11 +77,13 @@ export default function Calendar({
                 console.log("publicDays", publicDays);
             })
             .catch((error) => {
-                console.error("There was a get error!", error);
+                console.error("There was a Public holiday API error!", error);
             });
     }, [selectedYear]);
 
     useEffect(() => {
+        console.log("user Calendar", user);
+
         // Showing all employees of the selected team, not only the ones with holiday
         if (showAllVacationers && teamToShow) {
             console.log("showAllVacationers && teamToShow", teamToShow);
@@ -130,42 +112,36 @@ export default function Calendar({
 
     // Setting calendar settings of selected user
     useEffect(() => {
-        if (chosenVacationer && chosenVacationer.calendarSettings[0]) {
-            setHolidayColor(chosenVacationer.calendarSettings[0].holidayColor);
+        if (user.calendarSettings) {
+            setHolidayColor(user.calendarSettings[0].holidayColor);
             setUnConfirmedHolidayColor(
-                chosenVacationer.calendarSettings[0].unConfirmedHolidayColor
+                user.calendarSettings[0].unConfirmedHolidayColor
             );
-            setWeekendColor(chosenVacationer.calendarSettings[0].weekendColor);
+            setWeekendColor(user.calendarSettings[0].weekendColor);
             setWeekendHolidayColor(
-                chosenVacationer.calendarSettings[0].weekendHolidayColor
+                user.calendarSettings[0].weekendHolidayColor
             );
             let newHolidaySymbols = [];
+            newHolidaySymbols.push(user.calendarSettings[0].holidaySymbol);
             newHolidaySymbols.push(
-                chosenVacationer.calendarSettings[0].holidaySymbol
-            );
-            newHolidaySymbols.push(
-                chosenVacationer.calendarSettings[0].unConfirmedHolidaySymbol
+                user.calendarSettings[0].unConfirmedHolidaySymbol
             );
             setHolidaySymbols(newHolidaySymbols);
-        } else {
-            setHolidaySymbols(DEFAULT_SYMBOLS);
-            setHolidayColor(DEFAULT_COLOURS.holidayColor);
-            setUnConfirmedHolidayColor(DEFAULT_COLOURS.unConfirmedHolidayColor);
-            setWeekendColor(DEFAULT_COLOURS.weekendColor);
-            setWeekendHolidayColor(DEFAULT_COLOURS.weekendHolidayColor);
         }
-    }, [chosenVacationer]);
+    }, [user]);
 
     // Fetching teams from DB
     useEffect(() => {
         axios
-            .get(`${process.env.REACT_APP_ADDRESS}/teams`)
+            .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
+                withCredentials: true,
+            })
             .then((response) => {
                 setTeams(response.data);
                 console.log("TEAMS", response.data);
             })
             .catch((error) => {
-                console.log("There was a teams get error!", error);
+                console.error("There was a teams get error!", error);
             });
     }, [save]);
 
@@ -209,7 +185,8 @@ export default function Calendar({
             .get(
                 `${
                     process.env.REACT_APP_ADDRESS
-                }/holidaysbetween?start=${selectedDate.toISOString()}&end=${selectedMonth.toISOString()}`
+                }/holidaysbetween?start=${selectedDate.toISOString()}&end=${selectedMonth.toISOString()}`,
+                { withCredentials: true }
             )
             .then((response) => {
                 setSelectedVacationers(response.data);
@@ -217,8 +194,7 @@ export default function Calendar({
                 setShowSpinner(false);
             })
             .catch((error) => {
-                setReplacementText("Sorry, no connection to database");
-                console.error("There was a get error!", error);
+                console.error("There was a get holidaysbetween error!", error);
                 setShowSpinner(false);
             });
     };
@@ -558,11 +534,10 @@ export default function Calendar({
         }
     };
 
-    // When save is called (holiday added for vacationer) update calendar view from db
+    // When save is called (holiday CRUD-operation) update calendar view from db
     // Hide last days depending on the month lengths (0-11)
     useEffect(() => {
         setShowSpinner(true);
-        setReplacementText("");
         // Leap year February
         if (
             ((selectedDate.getFullYear() % 4 === 0 &&
@@ -905,7 +880,26 @@ export default function Calendar({
             <div className={styles.wholeCalendar}>
                 <div>
                     <div className={styles.teamChips}>
+                        {/*<Select*/}
+                        {/*    multiple={true}*/}
+                        {/*    value={teamToShow.title}*/}
+                        {/*    onChange={() => {*/}
+                        {/*        setTeamToShow(team);*/}
+                        {/*        console.log("team", team);*/}
+                        {/*    }}*/}
+                        {/*>*/}
+                        {/*    {teams.map((team) => (*/}
+                        {/*        <MenuItem*/}
+                        {/*            className={styles.menuItem}*/}
+                        {/*            key={team.id}*/}
+                        {/*            value={team.title}*/}
+                        {/*        >*/}
+                        {/*            {team.title}*/}
+                        {/*        </MenuItem>*/}
+                        {/*    ))}*/}
+                        {/*</Select>*/}
                         <Chip
+                            disabled={APIError || !user.name}
                             className={styles.oneTeamChip}
                             variant={!teamToShow ? "" : "outlined"}
                             label="All teams"
@@ -944,10 +938,12 @@ export default function Calendar({
                                     />
                                 ))}
                     </div>
-                    <div className={styles.infoBox}>
-                        {holidaySymbols[0]} = confirmed holiday <br />{" "}
-                        {holidaySymbols[1]} = un-confirmed holiday
-                    </div>
+                    {user.name && (
+                        <div className={styles.infoBox}>
+                            {holidaySymbols[0]} = confirmed holiday <br />{" "}
+                            {holidaySymbols[1]} = un-confirmed holiday
+                        </div>
+                    )}
                 </div>
                 <div className={styles.wholeCalendar}>
                     <FormGroup>
@@ -957,6 +953,7 @@ export default function Calendar({
                                 setShowAllVacationers(!showAllVacationers);
                             }}
                             control={<Checkbox color="success" />}
+                            disabled={APIError || !user.name}
                             label={
                                 teamToShow
                                     ? `Show all employees of team ${teamToShow.title} `
@@ -968,11 +965,13 @@ export default function Calendar({
                         <Button
                             onClick={() => changeMonth(-1)}
                             startIcon={<ArrowBackIosIcon />}
+                            disabled={APIError || !user.name}
                         >
                             Prev
                         </Button>
                         <div className={styles.monthSelection}>
                             <DatePicker
+                                disabled={APIError || !user.name}
                                 selected={selectedDate}
                                 onChange={(date) => setSelectedDate(date)}
                                 dateFormat="MM/yyyy"
@@ -985,6 +984,7 @@ export default function Calendar({
                         <Button
                             onClick={() => changeMonth(1)}
                             endIcon={<ArrowForwardIosIcon />}
+                            disabled={APIError || !user.name}
                         >
                             Next
                         </Button>
@@ -1078,11 +1078,7 @@ export default function Calendar({
                             </tbody>
                         </table>
                     )}
-                    {showSpinner ? (
-                        <CircularProgress />
-                    ) : (
-                        <p>{replacementText}</p>
-                    )}
+                    {showSpinner && <CircularProgress />}
                 </div>
             </div>
         </>
