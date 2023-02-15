@@ -888,8 +888,10 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
      * workers on holiday on given day. 
      */
     const countVacationers = (dayNumber) => {    
-        let vacationersAmount = 0;
+        let vacationersAmount1 = 0;
         
+        console.log(teams);
+
         // iterate through all vacationers
         selectedVacationers.forEach(vacationer => {
             // console.log("start: " + vacationer.vacations.start.substring(8,10))
@@ -897,11 +899,18 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
 
             // if the given day is included in the vacationers holiday add to vacationersAmount
             if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
-                vacationersAmount++;
+                vacationersAmount1++;
             }
         });     
 
-        return vacationersAmount;
+        return vacationersAmount1;
+    }
+
+    const countWorkers = (dayNumber) => {    
+        let onHolidayCount = 0;
+        onHolidayCount = countVacationers(dayNumber);    
+        
+        return vacationersAmount.length - onHolidayCount;
     }
 
     return (
@@ -1149,7 +1158,7 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                                             On Holiday: {countVacationers(i + 1)}
                                         </div>
                                         <div className={styles.working}>
-                                            Working: 
+                                            Working: {countWorkers(i + 1)}
                                         </div>
                                     </div>
                                 </div>
