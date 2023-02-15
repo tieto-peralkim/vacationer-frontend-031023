@@ -83,6 +83,7 @@
 
 .onHolidayContent {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 50%;
@@ -91,10 +92,15 @@
 
 .workingContent {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 50%;
     height: 100%;
+}
+
+.workingContent > p{
+    margin: 0;
 }
 
 .headerCont {

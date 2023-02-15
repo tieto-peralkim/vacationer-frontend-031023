@@ -890,7 +890,7 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
     const countVacationers = (dayNumber) => {    
         let vacationersAmount1 = 0;
         
-        console.log(teams);
+        //console.log(teams);
 
         // iterate through all vacationers
         selectedVacationers.forEach(vacationer => {
@@ -909,8 +909,41 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
     const countWorkers = (dayNumber) => {    
         let onHolidayCount = 0;
         onHolidayCount = countVacationers(dayNumber);    
-        
+
         return vacationersAmount.length - onHolidayCount;
+    }
+
+    const getVacationerNames = (dayNumber) => {    
+        let vacationerNames = [];
+        
+        selectedVacationers.forEach(vacationer => {
+            // console.log("start: " + vacationer.vacations.start.substring(8,10))
+            // console.log(vacationer.name)
+            
+            // if the given day is included in the vacationers holiday add to vacationersAmount
+            if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
+                teamToShow.members.forEach(member => {
+                    if (vacationer.name === member.name) {
+                        vacationerNames.push(vacationer.name)
+                    }
+                });
+            }
+        });  
+        
+        return vacationerNames;
+    }
+
+    const getWorkerNames = (dayNumber) => {    
+        let workerNames = [];
+
+        
+        console.log(teamToShow.members)
+        
+        teamToShow.members.forEach(member => {
+            workerNames.push(member.name)
+        });  
+        
+        return workerNames;
     }
 
     return (
@@ -1147,10 +1180,14 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                                 <div className={styles.dayContent}>
                                     <div className={styles.content}>
                                         <div className={styles.onHolidayContent}>
-                                            tester
+                                            {getVacationerNames(i + 1).map((name) => (
+                                                <p>{name}</p>
+                                            ))}
                                         </div>
                                         <div className={styles.workingContent}>
-                                            tester2
+                                            {getWorkerNames(i + 1).map((name) => (
+                                                <p>{name}</p>
+                                            ))}
                                         </div>
                                     </div>
                                     <div className={styles.headerCont}>
