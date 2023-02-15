@@ -20,8 +20,7 @@ import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
 
 export default function Calendar({ user, vacationersAmount, save, APIError }) {
-    const isMobile = useBreakpoint(down("sm")); // sm breakpoint activates when screen width <= 576px
-    //const daysInMonth = new ;
+    const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
     
     const today = new Date();
     const thisMonthFirst = new Date(
@@ -898,8 +897,18 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
             // console.log("end: " + vacationer.vacations.end.substring(8,10))
 
             // if the given day is included in the vacationers holiday add to vacationersAmount
-            if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
-                vacationersAmount1++;
+            if (teamToShow) {
+                if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
+                    teamToShow.members.forEach(member => {
+                        if (member.name === vacationer.name) {
+                            vacationersAmount1++;
+                        }
+                    });
+                }
+            } else {
+                if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
+                    vacationersAmount1++;
+                }
             }
         });     
 
@@ -909,8 +918,24 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
     const countWorkers = (dayNumber) => {    
         let onHolidayCount = 0;
         onHolidayCount = countVacationers(dayNumber);    
+        let allNames = [];
 
-        return vacationersAmount.length - onHolidayCount;
+        console.log(teams);
+        console.log(selectedVacationers);
+
+        if (teamToShow) {
+            return teamToShow.members.length - onHolidayCount;
+        } else {
+            teams.forEach(team => {
+                team.members.forEach(member => {
+                    if (!allNames.includes(member.name)){
+                        allNames.push(member.name)
+                    }
+                })
+            });
+            console.log(allNames.length)
+            return allNames.length - onHolidayCount;
+        }
     }
 
     const getVacationerNames = (dayNumber) => {    
@@ -921,12 +946,18 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
             // console.log(vacationer.name)
             
             // if the given day is included in the vacationers holiday add to vacationersAmount
-            if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
-                teamToShow.members.forEach(member => {
-                    if (vacationer.name === member.name) {
-                        vacationerNames.push(vacationer.name)
-                    }
-                });
+            if (teamToShow) {
+                if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
+                    teamToShow.members.forEach(member => {
+                        if (vacationer.name === member.name) {
+                            vacationerNames.push(vacationer.name)
+                        }
+                    });
+                } 
+            } else {
+                if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
+                    vacationerNames.push(vacationer.name)
+                } 
             }
         });  
         
@@ -935,15 +966,64 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
 
     const getWorkerNames = (dayNumber) => {    
         let workerNames = [];
+        let onHolidayNames = getVacationerNames(dayNumber);
+        
+        console.log(onHolidayNames)
+        
+        if (teamToShow) {
+            teamToShow.members.forEach(member => {
+                if (onHolidayNames.length > 0) {
+                    onHolidayNames.forEach(vacationer => {
+                        if (member.name != vacationer) {
+                            workerNames.push(member.name)
+                        }
+                    });
+                } else {
+                    workerNames.push(member.name)
+                }
+            });  
+            
+            return workerNames;
+        } else {
+            teams.forEach(team => {
+                team.members.forEach(member => {
+                    if (!onHolidayNames.includes(member.name)) {
+                        if (!workerNames.includes(member.name)) {
+                            workerNames.push(member.name)
+                        }
+                    }
+                })
+            });
+            return workerNames;
+        }
+    }
 
-        
-        console.log(teamToShow.members)
-        
-        teamToShow.members.forEach(member => {
-            workerNames.push(member.name)
-        });  
-        
-        return workerNames;
+    const getDayFromInt = (day) => {
+        switch (day) {
+            case 0:
+                return "Mon"
+
+            case 1:
+                return "Tue"
+
+            case 2:
+                return "Wed"
+
+            case 3:
+                return "Thu"
+
+            case 4:
+                return "Fri"
+
+            case 5:
+                return "Sat"
+
+            case 6:
+                return "Sun"
+
+            default:
+                break;
+        }
     }
 
     return (
@@ -1144,7 +1224,7 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                                                                     paddingLeft:
                                                                         "0.5em",
                                                                     height: "2em",
-                                                                    maxWidth: "3em",
+                                                                    maxWidth: "5em",
                                                                     border: setTodayColumn(
                                                                         cell.column
                                                                     ),
@@ -1175,7 +1255,9 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                             
                             <div className={styles.dayDiv} key={i}>
                                 <div className={styles.dayNumber}>
-                                    {i + 1}
+                                    <p>{i + 1}</p>
+                                    <p>{getDayFromInt(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, i).getDay())}</p>
+                                    {console.log(selectedDate.getDay())}
                                 </div>
                                 <div className={styles.dayContent}>
                                     <div className={styles.content}>

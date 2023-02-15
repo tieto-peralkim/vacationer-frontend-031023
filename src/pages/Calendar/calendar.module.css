@@ -40,7 +40,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 50px;
+    padding: 0px;
 }
 
 .dayDiv {
@@ -56,6 +56,7 @@
 
 .dayNumber {
     display: flex;
+    flex-direction: column;
     width: 10%;
     height: 100%;
     background-color: lightcoral;
@@ -83,16 +84,23 @@
 
 .onHolidayContent {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     width: 50%;
     height: 100%;
+    border-right: 1px solid black;
+}
+
+.onHolidayContent > p {
+    text-align: center;
+    margin: 0;
+    width: 50%;
 }
 
 .workingContent {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     width: 50%;
@@ -100,7 +108,9 @@
 }
 
 .workingContent > p{
+    text-align: center;
     margin: 0;
+    width: 50%;
 }
 
 .headerCont {
@@ -115,6 +125,7 @@
     justify-content: center;
     width: 50%;
     background-color: lightgreen;
+    border-right: 1px solid black;
 }
 
 .working {
