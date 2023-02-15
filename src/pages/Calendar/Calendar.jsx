@@ -1,3 +1,7 @@
+// These are for changing the page layout depending on the screen size.
+import { useBreakpoint } from "styled-breakpoints/react-styled"; 
+import { down } from "styled-breakpoints";
+
 import { forwardRef, useEffect, useMemo, useState } from "react";
 import { useTable } from "react-table";
 import axios from "axios";
@@ -16,6 +20,9 @@ import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
 
 export default function Calendar({ user, vacationersAmount, save, APIError }) {
+    const isMobile = useBreakpoint(down("sm")); // sm breakpoint activates when screen width <= 576px
+    //const daysInMonth = new ;
+    
     const today = new Date();
     const thisMonthFirst = new Date(
         today.getFullYear(),
@@ -875,10 +882,33 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
         </Button>
     ));
 
+    /**
+     * Counts how many vacationers exist in a given day.
+     * As a parameter accepts the number of the day and returns the amount of
+     * workers on holiday on given day. 
+     */
+    const countVacationers = (dayNumber) => {    
+        let vacationersAmount = 0;
+        
+        // iterate through all vacationers
+        selectedVacationers.forEach(vacationer => {
+            // console.log("start: " + vacationer.vacations.start.substring(8,10))
+            // console.log("end: " + vacationer.vacations.end.substring(8,10))
+
+            // if the given day is included in the vacationers holiday add to vacationersAmount
+            if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
+                vacationersAmount++;
+            }
+        });     
+
+        return vacationersAmount;
+    }
+
     return (
         <>
             <div className={styles.wholeCalendar}>
                 <div>
+                    
                     <div className={styles.teamChips}>
                         {/*<Select*/}
                         {/*    multiple={true}*/}
@@ -989,95 +1019,149 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                             Next
                         </Button>
                     </Box>
-                    {allHolidaysSelectedTime.length > 0 && (
-                        <table
-                            {...getTableProps()}
-                            style={{ border: "solid 0.1em #73D8FF" }}
-                        >
-                            <thead>
-                                {headerGroups.map((headerGroup) => (
-                                    <tr {...headerGroup.getHeaderGroupProps()}>
-                                        {headerGroup.headers.map((column) => (
-                                            <th
-                                                {...column.getHeaderProps()}
-                                                style={{
-                                                    background: setTodayHeader(
-                                                        column.Header
-                                                    ),
-                                                    color: "black",
-                                                    width: "1em",
-                                                }}
-                                            >
-                                                {column.render("Header")}
-                                            </th>
-                                        ))}
-                                    </tr>
-                                ))}
-                            </thead>
-                            <tbody {...getTableBodyProps()}>
-                                {rows.map((row) => {
-                                    prepareRow(row);
-                                    return (
-                                        <tr
-                                            {...row.getRowProps()}
-                                            style={{
-                                                backgroundColor: checkRow(
-                                                    row.cells[0].value
-                                                ),
-                                            }}
-                                        >
-                                            {row.cells.map((cell, index) => {
-                                                // console.log(
-                                                //     "info",
-                                                //     cell.value,
-                                                //     index
-                                                // );
-                                                return (
-                                                    <td
-                                                        {...cell.getCellProps({
-                                                            onClick: () => {
-                                                                console.log(
-                                                                    "loki1",
-                                                                    cell.value
-                                                                );
-                                                                console.log(
-                                                                    "loki2",
-                                                                    cell.row
-                                                                        .original
-                                                                        .name,
-                                                                    cell.column
-                                                                        .Header
-                                                                );
-                                                            },
-                                                        })}
+                    {/* <h2>Width: {isMobile ? "Mobile View" : "Desktop View"}</h2>
+                    <div>
+                        {isMobile ?
+                        <div>
+                            test
+                        </div>
+                        :
+                        <div>
+                            test2
+                        </div>
+                        }
+                    </div> */}
+
+                    {!isMobile ?
+                        <div className="full-calendar">
+                            {allHolidaysSelectedTime.length > 0 && (
+                                <table 
+                                    {...getTableProps()} 
+                                    style={{ border: "solid 0.1em #73D8FF", width: "100%" }}
+                                >
+                                    <thead>
+                                        {headerGroups.map((headerGroup) => (
+                                            <tr {...headerGroup.getHeaderGroupProps()}>
+                                                {headerGroup.headers.map((column) => (
+                                                    <th
+                                                        {...column.getHeaderProps()}
                                                         style={{
-                                                            fontWeight: setBold(
-                                                                cell.value
+                                                            background: setTodayHeader(
+                                                                column.Header
                                                             ),
-                                                            paddingLeft:
-                                                                "0.5em",
-                                                            height: "2em",
-                                                            maxWidth: "3em",
-                                                            border: setTodayColumn(
-                                                                cell.column
-                                                            ),
-                                                            backgroundColor:
-                                                                isCommonHoliday(
-                                                                    cell.value,
-                                                                    index
-                                                                ),
+                                                            color: "black",
+                                                            width: "1em",
                                                         }}
                                                     >
-                                                        {cell.render("Cell")}
-                                                    </td>
-                                                );
-                                            })}
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    )}
+                                                        {column.render("Header")}
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                        ))}
+                                    </thead>
+                                    <tbody {...getTableBodyProps()}>
+                                        {rows.map((row) => {
+                                            prepareRow(row);
+                                            return (
+                                                <tr
+                                                    {...row.getRowProps()}
+                                                    style={{
+                                                        backgroundColor: checkRow(
+                                                            row.cells[0].value
+                                                        ),
+                                                    }}
+                                                >
+                                                    {row.cells.map((cell, index) => {
+                                                        // console.log(
+                                                        //     "info",
+                                                        //     cell.value,
+                                                        //     index
+                                                        // );
+                                                        return (
+                                                            <td
+                                                                {...cell.getCellProps({
+                                                                    onClick: () => {
+                                                                        console.log(
+                                                                            "loki1",
+                                                                            cell.value
+                                                                        );
+                                                                        console.log(
+                                                                            "loki2",
+                                                                            cell.row
+                                                                                .original
+                                                                                .name,
+                                                                            cell.column
+                                                                                .Header
+                                                                        );
+                                                                    },
+                                                                })}
+                                                                style={{
+                                                                    fontWeight: setBold(
+                                                                        cell.value
+                                                                    ),
+                                                                    paddingLeft:
+                                                                        "0.5em",
+                                                                    height: "2em",
+                                                                    maxWidth: "3em",
+                                                                    border: setTodayColumn(
+                                                                        cell.column
+                                                                    ),
+                                                                    backgroundColor:
+                                                                        isCommonHoliday(
+                                                                            cell.value,
+                                                                            index
+                                                                        ),
+                                                                }}
+                                                            >
+                                                                {cell.render("Cell")}
+                                                            </td>
+                                                        );
+                                                    })}
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            )}
+                        </div>
+
+                        
+
+                        :   // If the screen width matches mobile
+                        <div className={styles.verticalCalendar}>
+                        {[...Array(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate())].map((e, i) => 
+                            
+                            <div className={styles.dayDiv} key={i}>
+                                <div className={styles.dayNumber}>
+                                    {i + 1}
+                                </div>
+                                <div className={styles.dayContent}>
+                                    <div className={styles.content}>
+                                        <div className={styles.onHolidayContent}>
+                                            tester
+                                        </div>
+                                        <div className={styles.workingContent}>
+                                            tester2
+                                        </div>
+                                    </div>
+                                    <div className={styles.headerCont}>
+                                        <div className={styles.onHoliday}>
+                                            On Holiday: {countVacationers(i + 1)}
+                                        </div>
+                                        <div className={styles.working}>
+                                            Working: 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>)}
+                        </div>
+                        // <div>
+                        //     {console.log(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate())}
+                        //     <div>
+                        //     </div>
+                        // </div>
+                    }
+                    
                     {showSpinner && <CircularProgress />}
                 </div>
             </div>
