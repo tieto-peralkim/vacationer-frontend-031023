@@ -16,6 +16,7 @@
     margin-right: 1em;
     margin-left: 1em;
 }
+
 .infoBox {
     float: right;
     border: 0.1em solid #2A55E7;
@@ -32,4 +33,105 @@
 .nameSelectBox {
     width: 30%;
     display: inline-block;
+}
+
+.verticalCalendar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0px;
+}
+
+.dayDiv {
+    background-color: lightblue;
+    width: 100%;
+    height: 150px;
+    margin-top: 20px;
+    margin-left: 150px;
+    margin-right: 150px;
+    border-radius: 5px;
+    display: flex;
+}
+
+.dayNumber {
+    display: flex;
+    flex-direction: column;
+    width: 10%;
+    height: 100%;
+    background-color: lightcoral;
+    justify-content: center;
+    align-items: center;
+}
+
+.dayContent {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    height: 100%;
+    background-color: lightblue;
+    justify-content: center;
+    align-items: center;
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80%;
+    width: 100%;
+}
+
+.onHolidayContent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    border-right: 1px solid black;
+}
+
+.onHolidayContent > p {
+    text-align: center;
+    margin: 0;
+    width: 50%;
+}
+
+.workingContent {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+}
+
+.workingContent > p{
+    text-align: center;
+    margin: 0;
+    width: 50%;
+}
+
+.headerCont {
+    display: flex;
+    height: 20%;
+    width: 100%;
+}
+
+.onHoliday {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    background-color: lightgreen;
+    border-right: 1px solid black;
+}
+
+.working {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    background-color: lightyellow;
 }
