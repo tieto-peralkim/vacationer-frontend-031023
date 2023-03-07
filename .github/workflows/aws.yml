@@ -44,7 +44,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: latest
-        REACT_APP_ADDRESS: ${{ secrets.REACT_APP_ADDRESS }}
+        REACT_APP_ADDRESS: ${{ secrets.BACK_ADDRESS }}
       run: |
         touch .env
         echo "REACT_APP_ADDRESS=$REACT_APP_ADDRESS" >> .env
