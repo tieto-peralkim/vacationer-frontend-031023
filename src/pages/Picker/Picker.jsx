@@ -9,8 +9,10 @@ import {
     Box,
     Button,
     ButtonGroup,
+    Checkbox,
     Chip,
     FormControl,
+    FormControlLabel,
     InputLabel,
     MenuItem,
     Select,
@@ -41,7 +43,6 @@ export default function Picker({
     today.setUTCHours(0, 0, 0);
 
     const [startDate, setStartDate] = useState(null);
-
     const [endDate, setEndDate] = useState(null);
 
     const [comment, setComment] = useState("");
@@ -66,8 +67,9 @@ export default function Picker({
     const [changingStartedSpace, setChangingStartedSpace] = useState(false);
 
     const [holidays, setHolidays] = useState([]);
-
+    const [adminspace, setAdminspace] = useState(false);
     const [calendarDaysExcluded, setCalendarDaysExcluded] = useState([]);
+    const [chosenVacationer, setChosenVacationer] = useState("");
 
     const handleOpenCalendar = () => {
         setOpenCalendar(true);
@@ -87,7 +89,17 @@ export default function Picker({
             setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
             setExcludedDates(user.vacations);
         }
+        resetForm();
     }, [user]);
+
+    useEffect(() => {
+        if (!adminspace) {
+            resetForm();
+            if (user.name) {
+                setExcludedDates(user.vacations);
+            }
+        }
+    }, [adminspace]);
 
     useEffect(() => {
         if (endDate === null) {
@@ -131,8 +143,7 @@ export default function Picker({
     };
 
     const resetForm = () => {
-        setHolidays([]);
-        // setChosenVacationer("");
+        setChosenVacationer(user);
     };
 
     const confirmDeletion = (holiday) => {
@@ -142,15 +153,20 @@ export default function Picker({
     };
 
     const deleteHoliday = () => {
+        let vacationer = user;
+
+        // If deleting someone else's holiday
+        if (adminspace) {
+            vacationer = chosenVacationer;
+        }
         axios
             .delete(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/${user.id}/${holidayToDelete.id}`,
+                `${process.env.REACT_APP_ADDRESS}/vacationers/${vacationer.id}/${holidayToDelete.id}`,
                 { withCredentials: true }
             )
             .then(() => {
                 setSave(!save);
-                // Not used with Github authentication
-                // resetForm();
+                resetForm();
                 resetDates();
             })
             .catch((error) => {
@@ -244,17 +260,17 @@ export default function Picker({
         return [numberOfUpcomingHolidays, numberOfDays];
     };
 
-    // const selectVacationer = (name) => {
-    //     setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
-    //     for (let i = 0; i < vacationers.length; i++) {
-    //         if (vacationers[i].name === name) {
-    //             setChosenVacationer(vacationers[i]);
-    //             console.log("selectVacationer", vacationers[i].vacations);
-    //             setExcludedDates(vacationers[i].vacations);
-    //             break;
-    //         }
-    //     }
-    // };
+    const selectVacationer = (name) => {
+        setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
+        for (let i = 0; i < vacationers.length; i++) {
+            if (vacationers[i].name === name) {
+                setChosenVacationer(vacationers[i]);
+                console.log("selectVacationer", vacationers[i].vacations);
+                setExcludedDates(vacationers[i].vacations);
+                break;
+            }
+        }
+    };
 
     const daysInDateRange = (firstDate, secondDate) => {
         let millisecondsDay = 24 * 60 * 60 * 1000;
@@ -314,18 +330,63 @@ export default function Picker({
         <div className={styles.mainView}>
             <div>
                 <form className={styles.form}>
+                    {/*For admin user*/}
+                    {user.admin && (
+                        <FormControl>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={adminspace}
+                                        onChange={() => {
+                                            setAdminspace(!adminspace);
+                                        }}
+                                    />
+                                }
+                                label={"ADMIN: Select another user"}
+                            />
+                        </FormControl>
+                    )}
+                    {adminspace && (
+                        <FormControl className={styles.nameSelectBox}>
+                            <Select
+                                defaultValue={
+                                    chosenVacationer.name
+                                        ? chosenVacationer.name
+                                        : ""
+                                }
+                                value={
+                                    chosenVacationer.name
+                                        ? chosenVacationer.name
+                                        : ""
+                                }
+                                disabled={!adminspace}
+                                onChange={(e) =>
+                                    selectVacationer(e.target.value)
+                                }
+                            >
+                                {vacationers.map((h) => (
+                                    <MenuItem key={h.id} value={h.name}>
+                                        {h.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    )}
                     <Button
                         className={styles.extraMargin}
                         variant="contained"
                         color="primary"
                         disabled={!user.name}
-                        onClick={handleOpenCalendar}
+                        onClick={() => {
+                            handleOpenCalendar();
+                        }}
                     >
-                        Add a holiday
+                        Add a holiday for {chosenVacationer.name}
                     </Button>
                     <PickerModal
+                        resetForm={resetForm}
                         openCalendar={openCalendar}
-                        chosenUser={user}
+                        chosenUser={chosenVacationer}
                         startDate={startDate}
                         setStartDate={setStartDate}
                         endDate={endDate}
@@ -422,7 +483,6 @@ export default function Picker({
                     {user.name && holidays.length === 0 && (
                         <p>No vacations...</p>
                     )}
-
                     <AlertDialog
                         openAlert={openDeletionAlert}
                         handleCloseAlert={handleCloseDeletionAlert}
