@@ -201,7 +201,10 @@ export default function UserForm({}) {
                             nameId: <i>{user.nameId}</i>
                         </div>
                         <div>
-                            User updated: <i>{userUpdatedAt}</i>
+                            admin: <i>{user.admin ? "yes" : "no"}</i>
+                        </div>
+                        <div>
+                            user updated: <i>{userUpdatedAt}</i>
                         </div>
                         <div className={styles.colorPickers}>
                             <div className={styles.rowFlex}>
