@@ -13,6 +13,7 @@ import {
 import styles from "./admin.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
 import ApiAlert from "../../components/ApiAlert";
+import { Navigate, useOutletContext } from "react-router-dom";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
@@ -34,8 +35,7 @@ export default function Admin() {
     const [newUser, setNewUser] = useState("");
     const nameError = newUser.length < 3;
 
-    // // CONTEXT
-    // const [user, setUser] = useOutletContext();
+    const [user, setUser] = useOutletContext();
     const [completedAction, setCompletedAction] = useState(false);
     const [openFinalDeleteUserAlert, setOpenFinalDeleteUserAlert] =
         useState(false);
@@ -271,7 +271,7 @@ export default function Admin() {
             });
     };
 
-    return (
+    return user.admin ? (
         <>
             {APIError && <ApiAlert />}
             <div className={styles.content}>
@@ -557,5 +557,7 @@ export default function Admin() {
                 confirm={"Yes delete"}
             />
         </>
+    ) : (
+        <Navigate to="/" />
     );
 }

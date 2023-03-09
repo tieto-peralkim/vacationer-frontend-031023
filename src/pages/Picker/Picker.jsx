@@ -32,8 +32,6 @@ export default function Picker({
     setVacationers,
     handleOpenAPIError,
     APIError,
-    // chosenVacationer,
-    // setChosenVacationer,
 }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
@@ -90,18 +88,6 @@ export default function Picker({
             setExcludedDates(user.vacations);
         }
     }, [user]);
-
-    // const selectVacationer = (name) => {
-    //     setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
-    //     for (let i = 0; i < vacationers.length; i++) {
-    //         if (vacationers[i].name === name) {
-    //             setChosenVacationer(vacationers[i]);
-    //             console.log("selectVacationer", vacationers[i].vacations);
-    //             setExcludedDates(vacationers[i].vacations);
-    //             break;
-    //         }
-    //     }
-    // };
 
     useEffect(() => {
         if (endDate === null) {
@@ -328,21 +314,6 @@ export default function Picker({
         <div className={styles.mainView}>
             <div>
                 <form className={styles.form}>
-                    {/*<FormControl className={styles.nameSelectBox}>*/}
-                    {/*    <InputLabel>Choose your name</InputLabel>*/}
-                    {/*    <Select*/}
-                    {/*        defaultValue={user ? user.name : ""}*/}
-                    {/*        value={user ? user.name : ""}*/}
-                    {/*        disabled={APIError}*/}
-                    {/*        onChange={(e) => selectVacationer(e.target.value)}*/}
-                    {/*    >*/}
-                    {/*        {vacationers.map((h) => (*/}
-                    {/*            <MenuItem key={h.id} value={h.name}>*/}
-                    {/*                {h.name}*/}
-                    {/*            </MenuItem>*/}
-                    {/*        ))}*/}
-                    {/*    </Select>*/}
-                    {/*</FormControl>*/}
                     <Button
                         className={styles.extraMargin}
                         variant="contained"
@@ -388,33 +359,6 @@ export default function Picker({
                     />
                     {holidays.length > 0 && (
                         <>
-                            {/*<Chip*/}
-                            {/*    // className={styles.}*/}
-                            {/*    variant={(showPastVacations === 12) ? "" : "outlined"}*/}
-                            {/*    label="Show 12 newest holidays"*/}
-                            {/*    color="secondary"*/}
-                            {/*    onClick={() => {*/}
-                            {/*        setShowPastVacations(12)*/}
-                            {/*    }}*/}
-                            {/*/>*/}
-                            {/*<Chip*/}
-                            {/*    // className={styles.}*/}
-                            {/*    variant={(showPastVacations === 8) ? "" : "outlined"}*/}
-                            {/*    label="Show 8 newest holidays"*/}
-                            {/*    color="secondary"*/}
-                            {/*    onClick={() => {*/}
-                            {/*        setShowPastVacations(8)*/}
-                            {/*    }}*/}
-                            {/*/>*/}
-                            {/*<Chip*/}
-                            {/*    // className={styles.}*/}
-                            {/*    variant={(showPastVacations === 4) ? "" : "outlined"}*/}
-                            {/*    label="Show 4 newest holidays"*/}
-                            {/*    color="secondary"*/}
-                            {/*    onClick={() => {*/}
-                            {/*        setShowPastVacations(4)*/}
-                            {/*    }}*/}
-                            {/*/>*/}
                             <div>
                                 {holidays.length > NUMBER_OF_SHOWN_DEFAULT && (
                                     <div className={styles.marginTop}>

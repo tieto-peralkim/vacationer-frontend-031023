@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
-import App from "./App";
+import NavigationBar from "./NavigationBar";
 import reportWebVitals from "./reportWebVitals";
 import Admin from "./pages/Admin/Admin";
 import Combo from "./pages/Combo/Combo";
@@ -13,7 +13,7 @@ import LoginFailed from "./pages/Login/LoginFailed";
 ReactDOM.render(
     <BrowserRouter>
         <Routes>
-            <Route path="/" element={<App />}>
+            <Route path="/" element={<NavigationBar />}>
                 <Route index element={<Combo />} />
                 <Route path="settings" element={<UserForm />} />
                 <Route path="team" element={<TeamForm />} />
