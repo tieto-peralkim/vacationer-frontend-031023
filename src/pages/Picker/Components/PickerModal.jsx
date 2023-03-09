@@ -132,7 +132,6 @@ export default function PickerModal({
 
     // When endDate has been chosen
     useEffect(() => {
-        console.log("chosenUser", chosenUser);
         if (calendarDatesOverlap()) {
             setOverlapErrorMessage(true);
         }

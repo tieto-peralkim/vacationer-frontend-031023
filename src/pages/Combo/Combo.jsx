@@ -12,9 +12,7 @@ export default function Combo() {
     const [save, setSave] = useState(false);
     const [APIError, setAPIError] = useState(false);
 
-    // CONTEXT
     const [user, setUser, update, setUpdate] = useOutletContext();
-
     const [vacationers, setVacationers] = useState([]);
     const [vacationersAmount, setVacationersAmount] = useState([]);
 

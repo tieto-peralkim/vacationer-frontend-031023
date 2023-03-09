@@ -85,6 +85,10 @@ export default function Picker({
     };
 
     useEffect(() => {
+        setChosenVacationer(user);
+    }, []);
+
+    useEffect(() => {
         if (user.name) {
             setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
             setExcludedDates(user.vacations);
