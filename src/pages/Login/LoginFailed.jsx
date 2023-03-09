@@ -1,11 +1,15 @@
+import styles from "./loginfailed.module.css";
+
 export default function LoginFailed() {
     return (
         <>
-            <div>
-                Login failed, try with other{" "}
+            <div className={styles.content}>
+                <h2>Login failed</h2>
+                To try again, go to{" "}
                 <a href={"https://github.com/"} target={"_blank"}>
-                    Github user
+                    Github
                 </a>
+                , logout and login with other user
             </div>
         </>
     );

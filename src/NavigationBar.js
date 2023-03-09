@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
-import styles from "./App.module.css";
+import styles from "./NavigationBar.module.css";
 import {
     AppBar,
     Box,
@@ -22,7 +22,7 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-function App() {
+function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
     const [user, setUser] = useState({});
     const [update, setUpdate] = useState(false);
@@ -189,4 +189,4 @@ function App() {
     );
 }
 
-export default App;
+export default NavigationBar;
