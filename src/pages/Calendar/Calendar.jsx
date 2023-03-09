@@ -1,5 +1,5 @@
 // These are for changing the page layout depending on the screen size.
-import { useBreakpoint } from "styled-breakpoints/react-styled"; 
+import { useBreakpoint } from "styled-breakpoints/react-styled";
 import { down } from "styled-breakpoints";
 
 import { forwardRef, useEffect, useMemo, useState } from "react";
@@ -21,7 +21,7 @@ import DatePicker from "react-datepicker";
 
 export default function Calendar({ user, vacationersAmount, save, APIError }) {
     const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
-    
+
     const today = new Date();
     const thisMonthFirst = new Date(
         today.getFullYear(),
@@ -829,7 +829,7 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
         if (
             typeof value === "number" ||
             value === WORKER_TITLE ||
-            value == ON_HOLIDAY_TITLE
+            value === ON_HOLIDAY_TITLE
         ) {
             return "bold";
         }
@@ -851,7 +851,7 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
         if (
             today.getFullYear() === selectedDate.getFullYear() &&
             today.getMonth() === selectedDate.getMonth() &&
-            header == today.getDate()
+            header === today.getDate()
         ) {
             return TODAY_COLOR;
         } else {
@@ -884,40 +884,46 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
     /**
      * Counts how many vacationers exist in a given day.
      * As a parameter accepts the number of the day and returns the amount of
-     * workers on holiday on given day. 
+     * workers on holiday on given day.
      */
-    const countVacationers = (dayNumber) => {    
+    const countVacationers = (dayNumber) => {
         let vacationersAmount1 = 0;
-        
+
         //console.log(teams);
 
         // iterate through all vacationers
-        selectedVacationers.forEach(vacationer => {
+        selectedVacationers.forEach((vacationer) => {
             // console.log("start: " + vacationer.vacations.start.substring(8,10))
             // console.log("end: " + vacationer.vacations.end.substring(8,10))
 
             // if the given day is included in the vacationers holiday add to vacationersAmount
             if (teamToShow) {
-                if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
-                    teamToShow.members.forEach(member => {
+                if (
+                    dayNumber >= vacationer.vacations.start.substring(8, 10) &&
+                    dayNumber <= vacationer.vacations.end.substring(8, 10)
+                ) {
+                    teamToShow.members.forEach((member) => {
                         if (member.name === vacationer.name) {
                             vacationersAmount1++;
                         }
                     });
                 }
             } else {
-                if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
+                if (
+                    dayNumber >= vacationer.vacations.start.substring(8, 10) &&
+                    dayNumber <= vacationer.vacations.end.substring(8, 10)
+                ) {
                     vacationersAmount1++;
                 }
             }
-        });     
+        });
 
         return vacationersAmount1;
-    }
+    };
 
-    const countWorkers = (dayNumber) => {    
+    const countWorkers = (dayNumber) => {
         let onHolidayCount = 0;
-        onHolidayCount = countVacationers(dayNumber);    
+        onHolidayCount = countVacationers(dayNumber);
         let allNames = [];
 
         console.log(teams);
@@ -926,111 +932,116 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
         if (teamToShow) {
             return teamToShow.members.length - onHolidayCount;
         } else {
-            teams.forEach(team => {
-                team.members.forEach(member => {
-                    if (!allNames.includes(member.name)){
-                        allNames.push(member.name)
+            teams.forEach((team) => {
+                team.members.forEach((member) => {
+                    if (!allNames.includes(member.name)) {
+                        allNames.push(member.name);
                     }
-                })
+                });
             });
-            console.log(allNames.length)
+            console.log(allNames.length);
             return allNames.length - onHolidayCount;
         }
-    }
+    };
 
-    const getVacationerNames = (dayNumber) => {    
+    const getVacationerNames = (dayNumber) => {
         let vacationerNames = [];
-        
-        selectedVacationers.forEach(vacationer => {
+
+        selectedVacationers.forEach((vacationer) => {
             // console.log("start: " + vacationer.vacations.start.substring(8,10))
             // console.log(vacationer.name)
-            
+
             // if the given day is included in the vacationers holiday add to vacationersAmount
             if (teamToShow) {
-                if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
-                    teamToShow.members.forEach(member => {
+                if (
+                    dayNumber >= vacationer.vacations.start.substring(8, 10) &&
+                    dayNumber <= vacationer.vacations.end.substring(8, 10)
+                ) {
+                    teamToShow.members.forEach((member) => {
                         if (vacationer.name === member.name) {
-                            vacationerNames.push(vacationer.name)
+                            vacationerNames.push(vacationer.name);
                         }
                     });
-                } 
+                }
             } else {
-                if (dayNumber >= vacationer.vacations.start.substring(8,10) && dayNumber <= vacationer.vacations.end.substring(8,10)){
-                    vacationerNames.push(vacationer.name)
-                } 
+                if (
+                    dayNumber >= vacationer.vacations.start.substring(8, 10) &&
+                    dayNumber <= vacationer.vacations.end.substring(8, 10)
+                ) {
+                    vacationerNames.push(vacationer.name);
+                }
             }
-        });  
-        
-        return vacationerNames;
-    }
+        });
 
-    const getWorkerNames = (dayNumber) => {    
+        return vacationerNames;
+    };
+
+    const getWorkerNames = (dayNumber) => {
         let workerNames = [];
         let onHolidayNames = getVacationerNames(dayNumber);
-        
-        console.log(onHolidayNames)
-        
+
+        console.log(onHolidayNames);
+
         if (teamToShow) {
-            teamToShow.members.forEach(member => {
+            teamToShow.members.forEach((member) => {
                 if (onHolidayNames.length > 0) {
-                    onHolidayNames.forEach(vacationer => {
+                    onHolidayNames.forEach((vacationer) => {
                         if (member.name != vacationer) {
-                            workerNames.push(member.name)
+                            workerNames.push(member.name);
                         }
                     });
                 } else {
-                    workerNames.push(member.name)
+                    workerNames.push(member.name);
                 }
-            });  
-            
+            });
+
             return workerNames;
         } else {
-            teams.forEach(team => {
-                team.members.forEach(member => {
+            teams.forEach((team) => {
+                team.members.forEach((member) => {
                     if (!onHolidayNames.includes(member.name)) {
                         if (!workerNames.includes(member.name)) {
-                            workerNames.push(member.name)
+                            workerNames.push(member.name);
                         }
                     }
-                })
+                });
             });
             return workerNames;
         }
-    }
+    };
 
     const getDayFromInt = (day) => {
         switch (day) {
             case 0:
-                return "Mon"
+                return "Mon";
 
             case 1:
-                return "Tue"
+                return "Tue";
 
             case 2:
-                return "Wed"
+                return "Wed";
 
             case 3:
-                return "Thu"
+                return "Thu";
 
             case 4:
-                return "Fri"
+                return "Fri";
 
             case 5:
-                return "Sat"
+                return "Sat";
 
             case 6:
-                return "Sun"
+                return "Sun";
 
             default:
                 break;
         }
-    }
+    };
 
     return (
         <>
             <div className={styles.wholeCalendar}>
                 <div>
-                    
                     <div className={styles.teamChips}>
                         {/*<Select*/}
                         {/*    multiple={true}*/}
@@ -1101,7 +1112,7 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                     <FormGroup>
                         <FormControlLabel
                             checked={showAllVacationers}
-                            onChange={(e) => {
+                            onChange={() => {
                                 setShowAllVacationers(!showAllVacationers);
                             }}
                             control={<Checkbox color="success" />}
@@ -1154,142 +1165,198 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                         }
                     </div> */}
 
-                    {!isMobile ?
-                        <div className="full-calendar">
-                            {allHolidaysSelectedTime.length > 0 && (
-                                <table 
-                                    {...getTableProps()} 
-                                    style={{ border: "solid 0.1em #73D8FF", width: "100%" }}
-                                >
-                                    <thead>
-                                        {headerGroups.map((headerGroup) => (
-                                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                                {headerGroup.headers.map((column) => (
-                                                    <th
-                                                        {...column.getHeaderProps()}
-                                                        style={{
-                                                            background: setTodayHeader(
-                                                                column.Header
-                                                            ),
-                                                            color: "black",
-                                                            width: "1em",
-                                                        }}
-                                                    >
-                                                        {column.render("Header")}
-                                                    </th>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </thead>
-                                    <tbody {...getTableBodyProps()}>
-                                        {rows.map((row) => {
-                                            prepareRow(row);
-                                            return (
+                    {
+                        !isMobile ? (
+                            <div className="full-calendar">
+                                {allHolidaysSelectedTime.length > 0 && (
+                                    <table
+                                        {...getTableProps()}
+                                        style={{
+                                            border: "solid 0.1em #73D8FF",
+                                            width: "100%",
+                                        }}
+                                    >
+                                        <thead>
+                                            {headerGroups.map((headerGroup) => (
                                                 <tr
-                                                    {...row.getRowProps()}
-                                                    style={{
-                                                        backgroundColor: checkRow(
-                                                            row.cells[0].value
-                                                        ),
-                                                    }}
+                                                    {...headerGroup.getHeaderGroupProps()}
                                                 >
-                                                    {row.cells.map((cell, index) => {
-                                                        // console.log(
-                                                        //     "info",
-                                                        //     cell.value,
-                                                        //     index
-                                                        // );
-                                                        return (
-                                                            <td
-                                                                {...cell.getCellProps({
-                                                                    onClick: () => {
-                                                                        console.log(
-                                                                            "loki1",
-                                                                            cell.value
-                                                                        );
-                                                                        console.log(
-                                                                            "loki2",
-                                                                            cell.row
-                                                                                .original
-                                                                                .name,
-                                                                            cell.column
-                                                                                .Header
-                                                                        );
-                                                                    },
-                                                                })}
+                                                    {headerGroup.headers.map(
+                                                        (column) => (
+                                                            <th
+                                                                {...column.getHeaderProps()}
                                                                 style={{
-                                                                    fontWeight: setBold(
-                                                                        cell.value
-                                                                    ),
-                                                                    paddingLeft:
-                                                                        "0.5em",
-                                                                    height: "2em",
-                                                                    maxWidth: "5em",
-                                                                    border: setTodayColumn(
-                                                                        cell.column
-                                                                    ),
-                                                                    backgroundColor:
-                                                                        isCommonHoliday(
-                                                                            cell.value,
-                                                                            index
+                                                                    background:
+                                                                        setTodayHeader(
+                                                                            column.Header
                                                                         ),
+                                                                    color: "black",
+                                                                    width: "1em",
                                                                 }}
                                                             >
-                                                                {cell.render("Cell")}
-                                                            </td>
-                                                        );
-                                                    })}
+                                                                {column.render(
+                                                                    "Header"
+                                                                )}
+                                                            </th>
+                                                        )
+                                                    )}
                                                 </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            )}
-                        </div>
-
-                        
-
-                        :   // If the screen width matches mobile
-                        <div className={styles.verticalCalendar}>
-                        {[...Array(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate())].map((e, i) => 
-                            
-                            <div className={styles.dayDiv} key={i}>
-                                <div className={styles.dayNumber}>
-                                    <p>{i + 1}</p>
-                                    <p>{getDayFromInt(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, i).getDay())}</p>
-                                    {console.log(selectedDate.getDay())}
-                                </div>
-                                <div className={styles.dayContent}>
-                                    <div className={styles.content}>
-                                        <div className={styles.onHolidayContent}>
-                                            {getVacationerNames(i + 1).map((name) => (
-                                                <p>{name}</p>
                                             ))}
+                                        </thead>
+                                        <tbody {...getTableBodyProps()}>
+                                            {rows.map((row) => {
+                                                prepareRow(row);
+                                                return (
+                                                    <tr
+                                                        {...row.getRowProps()}
+                                                        style={{
+                                                            backgroundColor:
+                                                                checkRow(
+                                                                    row.cells[0]
+                                                                        .value
+                                                                ),
+                                                        }}
+                                                    >
+                                                        {row.cells.map(
+                                                            (cell, index) => {
+                                                                // console.log(
+                                                                //     "info",
+                                                                //     cell.value,
+                                                                //     index
+                                                                // );
+                                                                return (
+                                                                    <td
+                                                                        {...cell.getCellProps(
+                                                                            {
+                                                                                onClick:
+                                                                                    () => {
+                                                                                        console.log(
+                                                                                            "loki1",
+                                                                                            cell.value
+                                                                                        );
+                                                                                        console.log(
+                                                                                            "loki2",
+                                                                                            cell
+                                                                                                .row
+                                                                                                .original
+                                                                                                .name,
+                                                                                            cell
+                                                                                                .column
+                                                                                                .Header
+                                                                                        );
+                                                                                    },
+                                                                            }
+                                                                        )}
+                                                                        style={{
+                                                                            fontWeight:
+                                                                                setBold(
+                                                                                    cell.value
+                                                                                ),
+                                                                            paddingLeft:
+                                                                                "0.5em",
+                                                                            height: "2em",
+                                                                            maxWidth:
+                                                                                "5em",
+                                                                            border: setTodayColumn(
+                                                                                cell.column
+                                                                            ),
+                                                                            backgroundColor:
+                                                                                isCommonHoliday(
+                                                                                    cell.value,
+                                                                                    index
+                                                                                ),
+                                                                        }}
+                                                                    >
+                                                                        {cell.render(
+                                                                            "Cell"
+                                                                        )}
+                                                                    </td>
+                                                                );
+                                                            }
+                                                        )}
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+                        ) : (
+                            // If the screen width matches mobile
+                            <div className={styles.verticalCalendar}>
+                                {[
+                                    ...Array(
+                                        new Date(
+                                            selectedDate.getFullYear(),
+                                            selectedDate.getMonth() + 1,
+                                            0
+                                        ).getDate()
+                                    ),
+                                ].map((e, i) => (
+                                    <div className={styles.dayDiv} key={i}>
+                                        <div className={styles.dayNumber}>
+                                            <p>{i + 1}</p>
+                                            <p>
+                                                {getDayFromInt(
+                                                    new Date(
+                                                        selectedDate.getFullYear(),
+                                                        selectedDate.getMonth() +
+                                                            1,
+                                                        i
+                                                    ).getDay()
+                                                )}
+                                            </p>
+                                            {console.log(selectedDate.getDay())}
                                         </div>
-                                        <div className={styles.workingContent}>
-                                            {getWorkerNames(i + 1).map((name) => (
-                                                <p>{name}</p>
-                                            ))}
+                                        <div className={styles.dayContent}>
+                                            <div className={styles.content}>
+                                                <div
+                                                    className={
+                                                        styles.onHolidayContent
+                                                    }
+                                                >
+                                                    {getVacationerNames(
+                                                        i + 1
+                                                    ).map((name) => (
+                                                        <p>{name}</p>
+                                                    ))}
+                                                </div>
+                                                <div
+                                                    className={
+                                                        styles.workingContent
+                                                    }
+                                                >
+                                                    {getWorkerNames(i + 1).map(
+                                                        (name) => (
+                                                            <p>{name}</p>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className={styles.headerCont}>
+                                                <div
+                                                    className={styles.onHoliday}
+                                                >
+                                                    On Holiday:{" "}
+                                                    {countVacationers(i + 1)}
+                                                </div>
+                                                <div className={styles.working}>
+                                                    Working:{" "}
+                                                    {countWorkers(i + 1)}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className={styles.headerCont}>
-                                        <div className={styles.onHoliday}>
-                                            On Holiday: {countVacationers(i + 1)}
-                                        </div>
-                                        <div className={styles.working}>
-                                            Working: {countWorkers(i + 1)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>)}
-                        </div>
+                                ))}
+                            </div>
+                        )
                         // <div>
                         //     {console.log(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate())}
                         //     <div>
                         //     </div>
                         // </div>
                     }
-                    
+
                     {showSpinner && <CircularProgress />}
                 </div>
             </div>

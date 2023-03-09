@@ -163,20 +163,22 @@ function App() {
                                 </div>
                             </ListItem>
                         </Link>
-                        <Link to="/admin">
-                            <ListItem
-                                className={styles.navigation}
-                                button
-                                onClick={() => setIsOpen(!isOpen)}
-                            >
-                                <ListItemIcon>
-                                    <SettingsIcon />
-                                </ListItemIcon>
-                                <div className={styles.navigationText}>
-                                    Admin settings
-                                </div>
-                            </ListItem>
-                        </Link>
+                        {user.admin && (
+                            <Link to="/admin">
+                                <ListItem
+                                    className={styles.navigation}
+                                    button
+                                    onClick={() => setIsOpen(!isOpen)}
+                                >
+                                    <ListItemIcon>
+                                        <SettingsIcon />
+                                    </ListItemIcon>
+                                    <div className={styles.navigationText}>
+                                        Admin settings
+                                    </div>
+                                </ListItem>
+                            </Link>
+                        )}
                     </List>
                 </Box>
             </Drawer>

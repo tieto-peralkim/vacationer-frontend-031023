@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
-    Alert,
-    Box,
     Button,
+    Checkbox,
     FormControl,
+    FormControlLabel,
     InputLabel,
     MenuItem,
     Select,
-    Slider,
     TextField,
 } from "@mui/material";
 import styles from "./admin.module.css";
@@ -21,6 +20,8 @@ export default function Admin() {
     const [selectedDeletedUser, setSelectedDeletedUser] = useState("");
     const [selectedDeletedTeam, setSelectedDeletedTeam] = useState("");
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
+    const [openChangeAdminAlert, setOpenChangeAdminAlert] = useState(false);
+    const [adminStatus, setAdminStatus] = useState(false);
 
     const [deletedVacationers, setDeletedVacationers] = useState([]);
     const [deletedTeams, setDeletedTeams] = useState([]);
@@ -47,6 +48,8 @@ export default function Admin() {
     const emptySelections = () => {
         setSelectedDeletedUser("");
         setSelectedDeletedTeam("");
+        setSelectedUser("");
+        setAdminStatus(false);
     };
 
     useEffect(() => {
@@ -232,6 +235,24 @@ export default function Admin() {
             });
     };
 
+    const setAdminBoolean = () => {
+        console.log("adminStatus", adminStatus);
+        axios
+            .patch(
+                `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedUser.id}/admin`,
+                { adminRole: adminStatus },
+                { withCredentials: true }
+            )
+            .then((response) => {
+                setOpenChangeAdminAlert(false);
+                console.log(response);
+                setCompletedAction(!completedAction);
+            })
+            .catch((error) => {
+                console.error("There was a set admin error!", error);
+            });
+    };
+
     const removeUserFromTeams = (removableUser) => {
         axios
             .put(
@@ -302,6 +323,27 @@ export default function Admin() {
                                     </MenuItem>
                                 ))}
                             </Select>
+                            <FormControl>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            disabled={!selectedUser}
+                                            checked={
+                                                selectedUser
+                                                    ? selectedUser.admin
+                                                    : false
+                                            }
+                                            onChange={(e) => {
+                                                setAdminStatus(
+                                                    e.target.checked
+                                                );
+                                                setOpenChangeAdminAlert(true);
+                                            }}
+                                        />
+                                    }
+                                    label={"Admin user"}
+                                />
+                            </FormControl>
                             <Button
                                 disabled={!selectedUser}
                                 onClick={() => {
@@ -489,6 +531,18 @@ export default function Admin() {
                 handleCloseAlert={() => setUserCreationMessage("")}
                 dialogTitle={"API ERROR!"}
                 dialogContent={userCreationMessage}
+            />
+            <AlertDialog
+                openAlert={openChangeAdminAlert}
+                handleCloseAlert={() => setOpenChangeAdminAlert(false)}
+                handleAction={setAdminBoolean}
+                dialogTitle={"Change admin rights"}
+                dialogContent={
+                    selectedUser &&
+                    `Are you sure you want to change admin rights of the user ${selectedUser.name} ?`
+                }
+                cancel={"No"}
+                confirm={"Yes change"}
             />
             <AlertDialog
                 openAlert={openDeleteUserAlert}
