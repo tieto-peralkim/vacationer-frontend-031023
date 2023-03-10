@@ -1111,19 +1111,25 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                 </div>
                 <div className={styles.wholeCalendar}>
                     <FormGroup>
-                        <FormControlLabel
-                            checked={showAllVacationers}
-                            onChange={() => {
-                                setShowAllVacationers(!showAllVacationers);
-                            }}
-                            control={<Checkbox color="success" />}
-                            disabled={APIError || !user.name}
-                            label={
-                                teamToShow
-                                    ? `Show all employees of team ${teamToShow.title} `
-                                    : "Show all employees"
-                            }
-                        />
+                        { 
+                            !isMobile ? (
+                                <FormControlLabel
+                                    checked={showAllVacationers}
+                                    onChange={() => {
+                                        setShowAllVacationers(!showAllVacationers);
+                                    }}
+                                    control={<Checkbox color="success" />}
+                                    disabled={APIError || !user.name}
+                                    label={
+                                        teamToShow
+                                            ? `Show all employees of team ${teamToShow.title} `
+                                            : "Show all employees"
+                                    }
+                                />
+                            ): (
+                                ""
+                            )
+                        }
                     </FormGroup>
                     <Box className={styles.buttons}>
                         <Button
