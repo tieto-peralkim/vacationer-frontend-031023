@@ -11,11 +11,8 @@ import { useOutletContext } from "react-router-dom";
 export default function Combo() {
     const [save, setSave] = useState(false);
     const [APIError, setAPIError] = useState(false);
-    const [chosenVacationer, setChosenVacationer] = useState("");
 
-    // CONTEXT
     const [user, setUser, update, setUpdate] = useOutletContext();
-
     const [vacationers, setVacationers] = useState([]);
     const [vacationersAmount, setVacationersAmount] = useState([]);
 

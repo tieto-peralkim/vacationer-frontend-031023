@@ -20,6 +20,7 @@ import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 
 export default function PickerModal({
+    resetForm,
     openCalendar,
     chosenUser,
     startDate,
@@ -163,6 +164,7 @@ export default function PickerModal({
                     resetDates();
                     handleCloseAddAlert();
                     handleCloseCalendar();
+                    resetForm();
                     setSave(!save);
                 })
                 .catch((error) => {
@@ -220,6 +222,7 @@ export default function PickerModal({
                 resetDates();
                 handleCloseEditAlert();
                 handleCloseCalendar();
+                resetForm();
                 setSave(!save);
             })
             .catch((error) => {
