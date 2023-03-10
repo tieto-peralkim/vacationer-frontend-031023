@@ -889,35 +889,36 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
     const countVacationers = (dayNumber) => {
         let vacationersAmount1 = 0;
 
-        //console.log(teams);
-
-        // iterate through all vacationers
-        selectedVacationers.forEach((vacationer) => {
-            // console.log("start: " + vacationer.vacations.start.substring(8,10))
-            // console.log("end: " + vacationer.vacations.end.substring(8,10))
-
-            // if the given day is included in the vacationers holiday add to vacationersAmount
-            if (teamToShow) {
-                if (
-                    dayNumber >= vacationer.vacations.start.substring(8, 10) &&
-                    dayNumber <= vacationer.vacations.end.substring(8, 10)
-                ) {
-                    teamToShow.members.forEach((member) => {
-                        if (member.name === vacationer.name) {
-                            vacationersAmount1++;
+        try {
+            // iterate through all vacationers
+            selectedVacationers.forEach((vacationer) => {
+                // console.log("start: " + vacationer.vacations.start.substring(8,10))
+                // console.log("end: " + vacationer.vacations.end.substring(8,10))
+                
+                // if the given day is included in the vacationers holiday add to vacationersAmount
+                if (teamToShow) {
+                    if (
+                        dayNumber >= vacationer.vacations.start.substring(8, 10) &&
+                        dayNumber <= vacationer.vacations.end.substring(8, 10)
+                        ) {
+                            teamToShow.members.forEach((member) => {
+                                if (member.name === vacationer.name) {
+                                    vacationersAmount1++;
+                                }
+                            });
                         }
-                    });
-                }
-            } else {
-                if (
-                    dayNumber >= vacationer.vacations.start.substring(8, 10) &&
-                    dayNumber <= vacationer.vacations.end.substring(8, 10)
-                ) {
-                    vacationersAmount1++;
-                }
-            }
-        });
-
+                    } else {
+                        if (
+                            dayNumber >= vacationer.vacations.start.substring(8, 10) &&
+                            dayNumber <= vacationer.vacations.end.substring(8, 10)
+                            ) {
+                                vacationersAmount1++;
+                            }
+                        }
+            });
+        } catch (error) {
+            console.log(error);           
+        }            
         return vacationersAmount1;
     };
 
@@ -1350,11 +1351,6 @@ export default function Calendar({ user, vacationersAmount, save, APIError }) {
                                 ))}
                             </div>
                         )
-                        // <div>
-                        //     {console.log(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate())}
-                        //     <div>
-                        //     </div>
-                        // </div>
                     }
 
                     {showSpinner && <CircularProgress />}
