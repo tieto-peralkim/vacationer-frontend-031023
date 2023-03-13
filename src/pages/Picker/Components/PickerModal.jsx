@@ -51,6 +51,7 @@ export default function PickerModal({
     resetDates,
     save,
     setSave,
+    APIError,
     handleOpenAPIError,
     handleCloseAPIError,
     calculatePerDay,
@@ -167,7 +168,9 @@ export default function PickerModal({
                     handleCloseCalendar();
                     resetForm();
                     setSave(!save);
-                    handleCloseAPIError();
+                    if (APIError) {
+                        handleCloseAPIError();
+                    }
                 })
                 .catch((error) => {
                     console.error("There was a post new holiday error!", error);
@@ -226,7 +229,9 @@ export default function PickerModal({
                 handleCloseCalendar();
                 resetForm();
                 setSave(!save);
-                handleCloseAPIError();
+                if (APIError) {
+                    handleCloseAPIError();
+                }
             })
             .catch((error) => {
                 console.error("There was a put error!", error);

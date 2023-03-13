@@ -53,6 +53,8 @@ export default function Combo() {
                 <Calendar
                     vacationersAmount={vacationersAmount}
                     save={save}
+                    handleOpenAPIError={handleOpenAPIError}
+                    handleCloseAPIError={handleCloseAPIError}
                     APIError={APIError}
                     user={user}
                 />

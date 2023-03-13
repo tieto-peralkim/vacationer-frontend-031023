@@ -6,14 +6,11 @@ import styles from "./picker.module.css";
 
 import fi from "date-fns/locale/fi";
 import {
-    Box,
     Button,
     ButtonGroup,
     Checkbox,
-    Chip,
     FormControl,
     FormControlLabel,
-    InputLabel,
     MenuItem,
     Select,
     Slider,
@@ -30,6 +27,7 @@ export default function Picker({
     save,
     setSave,
     vacationersAmount,
+    APIError,
     handleOpenAPIError,
     handleCloseAPIError,
 }) {
@@ -170,7 +168,9 @@ export default function Picker({
                 setSave(!save);
                 resetForm();
                 resetDates();
-                handleCloseAPIError();
+                if (APIError) {
+                    handleCloseAPIError();
+                }
             })
             .catch((error) => {
                 console.error("There was a delete holiday error!", error);
@@ -286,7 +286,9 @@ export default function Picker({
                     setChosenVacationer(response.data);
                     console.log("response on", response.data);
                     setExcludedDates(response.data.vacations);
-                    handleCloseAPIError();
+                    if (APIError) {
+                        handleCloseAPIError();
+                    }
                 })
                 .catch((error) => {
                     console.error("There was a vacationers get error:", error);
@@ -314,7 +316,9 @@ export default function Picker({
             .then((response) => {
                 console.log("setDailyVacationers", response.data);
                 setDailyVacationers(response.data);
-                handleCloseAPIError();
+                if (APIError) {
+                    handleCloseAPIError();
+                }
             })
             .catch((error) => {
                 console.error("There was a timespan get error!", error);
@@ -439,6 +443,7 @@ export default function Picker({
                         resetDates={resetDates}
                         save={save}
                         setSave={setSave}
+                        APIError={APIError}
                         handleOpenAPIError={handleOpenAPIError}
                         handleCloseAPIError={handleCloseAPIError}
                         calculatePerDay={calculatePerDay}
