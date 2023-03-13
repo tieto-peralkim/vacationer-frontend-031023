@@ -131,6 +131,13 @@ export default function UserForm({}) {
             });
     };
 
+    const resetColors = () => {
+        setHolidayColor("#73D8FF");
+        setUnConfirmedHolidayColor("#68CCCA");
+        setWeekendColor("#808080");
+        setWeekendHolidayColor("#CCCCCC");
+    };
+
     const updateCalendarSettings = () => {
         if (!symbolNumberError && !unconfirmedSymbolError) {
             let changedCalendarSettings = {
@@ -275,6 +282,16 @@ export default function UserForm({}) {
                                     />
                                 </div>
                             </div>
+                        </div>
+                        <div className={styles.belowButton}>
+                            <Button
+                                disabled={!user}
+                                onClick={resetColors}
+                                variant="outlined"
+                                color={"secondary"}
+                            >
+                                Reset Calendar colors
+                            </Button>
                         </div>
                         <div className={styles.belowButton}>
                             <Button

@@ -2,8 +2,8 @@ import Picker from "../Picker/Picker";
 import Calendar from "../Calendar/Calendar";
 import ApiAlert from "../../components/ApiAlert";
 import styles from "./combo.module.css";
-import { Alert, Divider } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { Divider } from "@mui/material";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
 
@@ -13,7 +13,6 @@ export default function Combo() {
     const [APIError, setAPIError] = useState(false);
 
     const [user, setUser, update, setUpdate] = useOutletContext();
-    const [vacationers, setVacationers] = useState([]);
     const [vacationersAmount, setVacationersAmount] = useState([]);
 
     const handleOpenAPIError = () => {
@@ -25,7 +24,6 @@ export default function Combo() {
 
     // Update simple list of vacationers
     useEffect(() => {
-        console.log("user.name Combo", user.name);
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
                 withCredentials: true,
@@ -48,22 +46,6 @@ export default function Combo() {
         setUpdate(!update);
     }, [save]);
 
-    // Update full list of vacationers
-    useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/vacationers`, {
-                withCredentials: true,
-            })
-            .then((response) => {
-                setVacationers(response.data);
-                console.log("Saved, setVacationers:", response.data);
-            })
-            .catch((error) => {
-                console.error("There was a vacationers get error:", error);
-                handleOpenAPIError();
-            });
-    }, [save]);
-
     return (
         <>
             {APIError && <ApiAlert />}
@@ -71,6 +53,8 @@ export default function Combo() {
                 <Calendar
                     vacationersAmount={vacationersAmount}
                     save={save}
+                    handleOpenAPIError={handleOpenAPIError}
+                    handleCloseAPIError={handleCloseAPIError}
                     APIError={APIError}
                     user={user}
                 />
@@ -81,13 +65,12 @@ export default function Combo() {
                 />
                 <Picker
                     handleOpenAPIError={handleOpenAPIError}
+                    handleCloseAPIError={handleCloseAPIError}
                     APIError={APIError}
-                    vacationers={vacationers}
-                    setVacationers={setVacationers}
+                    vacationersAmount={vacationersAmount}
                     save={save}
                     setSave={setSave}
                     user={user}
-                    setUpdate={setUpdate}
                 />
             </div>
         </>

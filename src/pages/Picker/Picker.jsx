@@ -6,14 +6,11 @@ import styles from "./picker.module.css";
 
 import fi from "date-fns/locale/fi";
 import {
-    Box,
     Button,
     ButtonGroup,
     Checkbox,
-    Chip,
     FormControl,
     FormControlLabel,
-    InputLabel,
     MenuItem,
     Select,
     Slider,
@@ -29,11 +26,10 @@ export default function Picker({
     user,
     save,
     setSave,
-    setUpdate,
-    vacationers,
-    setVacationers,
-    handleOpenAPIError,
+    vacationersAmount,
     APIError,
+    handleOpenAPIError,
+    handleCloseAPIError,
 }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
@@ -172,6 +168,9 @@ export default function Picker({
                 setSave(!save);
                 resetForm();
                 resetDates();
+                if (APIError) {
+                    handleCloseAPIError();
+                }
             })
             .catch((error) => {
                 console.error("There was a delete holiday error!", error);
@@ -265,14 +264,36 @@ export default function Picker({
     };
 
     const selectVacationer = (name) => {
-        setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
-        for (let i = 0; i < vacationers.length; i++) {
-            if (vacationers[i].name === name) {
-                setChosenVacationer(vacationers[i]);
-                console.log("selectVacationer", vacationers[i].vacations);
-                setExcludedDates(vacationers[i].vacations);
-                break;
+        if (vacationersAmount) {
+            setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
+            let vacationerFound;
+
+            for (let i = 0; i < vacationersAmount.length; i++) {
+                if (vacationersAmount[i].name === name) {
+                    vacationerFound = vacationersAmount[i];
+                    console.log("vacationerFound", vacationerFound);
+                    break;
+                }
             }
+            axios
+                .get(
+                    `${process.env.REACT_APP_ADDRESS}/vacationers/${vacationerFound.id}`,
+                    {
+                        withCredentials: true,
+                    }
+                )
+                .then((response) => {
+                    setChosenVacationer(response.data);
+                    console.log("response on", response.data);
+                    setExcludedDates(response.data.vacations);
+                    if (APIError) {
+                        handleCloseAPIError();
+                    }
+                })
+                .catch((error) => {
+                    console.error("There was a vacationers get error:", error);
+                    handleOpenAPIError();
+                });
         }
     };
 
@@ -295,6 +316,9 @@ export default function Picker({
             .then((response) => {
                 console.log("setDailyVacationers", response.data);
                 setDailyVacationers(response.data);
+                if (APIError) {
+                    handleCloseAPIError();
+                }
             })
             .catch((error) => {
                 console.error("There was a timespan get error!", error);
@@ -368,7 +392,7 @@ export default function Picker({
                                     selectVacationer(e.target.value)
                                 }
                             >
-                                {vacationers.map((h) => (
+                                {vacationersAmount.map((h) => (
                                     <MenuItem key={h.id} value={h.name}>
                                         {h.name}
                                     </MenuItem>
@@ -419,7 +443,9 @@ export default function Picker({
                         resetDates={resetDates}
                         save={save}
                         setSave={setSave}
+                        APIError={APIError}
                         handleOpenAPIError={handleOpenAPIError}
+                        handleCloseAPIError={handleCloseAPIError}
                         calculatePerDay={calculatePerDay}
                     />
                     {holidays.length > 0 && (
