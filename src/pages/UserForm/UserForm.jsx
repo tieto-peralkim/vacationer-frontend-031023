@@ -131,7 +131,12 @@ export default function UserForm({}) {
             });
     };
 
-    const resetColors = () => {};
+    const resetColors = () => {
+        setHolidayColor("#73D8FF");
+        setUnConfirmedHolidayColor("#68CCCA");
+        setWeekendColor("#808080");
+        setWeekendHolidayColor("#CCCCCC");
+    };
 
     const updateCalendarSettings = () => {
         if (!symbolNumberError && !unconfirmedSymbolError) {
