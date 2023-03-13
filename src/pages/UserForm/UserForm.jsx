@@ -131,6 +131,8 @@ export default function UserForm({}) {
             });
     };
 
+    const resetColors = () => {};
+
     const updateCalendarSettings = () => {
         if (!symbolNumberError && !unconfirmedSymbolError) {
             let changedCalendarSettings = {
@@ -275,6 +277,16 @@ export default function UserForm({}) {
                                     />
                                 </div>
                             </div>
+                        </div>
+                        <div className={styles.belowButton}>
+                            <Button
+                                disabled={!user}
+                                onClick={resetColors}
+                                variant="outlined"
+                                color={"secondary"}
+                            >
+                                Reset Calendar colors
+                            </Button>
                         </div>
                         <div className={styles.belowButton}>
                             <Button
