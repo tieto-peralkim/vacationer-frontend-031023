@@ -191,18 +191,27 @@ export default function PickerModal({
         }
     };
 
+    // For DatePicker
     const onChange = (dates) => {
         setOverlapErrorMessage(false);
         const [start, end] = dates;
 
         console.log("start1", start, end);
+        if (start) {
+            // Sethours needed for the DatePicker. If omitted, DatePicker shows wrong startdate
+            start.setHours(12);
+            // Holiday start time
+            start.setUTCHours(12);
 
-        setStartDate(start);
-        start.setHours(15);
-        start.setUTCHours(0);
-
-        setEndDate(end);
-        console.log("start2", start, end);
+            setStartDate(start);
+            setEndDate(null);
+        }
+        if (end) {
+            // Holiday end time
+            end.setUTCHours(12);
+            setEndDate(end);
+        }
+        console.log("start12", start, end);
         if (start !== null && end !== null) {
             calculatePerDay(start, end);
         }
