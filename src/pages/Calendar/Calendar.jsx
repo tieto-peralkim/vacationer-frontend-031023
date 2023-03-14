@@ -944,9 +944,6 @@ export default function Calendar({
         onHolidayCount = countVacationers(dayNumber);
         let allNames = [];
 
-        console.log(teams);
-        console.log(vacationersAmount);
-
         if (teamToShow) {
             return teamToShow.members.length - onHolidayCount;
         } else {
@@ -988,6 +985,9 @@ export default function Calendar({
                     });
                 }
             } else {
+                // if (dayNumber == 27) {
+                //     console.log("Vacation end:" + vacationer.vacations.end.substring(8, 10));
+                // }
                 if (
                     dayNumber >= vacationer.vacations.start.substring(8, 10) &&
                     dayNumber <= vacationer.vacations.end.substring(8, 10)
@@ -1003,8 +1003,6 @@ export default function Calendar({
     const getWorkerNames = (dayNumber) => {
         let workerNames = [];
         let onHolidayNames = getVacationerNames(dayNumber);
-
-        console.log(onHolidayNames);
 
         if (teamToShow) {
             teamToShow.members.forEach((member) => {
@@ -1187,19 +1185,6 @@ export default function Calendar({
                             Next
                         </Button>
                     </Box>
-                    {/* <h2>Width: {isMobile ? "Mobile View" : "Desktop View"}</h2>
-                    <div>
-                        {isMobile ?
-                        <div>
-                            test
-                        </div>
-                        :
-                        <div>
-                            test2
-                        </div>
-                        }
-                    </div> */}
-
                     {!isMobile ? (
                         <div className="full-calendar">
                             {allHolidaysSelectedTime.length > 0 && (
@@ -1334,7 +1319,7 @@ export default function Calendar({
                                             {getDayFromInt(
                                                 new Date(
                                                     selectedDate.getFullYear(),
-                                                    selectedDate.getMonth() + 1,
+                                                    selectedDate.getMonth(),
                                                     i
                                                 ).getDay()
                                             )}
