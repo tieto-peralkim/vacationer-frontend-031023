@@ -944,21 +944,24 @@ export default function Calendar({
         onHolidayCount = countVacationers(dayNumber);
         let allNames = [];
 
-        console.log(teams);
-        console.log(selectedVacationers);
-
         if (teamToShow) {
             return teamToShow.members.length - onHolidayCount;
         } else {
-            teams.forEach((team) => {
-                team.members.forEach((member) => {
-                    if (!allNames.includes(member.name)) {
-                        allNames.push(member.name);
-                    }
+
+                teams.forEach((team) => {
+                    team.members.forEach((member) => {
+                        if (!allNames.includes(member.name)) {
+                            allNames.push(member.name);
+                        }
+                    });
                 });
-            });
-            console.log(allNames.length);
-            return allNames.length - onHolidayCount;
+                vacationersAmount.forEach((vacationer) => {
+                    if (!allNames.includes(vacationer.name)) {
+                        allNames.push(vacationer.name);
+                    }
+                })
+                console.log(allNames.length);
+                return allNames.length - onHolidayCount;
         }
     };
 
@@ -982,6 +985,9 @@ export default function Calendar({
                     });
                 }
             } else {
+                // if (dayNumber == 27) {
+                //     console.log("Vacation end:" + vacationer.vacations.end.substring(8, 10));
+                // }
                 if (
                     dayNumber >= vacationer.vacations.start.substring(8, 10) &&
                     dayNumber <= vacationer.vacations.end.substring(8, 10)
@@ -998,8 +1004,6 @@ export default function Calendar({
         let workerNames = [];
         let onHolidayNames = getVacationerNames(dayNumber);
 
-        console.log(onHolidayNames);
-
         if (teamToShow) {
             teamToShow.members.forEach((member) => {
                 if (onHolidayNames.length > 0) {
@@ -1015,16 +1019,23 @@ export default function Calendar({
 
             return workerNames;
         } else {
-            teams.forEach((team) => {
-                team.members.forEach((member) => {
-                    if (!onHolidayNames.includes(member.name)) {
-                        if (!workerNames.includes(member.name)) {
-                            workerNames.push(member.name);
+                teams.forEach((team) => {
+                    team.members.forEach((member) => {
+                        if (!onHolidayNames.includes(member.name)) {
+                            if (!workerNames.includes(member.name)) {
+                                workerNames.push(member.name);
+                            }
+                        }
+                    });
+                });
+                vacationersAmount.forEach((vacationer) => {
+                    if (!onHolidayNames.includes(vacationer.name)) {
+                        if (!workerNames.includes(vacationer.name)) {
+                            workerNames.push(vacationer.name);
                         }
                     }
-                });
-            });
-            return workerNames;
+                })
+                return workerNames;
         }
     };
 
@@ -1174,19 +1185,6 @@ export default function Calendar({
                             Next
                         </Button>
                     </Box>
-                    {/* <h2>Width: {isMobile ? "Mobile View" : "Desktop View"}</h2>
-                    <div>
-                        {isMobile ?
-                        <div>
-                            test
-                        </div>
-                        :
-                        <div>
-                            test2
-                        </div>
-                        }
-                    </div> */}
-
                     {!isMobile ? (
                         <div className="full-calendar">
                             {allHolidaysSelectedTime.length > 0 && (
@@ -1321,7 +1319,7 @@ export default function Calendar({
                                             {getDayFromInt(
                                                 new Date(
                                                     selectedDate.getFullYear(),
-                                                    selectedDate.getMonth() + 1,
+                                                    selectedDate.getMonth(),
                                                     i
                                                 ).getDay()
                                             )}
