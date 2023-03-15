@@ -99,7 +99,7 @@ export default function TeamForm({}) {
 
         team.members.forEach(teamMember => {
             newMembers.forEach(newMember => {
-                if (teamMember.vacationerId === newMember.id) {
+                if (teamMember.name === newMember.name) {
                     isDuplicate = true
                 }
             });
@@ -121,6 +121,7 @@ export default function TeamForm({}) {
                     console.error("There was a team put error!", error);
                 });
         } else {
+            setIsEmpty(true);
             setMemberExistsError(true);
         }
     };
@@ -208,7 +209,7 @@ export default function TeamForm({}) {
     };
 
     useEffect(() => {
-        if (selectedTeam !== "" && selectedMembers.length > 1) {
+        if (selectedTeam !== "" && selectedMembers.length > 0) {
             setIsEmpty(false);
         }
         setMemberExistsError(false);
@@ -329,7 +330,7 @@ export default function TeamForm({}) {
                                         renderValue={(selected) => "..."}
                                         disabled={APIError || !selectedTeam}
                                     >
-                                        {vacationers.map((vacationer) => (
+                                        { vacationers.filter(vacationer => !selectedTeam?.members?.some(member => member.name === vacationer.name)).map(vacationer => ( // Filter out names that already exists in selected team
                                             <MenuItem
                                                 key={vacationer.id}
                                                 value={vacationer}
