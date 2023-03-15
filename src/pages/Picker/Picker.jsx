@@ -9,16 +9,17 @@ import {
     Button,
     ButtonGroup,
     Checkbox,
+    createTheme,
     FormControl,
     FormControlLabel,
+    Grid,
     MenuItem,
     Select,
-    Slider,
+    ThemeProvider,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
-import Typography from "@mui/material/Typography";
 
 registerLocale("fi", fi);
 
@@ -45,9 +46,6 @@ export default function Picker({
     const [confirmed, setConfirmed] = useState(false);
     const [startDateErrorMessage, setStartDateErrorMessage] = useState(false);
     const [endDateErrorMessage, setEndDateErrorMessage] = useState(false);
-    const [showPastVacations, setShowPastVacations] = useState(
-        NUMBER_OF_SHOWN_DEFAULT
-    );
     const [dailyVacationers, setDailyVacationers] = useState([]);
     const [showHolidays, setShowHolidays] = useState(2);
     const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
@@ -80,13 +78,24 @@ export default function Picker({
         resetDates();
     };
 
+    const theme = createTheme({
+        breakpoints: {
+            values: {
+                xs: 400,
+                sm: 575,
+                md: 800,
+                lg: 1100,
+                xl: 1500,
+            },
+        },
+    });
+
     useEffect(() => {
         setChosenVacationer(user);
     }, []);
 
     useEffect(() => {
         if (user.name) {
-            setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
             setExcludedDates(user.vacations);
         }
         resetForm();
@@ -123,19 +132,6 @@ export default function Picker({
         // set existing holiday dates to be excluded in DatePicker
         setCalendarDaysExcluded(holidays);
     }, [holidays]);
-
-    useEffect(() => {
-        if (holidays.length - showPastVacations >= 0) {
-            setShowHolidays(holidays.length - showPastVacations);
-            console.log(
-                "slice",
-                holidays.length - showPastVacations,
-                holidays.length
-            );
-        } else {
-            setShowHolidays(0);
-        }
-    }, [holidays, showPastVacations]);
 
     const resetDates = () => {
         setStartDate(null);
@@ -265,7 +261,6 @@ export default function Picker({
 
     const selectVacationer = (name) => {
         if (vacationersAmount) {
-            setShowPastVacations(NUMBER_OF_SHOWN_DEFAULT);
             let vacationerFound;
 
             for (let i = 0; i < vacationersAmount.length; i++) {
@@ -327,90 +322,79 @@ export default function Picker({
     };
 
     const startAndEndTimeJSX = (holiday) => {
-        if (
-            holiday.start.getDate() === holiday.end.getDate() &&
-            holiday.start.getMonth() === holiday.end.getMonth() &&
-            holiday.start.getYear() === holiday.end.getYear()
-        ) {
-            return (
-                <>
-                    {holiday.start.getUTCDate()}.
-                    {holiday.start.getUTCMonth() + 1}.
-                    {holiday.start.getUTCFullYear()} (
-                    {daysInDateRange(holiday.start, holiday.end)} day)
-                </>
-            );
-        } else {
-            return (
-                <>
-                    {holiday.start.getUTCDate()}.
-                    {holiday.start.getUTCMonth() + 1}.
-                    {holiday.start.getUTCFullYear()} -{" "}
-                    {holiday.end.getUTCDate()}.{holiday.end.getUTCMonth() + 1}.
-                    {holiday.end.getUTCFullYear()} (
-                    {daysInDateRange(holiday.start, holiday.end)} days)
-                </>
-            );
-        }
+        return (
+            <>
+                {holiday.start.getUTCDate()}.{holiday.start.getUTCMonth() + 1}.
+                {holiday.start.getUTCFullYear()} - {holiday.end.getUTCDate()}.
+                {holiday.end.getUTCMonth() + 1}.{holiday.end.getUTCFullYear()}
+            </>
+        );
     };
 
     return (
-        <div className={styles.mainView}>
-            <div>
+        <ThemeProvider theme={theme}>
+            <div className={styles.content}>
                 <form className={styles.form}>
-                    {/*For admin user*/}
-                    {user.admin && (
-                        <FormControl>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={adminspace}
-                                        onChange={() => {
-                                            setAdminspace(!adminspace);
-                                        }}
+                    <div>
+                        {user.admin && (
+                            <div className={styles.selectSection}>
+                                <FormControl>
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={adminspace}
+                                                onChange={() => {
+                                                    setAdminspace(!adminspace);
+                                                }}
+                                            />
+                                        }
+                                        label={"ADMIN: Select user"}
                                     />
-                                }
-                                label={"ADMIN: Select another user"}
-                            />
-                        </FormControl>
-                    )}
-                    {adminspace && (
-                        <FormControl className={styles.nameSelectBox}>
-                            <Select
-                                defaultValue={
-                                    chosenVacationer.name
-                                        ? chosenVacationer.name
-                                        : ""
-                                }
-                                value={
-                                    chosenVacationer.name
-                                        ? chosenVacationer.name
-                                        : ""
-                                }
-                                disabled={!adminspace}
-                                onChange={(e) =>
-                                    selectVacationer(e.target.value)
-                                }
-                            >
-                                {vacationersAmount.map((h) => (
-                                    <MenuItem key={h.id} value={h.name}>
-                                        {h.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    )}
-                    <Button
-                        className={styles.extraMargin}
-                        variant="contained"
-                        color="primary"
-                        disabled={!user.name}
-                        onClick={() => {
-                            handleOpenCalendar();
-                        }}
-                    >
-                        Add a holiday for {chosenVacationer.name}
-                    </Button>
+                                </FormControl>
+                                {adminspace && (
+                                    <FormControl>
+                                        <Select
+                                            className={styles.selectBox}
+                                            defaultValue={
+                                                chosenVacationer.name
+                                                    ? chosenVacationer.name
+                                                    : ""
+                                            }
+                                            value={
+                                                chosenVacationer.name
+                                                    ? chosenVacationer.name
+                                                    : ""
+                                            }
+                                            onChange={(e) =>
+                                                selectVacationer(e.target.value)
+                                            }
+                                        >
+                                            {vacationersAmount.map((h) => (
+                                                <MenuItem
+                                                    key={h.id}
+                                                    value={h.name}
+                                                >
+                                                    {h.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            </div>
+                        )}
+                        <Button
+                            className={styles.extraMargin}
+                            variant="contained"
+                            color="secondary"
+                            disabled={!user.name}
+                            onClick={() => {
+                                handleOpenCalendar();
+                            }}
+                        >
+                            Add new holiday
+                            {adminspace && <> of {chosenVacationer.name} </>}
+                        </Button>
+                    </div>
                     <PickerModal
                         resetForm={resetForm}
                         openCalendar={openCalendar}
@@ -448,90 +432,81 @@ export default function Picker({
                         handleCloseAPIError={handleCloseAPIError}
                         calculatePerDay={calculatePerDay}
                     />
-                    {holidays.length > 0 && (
-                        <>
-                            <div>
-                                {holidays.length > NUMBER_OF_SHOWN_DEFAULT && (
-                                    <div className={styles.marginTop}>
-                                        <Typography>
-                                            Showing newest {showPastVacations}{" "}
-                                            holidays
-                                        </Typography>
-                                        <Slider
-                                            className={styles.marginTop}
-                                            value={showPastVacations}
-                                            min={1}
-                                            max={holidays.length}
-                                            valueLabelDisplay={"on"}
-                                            onChange={(e) =>
-                                                setShowPastVacations(
-                                                    e.target.value
-                                                )
+                </form>
+                <div className={styles.rightSide}>
+                    <Grid
+                        container
+                        rowSpacing={0.7}
+                        columnSpacing={0.5}
+                        direction="row"
+                        justifyContent="flex-start"
+                    >
+                        {holidays
+                            .sort((v1, v2) => v1.start - v2.start)
+                            .map((holiday) => (
+                                <Grid item xl={2} lg={3} md={4} sm={6} xs={12}>
+                                    <ButtonGroup
+                                        className={styles.buttonGroup}
+                                        size="medium"
+                                        key={holiday.id}
+                                    >
+                                        <Button
+                                            className={styles.buttonStyle}
+                                            onClick={() =>
+                                                editHoliday(holiday.id)
                                             }
-                                        />
-                                    </div>
-                                )}
-                                <div className={styles.holidays}>
-                                    {holidays
-                                        .sort((v1, v2) => v1.start - v2.start)
-                                        .slice(showHolidays, holidays.length)
-                                        .map((holiday) => (
-                                            <ButtonGroup
-                                                size="large"
-                                                variant="outlined"
-                                                key={holiday.id}
-                                                className={styles.datesGroup}
-                                            >
-                                                <Button
-                                                    onClick={() =>
-                                                        editHoliday(holiday.id)
-                                                    }
-                                                    color={"primary"}
-                                                    className={styles.dates}
-                                                    disabled={!holiday.upcoming}
-                                                >
-                                                    {startAndEndTimeJSX(
-                                                        holiday
-                                                    )}
-                                                </Button>
-                                                <Button
-                                                    onClick={() =>
-                                                        confirmDeletion(holiday)
-                                                    }
-                                                    color={"primary"}
-                                                    disabled={!holiday.upcoming}
-                                                    endIcon={<ClearIcon />}
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </ButtonGroup>
-                                        ))}
-                                </div>
-                            </div>
-                        </>
-                    )}
-                    {user.name && holidays.length === 0 && (
-                        <p>No vacations...</p>
-                    )}
-                    <AlertDialog
-                        openAlert={openDeletionAlert}
-                        handleCloseAlert={handleCloseDeletionAlert}
-                        handleAction={deleteHoliday}
-                        dialogTitle={"Delete holiday"}
-                        dialogContent={
-                            holidayToDelete.start &&
-                            `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString(
-                                "fi-FI"
-                            )}
+                                            color="info"
+                                            variant={
+                                                holiday.confirmed
+                                                    ? "contained"
+                                                    : "outlined"
+                                            }
+                                            disabled={!holiday.upcoming}
+                                        >
+                                            {startAndEndTimeJSX(holiday)}
+                                        </Button>
+                                        <Button
+                                            onClick={() =>
+                                                confirmDeletion(holiday)
+                                            }
+                                            color={"error"}
+                                            variant="contained"
+                                            disabled={!holiday.upcoming}
+                                        >
+                                            <ClearIcon />
+                                        </Button>
+                                    </ButtonGroup>
+                                </Grid>
+                            ))}
+                    </Grid>
+                </div>
+                {user.name && holidays.length === 0 && <p>No vacations...</p>}
+                <AlertDialog
+                    openAlert={openDeletionAlert}
+                    handleCloseAlert={handleCloseDeletionAlert}
+                    handleAction={deleteHoliday}
+                    dialogTitle={"Delete holiday"}
+                    dialogContent={
+                        holidayToDelete.start &&
+                        `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString(
+                            "fi-FI"
+                        )}
                                    - ${holidayToDelete.end.toLocaleDateString(
                                        "fi-FI"
                                    )} ?`
-                        }
-                        cancel={"No"}
-                        confirm={"Yes delete"}
-                    />
-                </form>
+                    }
+                    cancel={"No"}
+                    confirm={"Yes delete"}
+                />
+                <div className={styles.marginTop}>
+                    <Button variant={"contained"} size={"small"}>
+                        Confirmed
+                    </Button>
+                    <Button variant={"outlined"} size={"small"}>
+                        Un-confirmed
+                    </Button>
+                </div>
             </div>
-        </div>
+        </ThemeProvider>
     );
 }
