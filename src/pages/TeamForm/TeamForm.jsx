@@ -1,6 +1,7 @@
 import {
     Alert,
     Button,
+    Checkbox,
     Chip,
     FormControl,
     InputLabel,
@@ -26,6 +27,7 @@ export default function TeamForm({}) {
 
     const [selectedTeam, setSelectedTeam] = useState("");
     const [selectedMember, setSelectedMember] = useState("");
+    const [selectedMembers, setSelectedMembers] = useState([]);
     const [deletableMember, setDeletableMember] = useState("");
 
     const [completedAction, setCompletedAction] = useState(false);
@@ -78,24 +80,36 @@ export default function TeamForm({}) {
     const emptySelections = () => {
         setSelectedMember("");
         setSelectedTeam("");
+        setSelectedMembers([]);
     };
 
-    const addToTeam = (newMember, team) => {
-        console.log("newMember", newMember, "team", team);
+    const handleChange = (event) => {
+        const {
+          target: { value },
+        } = event;
+        // console.log(value)
+        setSelectedMembers(
+          typeof value === 'string' ? value.split(',') : value
+        )
+    };
+
+    const addToTeam = (newMembers, team) => {
+        console.log("newMembers: ", newMembers, "team", team);
         let isDuplicate = false;
-        for (let i = 0; i < team.members.length; i++) {
-            console.log(i, team.members[i].vacationerId, newMember.id);
-            if (team.members[i].vacationerId === newMember.id) {
-                isDuplicate = true;
-                break;
-            }
-        }
+
+        team.members.forEach(teamMember => {
+            newMembers.forEach(newMember => {
+                if (teamMember.name === newMember.name) {
+                    isDuplicate = true
+                }
+            });
+        });
 
         if (!isDuplicate) {
             axios
                 .post(
                     `${process.env.REACT_APP_ADDRESS}/teams/${team.id}`,
-                    newMember,
+                    newMembers,
                     { withCredentials: true }
                 )
                 .then((response) => {
@@ -107,6 +121,7 @@ export default function TeamForm({}) {
                     console.error("There was a team put error!", error);
                 });
         } else {
+            setIsEmpty(true);
             setMemberExistsError(true);
         }
     };
@@ -194,11 +209,11 @@ export default function TeamForm({}) {
     };
 
     useEffect(() => {
-        if (selectedTeam !== "" && selectedMember !== "") {
+        if (selectedTeam !== "" && selectedMembers.length > 0) {
             setIsEmpty(false);
         }
         setMemberExistsError(false);
-    }, [selectedTeam, selectedMember]);
+    }, [selectedTeam, selectedMembers]);
 
     return (
         <>
@@ -305,32 +320,44 @@ export default function TeamForm({}) {
                                         ))}
                             </div>
                             <div className={styles.topMargin}>
-                                <FormControl>
+                                <FormControl sx={{ width: "50%", mt: 1 }}>
                                     <InputLabel>Add new team member</InputLabel>
                                     <Select
                                         className={styles.nameSelectBox}
-                                        value={selectedMember}
-                                        onChange={(e) => {
-                                            setSelectedMember(e.target.value);
-                                        }}
+                                        value={selectedMembers}
+                                        multiple
+                                        onChange={handleChange}
+                                        renderValue={(selected) => "..."}
                                         disabled={APIError || !selectedTeam}
                                     >
-                                        {vacationers.map((vacationer) => (
+                                        { vacationers.filter(vacationer => !selectedTeam?.members?.some(member => member.name === vacationer.name)).map(vacationer => ( // Filter out names that already exists in selected team
                                             <MenuItem
                                                 key={vacationer.id}
                                                 value={vacationer}
                                             >
+                                                <Checkbox checked={selectedMembers.indexOf(vacationer) > -1} />
                                                 {vacationer.name}
                                             </MenuItem>
                                         ))}
                                     </Select>
                                 </FormControl>
                                 <div>
+                                <InputLabel>Members to add: </InputLabel>
+                                {selectedMembers
+                                        .map((member) => (
+                                            <Chip
+                                                key={member.vacationerId}
+                                                label={member.name}
+                                            />
+                                        ))}
+                                </div>
+                                <div>
                                     <Button
+                                        className={styles.addButton}
                                         disabled={isEmpty}
                                         onClick={(e) => {
                                             addToTeam(
-                                                selectedMember,
+                                                selectedMembers,
                                                 selectedTeam
                                             );
                                         }}
