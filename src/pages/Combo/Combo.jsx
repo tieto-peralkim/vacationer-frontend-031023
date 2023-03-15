@@ -2,10 +2,16 @@ import Picker from "../Picker/Picker";
 import Calendar from "../Calendar/Calendar";
 import ApiAlert from "../../components/ApiAlert";
 import styles from "./combo.module.css";
-import { Divider } from "@mui/material";
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Divider,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // Combines Calendar and Picker
 export default function Combo() {
@@ -50,26 +56,28 @@ export default function Combo() {
         <>
             {APIError && <ApiAlert />}
             <div className={styles.content}>
+                <Accordion>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        Your holidays
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Picker
+                            handleOpenAPIError={handleOpenAPIError}
+                            handleCloseAPIError={handleCloseAPIError}
+                            APIError={APIError}
+                            vacationersAmount={vacationersAmount}
+                            save={save}
+                            setSave={setSave}
+                            user={user}
+                        />
+                    </AccordionDetails>
+                </Accordion>
                 <Calendar
                     vacationersAmount={vacationersAmount}
                     save={save}
                     handleOpenAPIError={handleOpenAPIError}
                     handleCloseAPIError={handleCloseAPIError}
                     APIError={APIError}
-                    user={user}
-                />
-                <Divider
-                    orientation={"horizontal"}
-                    flexItem={true}
-                    absolute={false}
-                />
-                <Picker
-                    handleOpenAPIError={handleOpenAPIError}
-                    handleCloseAPIError={handleCloseAPIError}
-                    APIError={APIError}
-                    vacationersAmount={vacationersAmount}
-                    save={save}
-                    setSave={setSave}
                     user={user}
                 />
             </div>

@@ -9,41 +9,42 @@
   margin-top: 0.5em;
 }
 .marginTop {
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 ul {
   list-style-type: none;
 }
-
 .form {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
-.dates {
-  width: 400px;
+.leftSide {
+  width: max-content;
 }
-.datesGroup {
-  margin-bottom: 1%;
+.rightSide {
 }
-.holidays {
+.content {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+}
+.selectSection {
+  display: flex;
+  align-items: center;
+}
+.selectBox {
+  height: 2em;
 }
 .extraMargin {
-  margin-top: 2% !important;
-  margin-bottom: 1% !important;
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
 }
-.nameSelectBox {
-  width: 400px;
-  display: inline-block;
+.buttonStyle {
+  width: 13em;
+  height: 3em;
+  text-align: left;
 }
-.mainView{
-  padding: 10px;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  display: flex;
+.buttonGroup {
+
 }
