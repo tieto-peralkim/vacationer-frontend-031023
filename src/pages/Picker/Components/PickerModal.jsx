@@ -423,29 +423,29 @@ export default function PickerModal({
                                 label={"Confirmed holiday"}
                             />
                         </FormGroup>
-                    </div>
-                    <div className={styles.buttonStyle}>
-                        {editingSpace ? (
-                            <Button
-                                disabled={disabledConditions}
-                                onClick={confirmEdit}
-                                variant="contained"
-                            >
-                                Edit a holiday
-                            </Button>
-                        ) : (
-                            <Button
-                                disabled={
-                                    !endDate ||
-                                    alertingDates.length !== 0 ||
-                                    overlapErrorMessage
-                                }
-                                onClick={confirmAdd}
-                                variant="contained"
-                            >
-                                Add a holiday
-                            </Button>
-                        )}
+                        <div className={styles.buttonStyle}>
+                            {editingSpace ? (
+                                <Button
+                                    disabled={disabledConditions}
+                                    onClick={confirmEdit}
+                                    variant="contained"
+                                >
+                                    Edit a holiday
+                                </Button>
+                            ) : (
+                                <Button
+                                    disabled={
+                                        !endDate ||
+                                        alertingDates.length !== 0 ||
+                                        overlapErrorMessage
+                                    }
+                                    onClick={confirmAdd}
+                                    variant="contained"
+                                >
+                                    Add a holiday
+                                </Button>
+                            )}
+                        </div>
                     </div>
                 </Box>
             </Modal>

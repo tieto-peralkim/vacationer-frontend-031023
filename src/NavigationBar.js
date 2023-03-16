@@ -21,6 +21,7 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { PersonPin } from "@mui/icons-material";
 
 function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -85,6 +86,7 @@ function NavigationBar() {
                             <div>No user</div>
                         ) : (
                             <Link to="/settings" className={styles.loginTitle}>
+                                <PersonPin className={styles.userIcon} />
                                 {user.name}
                             </Link>
                         )}

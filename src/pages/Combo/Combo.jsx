@@ -58,7 +58,7 @@ export default function Combo() {
             <div className={styles.content}>
                 <Accordion>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        Your holidays
+                        Your holidays: add, edit and remove
                     </AccordionSummary>
                     <AccordionDetails>
                         <Picker
