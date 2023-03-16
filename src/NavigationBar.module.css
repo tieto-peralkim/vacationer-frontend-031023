@@ -68,7 +68,12 @@
 }
 .loginTitle{
   text-decoration: none;
+  display: flex;
+  align-items: center;
   color: white;
+}
+.userIcon {
+  margin-right: 0.3em;
 }
 .rightPart {
   position: absolute;
