@@ -165,7 +165,7 @@ function NavigationBar() {
                                 </div>
                             </ListItem>
                         </Link>
-                        {user.admin && (
+                        {(user.admin || process.env.REACT_APP_ADMIN_OPEN) && (
                             <Link to="/admin">
                                 <ListItem
                                     className={styles.navigation}
