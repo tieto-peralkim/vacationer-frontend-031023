@@ -45,12 +45,9 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: latest
         REACT_APP_ADDRESS: ${{ secrets.BACK_ADDRESS }}
-#       Backdoor for admin access
-        REACT_APP_ADMIN_OPEN: true
       run: |
         touch .env
         echo "REACT_APP_ADDRESS=$REACT_APP_ADDRESS" >> .env
-        echo "REACT_APP_ADMIN_OPEN=$REACT_APP_ADMIN_OPEN" >> .env
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
