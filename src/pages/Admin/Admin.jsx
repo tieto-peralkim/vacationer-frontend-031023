@@ -271,7 +271,7 @@ export default function Admin() {
             });
     };
 
-    return user.admin || process.env.REACT_APP_ADMIN_OPEN ? (
+    return user.admin ? (
         <>
             {APIError && <ApiAlert />}
             <div className={styles.content}>
