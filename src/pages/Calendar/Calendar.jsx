@@ -821,6 +821,7 @@ export default function Calendar({
                 }
             }
         }
+        // TODO:
         // Not working with two last rows
         // else if (typeof value === "number") {
         //     colorToAdd = "bisque";
@@ -947,21 +948,20 @@ export default function Calendar({
         if (teamToShow) {
             return teamToShow.members.length - onHolidayCount;
         } else {
-
-                teams.forEach((team) => {
-                    team.members.forEach((member) => {
-                        if (!allNames.includes(member.name)) {
-                            allNames.push(member.name);
-                        }
-                    });
-                });
-                vacationersAmount.forEach((vacationer) => {
-                    if (!allNames.includes(vacationer.name)) {
-                        allNames.push(vacationer.name);
+            teams.forEach((team) => {
+                team.members.forEach((member) => {
+                    if (!allNames.includes(member.name)) {
+                        allNames.push(member.name);
                     }
-                })
-                console.log(allNames.length);
-                return allNames.length - onHolidayCount;
+                });
+            });
+            vacationersAmount.forEach((vacationer) => {
+                if (!allNames.includes(vacationer.name)) {
+                    allNames.push(vacationer.name);
+                }
+            });
+            console.log(allNames.length);
+            return allNames.length - onHolidayCount;
         }
     };
 
@@ -1019,23 +1019,23 @@ export default function Calendar({
 
             return workerNames;
         } else {
-                teams.forEach((team) => {
-                    team.members.forEach((member) => {
-                        if (!onHolidayNames.includes(member.name)) {
-                            if (!workerNames.includes(member.name)) {
-                                workerNames.push(member.name);
-                            }
-                        }
-                    });
-                });
-                vacationersAmount.forEach((vacationer) => {
-                    if (!onHolidayNames.includes(vacationer.name)) {
-                        if (!workerNames.includes(vacationer.name)) {
-                            workerNames.push(vacationer.name);
+            teams.forEach((team) => {
+                team.members.forEach((member) => {
+                    if (!onHolidayNames.includes(member.name)) {
+                        if (!workerNames.includes(member.name)) {
+                            workerNames.push(member.name);
                         }
                     }
-                })
-                return workerNames;
+                });
+            });
+            vacationersAmount.forEach((vacationer) => {
+                if (!onHolidayNames.includes(vacationer.name)) {
+                    if (!workerNames.includes(vacationer.name)) {
+                        workerNames.push(vacationer.name);
+                    }
+                }
+            });
+            return workerNames;
         }
     };
 

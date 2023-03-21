@@ -11,10 +11,10 @@ import {
     ListItemIcon,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
-import WorkspacesIcon from "@mui/icons-material/Workspaces";
 import MenuIcon from "@mui/icons-material/Menu";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import SettingsIcon from "@mui/icons-material/Settings";
+import Diversity1Icon from "@mui/icons-material/Diversity1";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import Typography from "@mui/material/Typography";
@@ -76,7 +76,7 @@ function NavigationBar() {
                     <IconButton onClick={() => setIsOpen(!isOpen)}>
                         <MenuIcon />
                     </IconButton>
-                    <Typography className={styles.leftPart} variant="h6">
+                    <Typography className={styles.leftPart} variant="h7">
                         {deletedWarning && (
                             <>
                                 <DangerousIcon />
@@ -85,14 +85,14 @@ function NavigationBar() {
                         {!user.name ? (
                             <div>No user</div>
                         ) : (
-                            <Link to="/settings" className={styles.loginTitle}>
+                            <Link to="/profile" className={styles.loginTitle}>
                                 <PersonPin className={styles.userIcon} />
                                 {user.name}
                             </Link>
                         )}
                         {newUserWarning && <FiberNewIcon />}
                     </Typography>
-                    <Typography className={styles.rightPart} variant="h6">
+                    <Typography className={styles.rightPart} variant="h7">
                         {!user.name ? (
                             <a
                                 href={`${process.env.REACT_APP_ADDRESS}/auth`}
@@ -109,8 +109,9 @@ function NavigationBar() {
                             </a>
                         )}
                     </Typography>
-                    <Typography className={styles.headline} variant="h6">
+                    <Typography className={styles.headline} variant="h5">
                         <Link to="/" className={styles.title}>
+                            <BeachAccessIcon />
                             Vacationer
                         </Link>
                     </Typography>
@@ -133,11 +134,11 @@ function NavigationBar() {
                                     <BeachAccessIcon />
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>
-                                    Picker
+                                    Calendar
                                 </div>
                             </ListItem>
                         </Link>
-                        <Link to="/settings">
+                        <Link to="/profile">
                             <ListItem
                                 className={styles.navigation}
                                 button
@@ -147,21 +148,21 @@ function NavigationBar() {
                                     <PersonIcon />
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>
-                                    Settings
+                                    Profile
                                 </div>
                             </ListItem>
                         </Link>
-                        <Link to="/team">
+                        <Link to="/teams">
                             <ListItem
                                 className={styles.navigation}
                                 button
                                 onClick={() => setIsOpen(!isOpen)}
                             >
                                 <ListItemIcon>
-                                    <WorkspacesIcon />
+                                    <Diversity1Icon />
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>
-                                    Team
+                                    Teams
                                 </div>
                             </ListItem>
                         </Link>
