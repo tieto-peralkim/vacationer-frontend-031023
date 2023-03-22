@@ -14,7 +14,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import MenuIcon from "@mui/icons-material/Menu";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import SettingsIcon from "@mui/icons-material/Settings";
-import Diversity1Icon from "@mui/icons-material/Diversity1";
+import GroupsIcon from "@mui/icons-material/Groups";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import Typography from "@mui/material/Typography";
@@ -159,7 +159,7 @@ function NavigationBar() {
                                 onClick={() => setIsOpen(!isOpen)}
                             >
                                 <ListItemIcon>
-                                    <Diversity1Icon />
+                                    <GroupsIcon />
                                 </ListItemIcon>
                                 <div className={styles.navigationText}>
                                     Teams
