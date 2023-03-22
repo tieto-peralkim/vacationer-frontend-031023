@@ -15,8 +15,8 @@ ReactDOM.render(
         <Routes>
             <Route path="/" element={<NavigationBar />}>
                 <Route index element={<Combo />} />
-                <Route path="settings" element={<UserForm />} />
-                <Route path="team" element={<TeamForm />} />
+                <Route path="profile" element={<UserForm />} />
+                <Route path="teams" element={<TeamForm />} />
                 <Route path="admin" element={<Admin />} />
                 <Route path="loginFailed" element={<LoginFailed />} />
                 <Route path="*" element={<Combo />} />
