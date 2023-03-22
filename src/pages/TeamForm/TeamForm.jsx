@@ -85,22 +85,22 @@ export default function TeamForm({}) {
 
     const handleChange = (event) => {
         const {
-          target: { value },
+            target: { value },
         } = event;
         // console.log(value)
         setSelectedMembers(
-          typeof value === 'string' ? value.split(',') : value
-        )
+            typeof value === "string" ? value.split(",") : value
+        );
     };
 
     const addToTeam = (newMembers, team) => {
         console.log("newMembers: ", newMembers, "team", team);
         let isDuplicate = false;
 
-        team.members.forEach(teamMember => {
-            newMembers.forEach(newMember => {
+        team.members.forEach((teamMember) => {
+            newMembers.forEach((newMember) => {
                 if (teamMember.name === newMember.name) {
-                    isDuplicate = true
+                    isDuplicate = true;
                 }
             });
         });
@@ -143,8 +143,7 @@ export default function TeamForm({}) {
                 })
                 .catch((error) => {
                     console.error("There was a post error!", error);
-                })
-                .finally(() => setNewTeam(""));
+                });
         } else {
             setTeamNameError(true);
         }
@@ -231,7 +230,6 @@ export default function TeamForm({}) {
                                     inputProps={{ minLength: 3 }}
                                     label="Team name"
                                     variant="outlined"
-                                    error={nameError}
                                     disabled={APIError}
                                     value={newTeam}
                                     helperText={
@@ -330,26 +328,44 @@ export default function TeamForm({}) {
                                         renderValue={(selected) => "..."}
                                         disabled={APIError || !selectedTeam}
                                     >
-                                        { vacationers.filter(vacationer => !selectedTeam?.members?.some(member => member.name === vacationer.name)).map(vacationer => ( // Filter out names that already exists in selected team
-                                            <MenuItem
-                                                key={vacationer.id}
-                                                value={vacationer}
-                                            >
-                                                <Checkbox checked={selectedMembers.indexOf(vacationer) > -1} />
-                                                {vacationer.name}
-                                            </MenuItem>
-                                        ))}
+                                        {vacationers
+                                            .filter(
+                                                (vacationer) =>
+                                                    !selectedTeam?.members?.some(
+                                                        (member) =>
+                                                            member.name ===
+                                                            vacationer.name
+                                                    )
+                                            )
+                                            .map(
+                                                (
+                                                    vacationer // Filter out names that already exists in selected team
+                                                ) => (
+                                                    <MenuItem
+                                                        key={vacationer.id}
+                                                        value={vacationer}
+                                                    >
+                                                        <Checkbox
+                                                            checked={
+                                                                selectedMembers.indexOf(
+                                                                    vacationer
+                                                                ) > -1
+                                                            }
+                                                        />
+                                                        {vacationer.name}
+                                                    </MenuItem>
+                                                )
+                                            )}
                                     </Select>
                                 </FormControl>
                                 <div>
-                                <InputLabel>Members to add: </InputLabel>
-                                {selectedMembers
-                                        .map((member) => (
-                                            <Chip
-                                                key={member.vacationerId}
-                                                label={member.name}
-                                            />
-                                        ))}
+                                    <InputLabel>Members to add: </InputLabel>
+                                    {selectedMembers.map((member) => (
+                                        <Chip
+                                            key={member.vacationerId}
+                                            label={member.name}
+                                        />
+                                    ))}
                                 </div>
                                 <div>
                                     <Button
@@ -395,7 +411,7 @@ export default function TeamForm({}) {
                 dialogTitle={"Delete team"}
                 dialogContent={
                     selectedTeam &&
-                    `Are you sure you want to delete the team ${selectedTeam.title} ?`
+                    `Are you sure you want to delete the team ${selectedTeam.title}?`
                 }
                 cancel={"No"}
                 confirm={"Yes delete"}
@@ -414,9 +430,12 @@ export default function TeamForm({}) {
             />
             <AlertDialog
                 openAlert={teamCreated}
-                handleCloseAlert={() => setTeamCreated(false)}
-                dialogTitle={"Create team"}
-                dialogContent={"Team created!"}
+                handleCloseAlert={() => {
+                    setTeamCreated(false);
+                    setNewTeam("");
+                }}
+                dialogTitle={newTeam && "Create team"}
+                dialogContent={newTeam && `Team ${newTeam} created!`}
             />
             <AlertDialog
                 openAlert={teamNameError}
