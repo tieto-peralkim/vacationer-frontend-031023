@@ -11,3 +11,7 @@ npm start
 ```
 2. Start the backend
 3. Go to http://localhost:3000
+
+## Deployments
+* QA: When PR has been merged, deployment starts automatically
+* PROD: Adding a tag starts the deployment. Add same tag to both backend and frontend repos. Latest tags: https://github.com/tieto-cem/vacationer-frontend/tags
