@@ -1,0 +1,90 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.borderedBox {
+    border: solid 1px blue;
+    border-radius: 1em;
+    padding: 1.3em;
+    margin: 0.3em;
+    height: max-content;
+    width: 50%;
+}
+.nameSelectBox {
+    min-width: 15em;
+    margin-bottom: 2em;
+    margin-top: 0.6em
+
+}
+.allButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7em;
+    margin-bottom: 2em;
+}
+.topMargin {
+    margin-top: 2em;
+}
+.alertAPI {
+    justify-content: center;
+    width: 100%;
+}
+.addButton {
+    margin-top: 20px;
+}
+
+.listItem {
+    border: 1px solid black;
+    margin: 5px;
+    border-radius: 4px;
+}
+
+.listItemGreyed {
+    background-color: rgb(150, 150, 150);
+    border: 1px solid black;
+    margin: 5px;
+    border-radius: 4px;
+}
+
+.listItemGreyed > .memberChip {
+    width: 100px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 2px;
+    background-color: white;
+}
+
+a{
+    text-decoration: none;
+}
+
+a:hover > .listItem {
+    background-color: rgb(186, 205, 255);
+    transition: 0.5s;
+}
+
+.memberChip {
+    width: 100px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 2px;
+}
+
+.memberChipGreyed {
+    width: 100px;
+    margin-left: 3px;
+    margin-right: 3px;
+    margin-bottom: 2px;
+    background-color: lightgray !important;
+    color: black !important;
+}
+
+p {
+    margin-top: 0;
+}
+
+.greyedTitle {
+    color: white;
+}
