@@ -3,20 +3,23 @@ import {
     ListItem,
     Divider,
     ListItemText,
-    Chip
+    Chip,
+    Button,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import styles from "../team.module.css";
 import axios from "axios";
 import ApiAlert from "../../../components/ApiAlert";
-import * as React from 'react';
+import * as React from "react";
 import { useOutletContext } from "react-router-dom";
+import TeamAdd from "../TeamAdd/TeamAdd";
 
 export default function TeamForm({}) {
     const [teams, setTeams] = useState([]);
     const [user, setUser] = useOutletContext();
     const [vacationers, setVacationers] = useState([]);
 
+    const [openTeamAdd, setOpenTeamAdd] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState("");
 
     const [completedAction, setCompletedAction] = useState(false);
@@ -56,52 +59,76 @@ export default function TeamForm({}) {
             });
     }, [completedAction]);
 
+    const handleClickOpenTeamAdd = () => {
+        setOpenTeamAdd(true);
+    };
+
     return (
         <>
+            <TeamAdd 
+                open={openTeamAdd} 
+                setOpenTeamAdd={setOpenTeamAdd} 
+                teams={teams}
+                setTeams={setTeams}
+            />
             {APIError && <ApiAlert />}
             <div className={styles.content}>
-                <List sx={{ width: '100%', maxWidth: 760, bgcolor: 'background.paper' }}>
-                    {teams.map((team) => (
-                        team.members.some( member => member['name'] === user.name ) ?
-                        <a href="">
-                        <ListItem alignItems="flex-start" className = {styles.listItem}>
-                            <ListItemText
-                            primary= {<p>
-                                {team.title}
-                            </p>}
-                            secondary={
-                                team.members.map((member) => (
-                                    <Chip
-                                        className={styles.memberChip}
-                                        key={member.name}
-                                        color="primary"
-                                        label={member.name}
+                <Button variant="outlined" onClick={handleClickOpenTeamAdd}>
+                    Create new team
+                </Button>
+                <List
+                    sx={{
+                        width: "100%",
+                        maxWidth: 760,
+                        bgcolor: "background.paper",
+                    }}
+                >
+                    {teams.map((team) =>
+                        team.members.some(
+                            (member) => member["name"] === user.name
+                        ) ? (
+                            <a href="">
+                                <ListItem
+                                    alignItems="flex-start"
+                                    className={styles.listItem}
+                                >
+                                    <ListItemText
+                                        primary={<p>{team.title}</p>}
+                                        secondary={team.members.map(
+                                            (member) => (
+                                                <Chip
+                                                    className={
+                                                        styles.memberChip
+                                                    }
+                                                    key={member.name}
+                                                    color="primary"
+                                                    label={member.name}
+                                                />
+                                            )
+                                        )}
                                     />
-                                ))
-                            }
-                            />
-                        </ListItem>
-                        </a>
-                        :
-                        <ListItem  className = {styles.listItemGreyed}>
-                            <ListItemText
-                            primary= {
-                                <p className={styles.greyedTitle}>
-                                    {team.title}
-                                </p>}
-                            secondary={
-                                team.members.map((member) => (
-                                    <Chip
-                                        className={styles.memberChipGreyed}
-                                        key={member.name}
-                                        color="primary"
-                                        label={member.name}
-                                    />
-                                ))
-                            }
-                            />
-                        </ListItem>
-                    ))}
+                                </ListItem>
+                            </a>
+                        ) : (
+                            <ListItem className={styles.listItemGreyed}>
+                                <ListItemText
+                                    primary={
+                                        <p className={styles.greyedTitle}>
+                                            {team.title}
+                                        </p>
+                                    }
+                                    secondary={team.members.map((member) => (
+                                        <Chip
+                                            className={styles.memberChipGreyed}
+                                            key={member.name}
+                                            color="primary"
+                                            label={member.name}
+                                        />
+                                    ))}
+                                />
+                            </ListItem>
+                        )
+                    )}
                 </List>
             </div>
         </>

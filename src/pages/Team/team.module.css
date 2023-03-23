@@ -35,6 +35,8 @@
     margin-top: 20px;
 }
 
+/* -------------------- REFACTOR ---------------------- */
+
 .listItem {
     border: 1px solid black;
     margin: 5px;
@@ -88,3 +90,14 @@ p {
 .greyedTitle {
     color: white;
 }
+
+.teamAddTextField {
+    margin: 20px;
+}
+
+.addTeamDialogContent {
+    display: flex;
+    flex-direction: column;
+}
+
+/* -------------------- /REFACTOR ---------------------- */
