@@ -13,6 +13,7 @@ import ApiAlert from "../../../components/ApiAlert";
 import * as React from "react";
 import { useOutletContext } from "react-router-dom";
 import TeamAdd from "../TeamAdd/TeamAdd";
+import TeamModify from "../TeamModify/TeamModify";
 
 export default function TeamForm({}) {
     const [teams, setTeams] = useState([]);
@@ -20,6 +21,7 @@ export default function TeamForm({}) {
     const [vacationers, setVacationers] = useState([]);
 
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
+    const [openTeamModify, setOpenTeamModify] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState("");
 
     const [completedAction, setCompletedAction] = useState(false);
@@ -63,6 +65,12 @@ export default function TeamForm({}) {
         setOpenTeamAdd(true);
     };
 
+    const handleClickOpenTeamModify = (team) => {
+        //console.log(team);
+        setSelectedTeam(team)
+        setOpenTeamModify(true);
+    };
+
     return (
         <>
             <TeamAdd 
@@ -70,6 +78,16 @@ export default function TeamForm({}) {
                 setOpenTeamAdd={setOpenTeamAdd} 
                 teams={teams}
                 setTeams={setTeams}
+            />
+            <TeamModify
+                open={openTeamModify}
+                setOpenTeamModify={setOpenTeamModify}
+                selectedTeam={selectedTeam}
+                vacationers={vacationers}
+                teams={teams}
+                setTeams={setTeams}
+                setVacationers={setVacationers}
+                setSelectedTeam={setSelectedTeam}
             />
             {APIError && <ApiAlert />}
             <div className={styles.content}>
@@ -87,10 +105,13 @@ export default function TeamForm({}) {
                         team.members.some(
                             (member) => member["name"] === user.name
                         ) ? (
-                            <a href="">
+                            <div className={styles.itemCont}>
                                 <ListItem
                                     alignItems="flex-start"
                                     className={styles.listItem}
+                                    onClick={() => {
+                                        handleClickOpenTeamModify(team);
+                                    }}
                                 >
                                     <ListItemText
                                         primary={<p>{team.title}</p>}
@@ -108,7 +129,7 @@ export default function TeamForm({}) {
                                         )}
                                     />
                                 </ListItem>
-                            </a>
+                            </div>
                         ) : (
                             <ListItem className={styles.listItemGreyed}>
                                 <ListItemText

@@ -58,11 +58,11 @@
     background-color: white;
 }
 
-a{
+/* a{
     text-decoration: none;
-}
+} */
 
-a:hover > .listItem {
+.itemCont:hover > .listItem {
     background-color: rgb(186, 205, 255);
     transition: 0.5s;
 }
@@ -98,6 +98,10 @@ p {
 .addTeamDialogContent {
     display: flex;
     flex-direction: column;
+}
+
+.teamName {
+    font-weight: bold;
 }
 
 /* -------------------- /REFACTOR ---------------------- */
