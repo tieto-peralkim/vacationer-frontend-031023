@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import ApiAlert from "../../../components/ApiAlert";
 import styles from "../team.module.css";
 import { useOutletContext } from "react-router-dom";
+import Cookies from "js-cookie";
 
 export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
     const [user, setUser] = useOutletContext();
@@ -20,49 +21,72 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
     const [teamNameError, setTeamNameError] = useState(false);
     const nameError = newTeam.length < 3;
     const [APIError, setAPIError] = useState(false);
-    const [initialMember, setInitialMember] = useState([user]);
+    const [initialMember, setInitialMember] = useState(user);
+    const [result, setResult] = useState(null);
 
     let newTeamId;
-    let team
+    let team;
 
     const handleClose = () => {
+        setResult(null);
         setOpenTeamAdd(false);
     };
 
-    const createTeam = () => {
-        if (!nameError) {
-            const teamToAdd = {
-                title: newTeam,
-            };
+    // const emptyAll = () => {
+    //     setNewTeam([])
+    //     setTeamCreated(false)
+    //     setTeamNameError(false)
+    //     setInitialMember([user])
+    // }
 
-            axios
-                .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
+    // BUG: Sometimes the current user is not added
+    const createTeam = (newTeam) => {
+        setResult(null);
+
+        let userJSON = JSON.parse(Cookies.get("payload").substring(2));
+        let userName = JSON.parse(atob(userJSON.payload)).username;
+        console.log("userName", userName);
+
+        axios
+            .get(
+                `${process.env.REACT_APP_ADDRESS}/vacationers/getById/${userName}`,
+                {
                     withCredentials: true,
-                })
-                .then((response) => {
-                    setTeamCreated(true);
-                    newTeamId = response.data.id;
-                    team = response.data
-                    console.log(team);
-                    
+                }
+            )
+            .then((response) => {
+                setUser(response.data);
+            })
+            .then((response) => {
+                if (!nameError) {
+                    const teamToAdd = {
+                        title: newTeam,
+                        members: user,
+                    };
+
+                    console.log(user);
+                    console.log(teamToAdd);
+
                     axios
                         .post(
-                            `${process.env.REACT_APP_ADDRESS}/teams/${newTeamId}`,
-                            initialMember,
-                            { withCredentials: true }
+                            `${process.env.REACT_APP_ADDRESS}/teams`,
+                            teamToAdd,
+                            {
+                                withCredentials: true,
+                            }
                         )
                         .then((response) => {
-                            console.log(response);
-                            setTeams([...teams, response.data])
-                            handleClose();
+                            setTeamCreated(true);
+                            team = response.data;
+                            console.log(team);
+                        })
+                        .catch((error) => {
+                            console.error("There was a post error!", error);
                         });
-                })
-                .catch((error) => {
-                    console.error("There was a post error!", error);
-                });
-        } else {
-            setTeamNameError(true);
-        }
+                } else {
+                    setTeamNameError(true);
+                }
+            });
     };
 
     return (
@@ -92,7 +116,7 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
 
                 <Button
                     onClick={() => {
-                        createTeam();
+                        createTeam(newTeam);
                         //handleClose()
                     }}
                     disabled={APIError}

@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
+import DeleteIcon from "@mui/icons-material/Delete";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -41,8 +42,10 @@ export default function TeamModify({
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [isEmpty, setIsEmpty] = useState(true);
     const [memberExistsError, setMemberExistsError] = useState(false);
+    const [deletableMember, setDeletableMember] = useState("");
+    const [openDeleteMemberAlert, setOpenDeleteMemberAlert] = useState(false);
 
-    console.log(selectedTeam);
+    //console.log(selectedTeam);
 
     const handleClose = () => {
         setOpenTeamModify(false);
@@ -58,6 +61,7 @@ export default function TeamModify({
         );
     };
 
+    // BUG: Doesn't update all new members
     const addToTeam = (newMembers, team) => {
         console.log("newMembers: ", newMembers, "team", team);
         let isDuplicate = false;
@@ -80,10 +84,8 @@ export default function TeamModify({
                 .then((response) => {
                     const index = teams.findIndex((el) => el.id === team.id);
                     teams[index] = response.data;
+                    console.log(response.data);
                     setTeams(teams);
-                    setVacationers(vacationers);
-                    // console.log(index);
-                    // console.log(teams);
                     setSelectedTeam(response.data);
                     setSelectedMembers([]);
                     setCompletedAction(!completedAction);
@@ -99,6 +101,31 @@ export default function TeamModify({
             setSelectedMembers([]);
             setMemberExistsError(true);
         }
+    };
+
+    // BUG: When removing, the member is removed but view not updated
+    const deleteMember = () => {
+        console.log("deleting member", deletableMember);
+
+        axios
+            .put(
+                `${process.env.REACT_APP_ADDRESS}/teams/members/${selectedTeam.id}`,
+                deletableMember,
+                { withCredentials: true }
+            )
+            .then((response) => {
+                console.log(response);
+                const index = teams.findIndex((el) => el.id === selectedTeam.id);
+                teams[index] = response.data;
+                setTeams(teams);
+                setSelectedTeam(response.data);
+                setDeletableMember("");
+                setCompletedAction(!completedAction);
+                setOpenDeleteMemberAlert(false);
+            })
+            .catch((error) => {
+                console.error("There was a delete member error!", error);
+            });
     };
 
     useEffect(() => {
@@ -131,6 +158,27 @@ export default function TeamModify({
                     helperText={"New name for the team."}
                     onChange={(e) => setNewTeam(e.target.value)}
                 />
+
+                <div>
+                    <InputLabel>Members: </InputLabel>
+                    {selectedTeam &&
+                        selectedTeam.members
+                            // some sorting?
+                            // .sort((v1, v2) => v1.name - v2.name)
+                            .map((member) => (
+                                <Chip
+                                    key={member.vacationerId}
+                                    label={member.name}
+                                    onDelete={() => {
+                                        setOpenDeleteMemberAlert(
+                                            true
+                                        );
+                                        setDeletableMember(member);
+                                    }}
+                                    deleteIcon={<DeleteIcon />}
+                                />
+                            ))}
+                </div>
 
                 <div className={styles.topMargin}>
                     <FormControl sx={{ width: "50%", mt: 1 }}>
@@ -215,6 +263,19 @@ export default function TeamModify({
                 dialogContent={
                     "This team name is too short (less than 3 characters)!"
                 }
+            />
+
+            <AlertDialog
+                openAlert={openDeleteMemberAlert}
+                handleCloseAlert={() => setOpenDeleteMemberAlert(false)}
+                handleAction={deleteMember}
+                dialogTitle={"Delete member"}
+                dialogContent={
+                    deletableMember &&
+                    `Are you sure you want to delete the member ${deletableMember.name} from team ${selectedTeam.title} ?`
+                }
+                cancel={"No"}
+                confirm={"Yes delete"}
             />
         </Dialog>
     );
