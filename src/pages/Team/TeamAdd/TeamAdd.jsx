@@ -14,7 +14,7 @@ import styles from "../team.module.css";
 import { useOutletContext } from "react-router-dom";
 import Cookies from "js-cookie";
 
-export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
+export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams, completedAction, setCompletedAction }) {
     const [user, setUser] = useOutletContext();
     const [teamCreated, setTeamCreated] = useState(false);
     const [newTeam, setNewTeam] = useState([]);
@@ -32,14 +32,6 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
         setOpenTeamAdd(false);
     };
 
-    // const emptyAll = () => {
-    //     setNewTeam([])
-    //     setTeamCreated(false)
-    //     setTeamNameError(false)
-    //     setInitialMember([user])
-    // }
-
-    // BUG: Sometimes the current user is not added
     const createTeam = (newTeam) => {
         setResult(null);
 
@@ -65,9 +57,6 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
                         members: user,
                     };
 
-                    // console.log(user);
-                    // console.log(teamToAdd);
-
                     axios
                         .post(
                             `${process.env.REACT_APP_ADDRESS}/teams`,
@@ -78,8 +67,8 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
                         )
                         .then((response) => {
                             setTeamCreated(true);
+                            setCompletedAction(!completedAction)
                             team = response.data;
-                            //console.log(team);
                         })
                         .catch((error) => {
                             console.error("There was a post error!", error);
@@ -91,9 +80,6 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
     };
 
     return (
-        // TODO: Add current user to the newly created team
-        // TODO: Update team list when new team is added
-
         <Dialog open={open} onClose={handleClose}>
             {APIError && <ApiAlert />}
             <DialogTitle color="primary">Create a new team</DialogTitle>
@@ -118,7 +104,7 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
                 <Button
                     onClick={() => {
                         createTeam(newTeam);
-                        //handleClose()
+                        handleClose()
                     }}
                     disabled={APIError}
                     variant={"contained"}

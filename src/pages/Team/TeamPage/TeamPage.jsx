@@ -17,7 +17,7 @@ import TeamModify from "../TeamModify/TeamModify";
 
 export default function TeamForm({}) {
     const [teams, setTeams] = useState([]);
-    const [user, setUser] = useOutletContext();
+    const [user, setUser, update, setUpdate] = useOutletContext();
     const [vacationers, setVacationers] = useState([]);
 
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
@@ -28,7 +28,11 @@ export default function TeamForm({}) {
     const [APIError, setAPIError] = useState(false);
 
     useEffect(() => {
-        console.log("User:" + user.name);
+        setUpdate(!update);
+        setAPIError(false);
+    }, [completedAction]);
+
+    useEffect(() => {
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
                 withCredentials: true,
@@ -36,7 +40,6 @@ export default function TeamForm({}) {
             .then((response) => {
                 setAPIError(false);
                 setTeams(response.data);
-                console.log("teams", response.data);
             })
             .catch((error) => {
                 console.error("There was a teams get error:", error);
@@ -51,7 +54,6 @@ export default function TeamForm({}) {
             .then((response) => {
                 setAPIError(false);
                 setVacationers(response.data);
-                console.log("vacationers", response.data);
             })
             .catch((error) => {
                 console.error("There was a vacationers get error!", error);
@@ -59,14 +61,13 @@ export default function TeamForm({}) {
                     setAPIError(true);
                 }
             });
-    }, [completedAction]);
+    }, [completedAction], [teams]);
 
     const handleClickOpenTeamAdd = () => {
         setOpenTeamAdd(true);
     };
 
     const handleClickOpenTeamModify = (team) => {
-        //console.log(team);
         setSelectedTeam(team)
         setOpenTeamModify(true);
     };
@@ -78,6 +79,8 @@ export default function TeamForm({}) {
                 setOpenTeamAdd={setOpenTeamAdd} 
                 teams={teams}
                 setTeams={setTeams}
+                completedAction={completedAction}
+                setCompletedAction={setCompletedAction}
             />
             <TeamModify
                 open={openTeamModify}
@@ -88,6 +91,8 @@ export default function TeamForm({}) {
                 setTeams={setTeams}
                 setVacationers={setVacationers}
                 setSelectedTeam={setSelectedTeam}
+                completedAction={completedAction}
+                setCompletedAction={setCompletedAction}
             />
             {APIError && <ApiAlert />}
             <div className={styles.content}>

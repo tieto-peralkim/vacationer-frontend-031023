@@ -32,8 +32,10 @@ export default function TeamModify({
     setTeams,
     setVacationers,
     setSelectedTeam,
+    completedAction, 
+    setCompletedAction 
 }) {
-    const [completedAction, setCompletedAction] = useState(false);
+    //const [completedAction, setCompletedAction] = useState(false);
     const [user, setUser] = useOutletContext();
     const [newTeam, setNewTeam] = useState([]);
     const [teamNameError, setTeamNameError] = useState(false);
@@ -44,8 +46,7 @@ export default function TeamModify({
     const [memberExistsError, setMemberExistsError] = useState(false);
     const [deletableMember, setDeletableMember] = useState("");
     const [openDeleteMemberAlert, setOpenDeleteMemberAlert] = useState(false);
-
-    //console.log(selectedTeam);
+    const [openModifyTeamAlert, setOpenModifyTeamAlert] = useState(false);
 
     useEffect(() => {
         //emptySelections();
@@ -54,15 +55,10 @@ export default function TeamModify({
                 withCredentials: true,
             })
             .then((response) => {
-                //setAPIError(false);
                 setSelectedTeam(response.data);
-                console.log("team", response.data);
             })
             .catch((error) => {
                 console.error("There was a teams get error:", error);
-                // if (!APIError) {
-                //     setAPIError(true);
-                // }
             });
     }, [completedAction]);
 
@@ -74,14 +70,12 @@ export default function TeamModify({
         const {
             target: { value },
         } = event;
-        // console.log(value)
         setSelectedMembers(
             typeof value === "string" ? value.split(",") : value
         );
     };
 
     const addToTeam = (newMembers, team) => {
-        console.log("newMembers: ", newMembers, "team", team);
         let isDuplicate = false;
 
         team.members.forEach((teamMember) => {
@@ -102,8 +96,7 @@ export default function TeamModify({
                     }
                 )
                 .then((response) => {
-                    console.log("here");
-                    //console.log(response);
+
                 })
                 .catch((error) => {
                     setSelectedMembers([]);
@@ -121,8 +114,6 @@ export default function TeamModify({
     };
 
     const deleteMember = () => {
-        console.log("deleting member", deletableMember);
-
         axios
             .put(
                 `${process.env.REACT_APP_ADDRESS}/teams/members/${selectedTeam.id}`,
@@ -130,7 +121,6 @@ export default function TeamModify({
                 { withCredentials: true }
             )
             .then((response) => {
-                console.log(response);
                 const index = teams.findIndex((el) => el.id === selectedTeam.id);
                 teams[index] = response.data;
                 setTeams(teams);
@@ -141,6 +131,24 @@ export default function TeamModify({
             })
             .catch((error) => {
                 console.error("There was a delete member error!", error);
+            });
+    };
+
+    const changeTeamName = (newName) => {
+        axios
+            .patch(
+                `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
+                {
+                    newName: newName,
+                },
+                { withCredentials: true }
+            )
+            .then((response) => {
+                setCompletedAction(!completedAction);
+                setOpenModifyTeamAlert(false);
+            })
+            .catch((error) => {
+                console.error("There was a put new name error!", error);
             });
     };
 
@@ -174,6 +182,15 @@ export default function TeamModify({
                     helperText={"New name for the team."}
                     onChange={(e) => setNewTeam(e.target.value)}
                 />
+                <Button
+                    disabled={!selectedTeam}
+                    onClick={() => {
+                        changeTeamName(newTeam);
+                    }}
+                    variant={"contained"}
+                >
+                    Change team name
+                </Button>
 
                 <div>
                     <InputLabel>Members: </InputLabel>
