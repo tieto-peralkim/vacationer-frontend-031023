@@ -13,7 +13,7 @@
 }
 .nameSelectBox {
     min-width: 15em;
-    margin-bottom: 2em;
+    margin-bottom: 20px;
     margin-top: 0.6em
 
 }
@@ -92,7 +92,8 @@ p {
 }
 
 .teamAddTextField {
-    margin: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .addTeamDialogContent {
@@ -102,6 +103,18 @@ p {
 
 .teamName {
     font-weight: bold;
+}
+
+.createButton {
+    margin-top: 10px;
+}
+
+.memberDiv {
+    margin-top: 40px;
+}
+
+.divider {
+    margin-top: 20px;
 }
 
 /* -------------------- /REFACTOR ---------------------- */

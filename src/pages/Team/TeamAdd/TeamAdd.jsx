@@ -14,8 +14,15 @@ import styles from "../team.module.css";
 import { useOutletContext } from "react-router-dom";
 import Cookies from "js-cookie";
 
-export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams, completedAction, setCompletedAction }) {
-    const [user, setUser] = useOutletContext();
+export default function TeamAdd({
+    open,
+    setOpenTeamAdd,
+    teams,
+    setTeams,
+    completedAction,
+    setCompletedAction,
+}) {
+    const [user, setUser, update, setUpdate] = useOutletContext();
     const [teamCreated, setTeamCreated] = useState(false);
     const [newTeam, setNewTeam] = useState([]);
     const [teamNameError, setTeamNameError] = useState(false);
@@ -32,51 +39,34 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams, complet
         setOpenTeamAdd(false);
     };
 
+    useEffect(() => {
+        setUpdate(!update);
+        setAPIError(false);
+    }, [completedAction]);
+
     const createTeam = (newTeam) => {
         setResult(null);
+        if (!nameError) {
+            const teamToAdd = {
+                title: newTeam,
+                members: user,
+            };
 
-        // TODO: useOutletContext -> reference in UserForm
-        let userJSON = JSON.parse(Cookies.get("payload").substring(2));
-        let userName = JSON.parse(atob(userJSON.payload)).username;
-        //console.log("userName", userName);
-
-        axios
-            .get(
-                `${process.env.REACT_APP_ADDRESS}/vacationers/getById/${userName}`,
-                {
+            axios
+                .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
                     withCredentials: true,
-                }
-            )
-            .then((response) => {
-                setUser(response.data);
-            })
-            .then((response) => {
-                if (!nameError) {
-                    const teamToAdd = {
-                        title: newTeam,
-                        members: user,
-                    };
-
-                    axios
-                        .post(
-                            `${process.env.REACT_APP_ADDRESS}/teams`,
-                            teamToAdd,
-                            {
-                                withCredentials: true,
-                            }
-                        )
-                        .then((response) => {
-                            setTeamCreated(true);
-                            setCompletedAction(!completedAction)
-                            team = response.data;
-                        })
-                        .catch((error) => {
-                            console.error("There was a post error!", error);
-                        });
-                } else {
-                    setTeamNameError(true);
-                }
-            });
+                })
+                .then((response) => {
+                    setTeamCreated(true);
+                    setCompletedAction(!completedAction);
+                    team = response.data;
+                })
+                .catch((error) => {
+                    console.error("There was a post error!", error);
+                });
+        } else {
+            setTeamNameError(true);
+        }
     };
 
     return (
@@ -104,10 +94,11 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams, complet
                 <Button
                     onClick={() => {
                         createTeam(newTeam);
-                        handleClose()
+                        handleClose();
                     }}
                     disabled={APIError}
                     variant={"contained"}
+                    className={styles.createButton}
                 >
                     Create
                 </Button>

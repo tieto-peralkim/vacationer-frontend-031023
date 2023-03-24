@@ -32,51 +32,55 @@ export default function TeamForm({}) {
         setAPIError(false);
     }, [completedAction]);
 
-    useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
-                withCredentials: true,
-            })
-            .then((response) => {
-                setAPIError(false);
-                setTeams(response.data);
-            })
-            .catch((error) => {
-                console.error("There was a teams get error:", error);
-                if (!APIError) {
-                    setAPIError(true);
-                }
-            });
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
-                withCredentials: true,
-            })
-            .then((response) => {
-                setAPIError(false);
-                setVacationers(response.data);
-            })
-            .catch((error) => {
-                console.error("There was a vacationers get error!", error);
-                if (!APIError) {
-                    setAPIError(true);
-                }
-            });
-    }, [completedAction], [teams]);
+    useEffect(
+        () => {
+            axios
+                .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
+                    withCredentials: true,
+                })
+                .then((response) => {
+                    setAPIError(false);
+                    setTeams(response.data);
+                })
+                .catch((error) => {
+                    console.error("There was a teams get error:", error);
+                    if (!APIError) {
+                        setAPIError(true);
+                    }
+                });
+            axios
+                .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
+                    withCredentials: true,
+                })
+                .then((response) => {
+                    setAPIError(false);
+                    setVacationers(response.data);
+                })
+                .catch((error) => {
+                    console.error("There was a vacationers get error!", error);
+                    if (!APIError) {
+                        setAPIError(true);
+                    }
+                });
+        },
+        [completedAction],
+        [teams]
+    );
 
     const handleClickOpenTeamAdd = () => {
         setOpenTeamAdd(true);
     };
 
     const handleClickOpenTeamModify = (team) => {
-        setSelectedTeam(team)
+        setSelectedTeam(team);
         setOpenTeamModify(true);
     };
 
     return (
         <>
-            <TeamAdd 
-                open={openTeamAdd} 
-                setOpenTeamAdd={setOpenTeamAdd} 
+            <TeamAdd
+                open={openTeamAdd}
+                setOpenTeamAdd={setOpenTeamAdd}
                 teams={teams}
                 setTeams={setTeams}
                 completedAction={completedAction}

@@ -14,6 +14,7 @@ import ApiAlert from "../../../components/ApiAlert";
 import styles from "../team.module.css";
 import { useOutletContext } from "react-router-dom";
 import {
+    Divider,
     Alert,
     Checkbox,
     Chip,
@@ -32,8 +33,8 @@ export default function TeamModify({
     setTeams,
     setVacationers,
     setSelectedTeam,
-    completedAction, 
-    setCompletedAction 
+    completedAction,
+    setCompletedAction,
 }) {
     //const [completedAction, setCompletedAction] = useState(false);
     const [user, setUser] = useOutletContext();
@@ -90,22 +91,20 @@ export default function TeamModify({
             axios
                 .post(
                     `${process.env.REACT_APP_ADDRESS}/teams/${team.id}`,
-                    newMembers, 
-                    { 
-                        withCredentials: true 
+                    newMembers,
+                    {
+                        withCredentials: true,
                     }
                 )
-                .then((response) => {
-
-                })
+                .then((response) => {})
                 .catch((error) => {
                     setSelectedMembers([]);
                     console.error("There was a team put error!", error);
                 });
-                setSelectedMembers([]);
-                setCompletedAction(!completedAction);
-                setIsEmpty(true);
-                setMemberExistsError(false);
+            setSelectedMembers([]);
+            setCompletedAction(!completedAction);
+            setIsEmpty(true);
+            setMemberExistsError(false);
         } else {
             setIsEmpty(true);
             setSelectedMembers([]);
@@ -121,7 +120,9 @@ export default function TeamModify({
                 { withCredentials: true }
             )
             .then((response) => {
-                const index = teams.findIndex((el) => el.id === selectedTeam.id);
+                const index = teams.findIndex(
+                    (el) => el.id === selectedTeam.id
+                );
                 teams[index] = response.data;
                 setTeams(teams);
                 setSelectedTeam(response.data);
@@ -171,6 +172,7 @@ export default function TeamModify({
                     Here you can add / remove members to the team, change the
                     teams name or delete the team.
                 </DialogContentText>
+                <Divider className={styles.divider}/>
                 <TextField
                     className={styles.teamAddTextField}
                     required
@@ -192,7 +194,9 @@ export default function TeamModify({
                     Change team name
                 </Button>
 
-                <div>
+                <Divider className={styles.divider}/>
+
+                <div className={styles.memberDiv}>
                     <InputLabel>Members: </InputLabel>
                     {selectedTeam &&
                         selectedTeam.members
@@ -203,9 +207,7 @@ export default function TeamModify({
                                     key={member.vacationerId}
                                     label={member.name}
                                     onDelete={() => {
-                                        setOpenDeleteMemberAlert(
-                                            true
-                                        );
+                                        setOpenDeleteMemberAlert(true);
                                         setDeletableMember(member);
                                     }}
                                     deleteIcon={<DeleteIcon />}
