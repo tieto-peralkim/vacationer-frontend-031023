@@ -47,6 +47,25 @@ export default function TeamModify({
 
     //console.log(selectedTeam);
 
+    useEffect(() => {
+        //emptySelections();
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                //setAPIError(false);
+                setSelectedTeam(response.data);
+                console.log("team", response.data);
+            })
+            .catch((error) => {
+                console.error("There was a teams get error:", error);
+                // if (!APIError) {
+                //     setAPIError(true);
+                // }
+            });
+    }, [completedAction]);
+
     const handleClose = () => {
         setOpenTeamModify(false);
     };
@@ -61,14 +80,13 @@ export default function TeamModify({
         );
     };
 
-    // BUG: Doesn't update all new members
     const addToTeam = (newMembers, team) => {
         console.log("newMembers: ", newMembers, "team", team);
         let isDuplicate = false;
 
         team.members.forEach((teamMember) => {
             newMembers.forEach((newMember) => {
-                if (teamMember.vacationerId === newMember.vacationerId) {
+                if (teamMember.name === newMember.name) {
                     isDuplicate = true;
                 }
             });
@@ -78,24 +96,23 @@ export default function TeamModify({
             axios
                 .post(
                     `${process.env.REACT_APP_ADDRESS}/teams/${team.id}`,
-                    newMembers,
-                    { withCredentials: true }
+                    newMembers, 
+                    { 
+                        withCredentials: true 
+                    }
                 )
                 .then((response) => {
-                    const index = teams.findIndex((el) => el.id === team.id);
-                    teams[index] = response.data;
-                    console.log(response.data);
-                    setTeams(teams);
-                    setSelectedTeam(response.data);
-                    setSelectedMembers([]);
-                    setCompletedAction(!completedAction);
-                    setIsEmpty(true);
-                    setMemberExistsError(false);
+                    console.log("here");
+                    //console.log(response);
                 })
                 .catch((error) => {
                     setSelectedMembers([]);
                     console.error("There was a team put error!", error);
                 });
+                setSelectedMembers([]);
+                setCompletedAction(!completedAction);
+                setIsEmpty(true);
+                setMemberExistsError(false);
         } else {
             setIsEmpty(true);
             setSelectedMembers([]);
@@ -103,7 +120,6 @@ export default function TeamModify({
         }
     };
 
-    // BUG: When removing, the member is removed but view not updated
     const deleteMember = () => {
         console.log("deleting member", deletableMember);
 

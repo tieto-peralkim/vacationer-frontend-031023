@@ -43,9 +43,10 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
     const createTeam = (newTeam) => {
         setResult(null);
 
+        // TODO: useOutletContext -> reference in UserForm
         let userJSON = JSON.parse(Cookies.get("payload").substring(2));
         let userName = JSON.parse(atob(userJSON.payload)).username;
-        console.log("userName", userName);
+        //console.log("userName", userName);
 
         axios
             .get(
@@ -64,8 +65,8 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
                         members: user,
                     };
 
-                    console.log(user);
-                    console.log(teamToAdd);
+                    // console.log(user);
+                    // console.log(teamToAdd);
 
                     axios
                         .post(
@@ -78,7 +79,7 @@ export default function TeamAdd({ open, setOpenTeamAdd, teams, setTeams }) {
                         .then((response) => {
                             setTeamCreated(true);
                             team = response.data;
-                            console.log(team);
+                            //console.log(team);
                         })
                         .catch((error) => {
                             console.error("There was a post error!", error);
