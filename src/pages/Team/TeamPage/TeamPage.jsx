@@ -72,6 +72,8 @@ export default function TeamForm({}) {
     };
 
     const handleClickOpenTeamModify = (team) => {
+        console.log(team);
+        console.log(vacationers);
         setSelectedTeam(team);
         setOpenTeamModify(true);
     };
@@ -100,7 +102,7 @@ export default function TeamForm({}) {
             />
             {APIError && <ApiAlert />}
             <div className={styles.content}>
-                <Button variant="outlined" onClick={handleClickOpenTeamAdd}>
+                <Button variant="outlined" onClick={handleClickOpenTeamAdd} className={styles.createTeamButton}>
                     Create new team
                 </Button>
                 <List

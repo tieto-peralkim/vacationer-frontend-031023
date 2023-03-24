@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-top: 30px;
 }
 .borderedBox {
     border: solid 1px blue;
@@ -33,6 +34,8 @@
 }
 .addButton {
     margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
 }
 
 /* -------------------- REFACTOR ---------------------- */
@@ -106,7 +109,12 @@ p {
 }
 
 .createButton {
-    margin-top: 10px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.createButton > * {
+    width: 100%;
 }
 
 .memberDiv {
@@ -117,4 +125,11 @@ p {
     margin-top: 20px;
 }
 
+.ultimateWarning > *{
+    color: red;
+}
+
+.createTeamButton {
+    margin-top: 130px;
+}
 /* -------------------- /REFACTOR ---------------------- */

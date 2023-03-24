@@ -47,10 +47,11 @@ export default function TeamModify({
     const [memberExistsError, setMemberExistsError] = useState(false);
     const [deletableMember, setDeletableMember] = useState("");
     const [openDeleteMemberAlert, setOpenDeleteMemberAlert] = useState(false);
+    const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
     const [openModifyTeamAlert, setOpenModifyTeamAlert] = useState(false);
+    const [openDeleteTeamAlert, setOpenDeleteTeamAlert] = useState(false);
 
     useEffect(() => {
-        //emptySelections();
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`, {
                 withCredentials: true,
@@ -77,11 +78,12 @@ export default function TeamModify({
     };
 
     const addToTeam = (newMembers, team) => {
+        console.log("newMembers: ", newMembers, "team", team);
         let isDuplicate = false;
 
         team.members.forEach((teamMember) => {
             newMembers.forEach((newMember) => {
-                if (teamMember.name === newMember.name) {
+                if (teamMember.vacationerId === newMember.id) {
                     isDuplicate = true;
                 }
             });
@@ -153,6 +155,25 @@ export default function TeamModify({
             });
     };
 
+    const deleteTeam = () => {
+        console.log("deleting team", selectedTeam);
+        axios
+            .put(
+                `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}/delete`,
+                {},
+                { withCredentials: true }
+            )
+            .then((response) => {
+                console.log(response);
+                setCompletedAction(!completedAction);
+                setOpenDeleteTeamAlert(false);
+                handleClose()
+            })
+            .catch((error) => {
+                console.error("There was a delete error!", error);
+            });
+    };
+
     useEffect(() => {
         if (selectedTeam !== "" && selectedMembers.length > 0) {
             setIsEmpty(false);
@@ -172,7 +193,7 @@ export default function TeamModify({
                     Here you can add / remove members to the team, change the
                     teams name or delete the team.
                 </DialogContentText>
-                <Divider className={styles.divider}/>
+                {/* <Divider className={styles.divider}/> */}
                 <TextField
                     className={styles.teamAddTextField}
                     required
@@ -183,6 +204,7 @@ export default function TeamModify({
                     value={newTeam}
                     helperText={"New name for the team."}
                     onChange={(e) => setNewTeam(e.target.value)}
+                    placeholder={selectedTeam.title}
                 />
                 <Button
                     disabled={!selectedTeam}
@@ -194,7 +216,7 @@ export default function TeamModify({
                     Change team name
                 </Button>
 
-                <Divider className={styles.divider}/>
+                {/* <Divider className={styles.divider}/> */}
 
                 <div className={styles.memberDiv}>
                     <InputLabel>Members: </InputLabel>
@@ -203,12 +225,23 @@ export default function TeamModify({
                             // some sorting?
                             // .sort((v1, v2) => v1.name - v2.name)
                             .map((member) => (
+                                member.name !== user.name ?
                                 <Chip
                                     key={member.vacationerId}
                                     label={member.name}
-                                    onDelete={() => {
-                                        setOpenDeleteMemberAlert(true);
-                                        setDeletableMember(member);
+                                    onDelete={() => { 
+                                        setOpenDeleteMemberAlert(true)
+                                        setDeletableMember(member)
+                                    }}
+                                    deleteIcon={<DeleteIcon />}
+                                />
+                                :
+                                <Chip
+                                    key={member.vacationerId}
+                                    label={member.name}
+                                    onDelete={() => { 
+                                        setOpenDeleteUserAlert(true)
+                                        setDeletableMember(member)
                                     }}
                                     deleteIcon={<DeleteIcon />}
                                 />
@@ -231,7 +264,7 @@ export default function TeamModify({
                                     (vacationer) =>
                                         !selectedTeam?.members?.some(
                                             (member) =>
-                                                member.name === vacationer.name
+                                                member.vacationerId === vacationer.id
                                         )
                                 )
                                 .map(
@@ -239,7 +272,7 @@ export default function TeamModify({
                                         vacationer // Filter out names that already exists in selected team
                                     ) => (
                                         <MenuItem
-                                            key={vacationer.id}
+                                            key={vacationer.vacationerId}
                                             value={vacationer}
                                         >
                                             <Checkbox
@@ -264,9 +297,8 @@ export default function TeamModify({
                             />
                         ))}
                     </div>
-                    <div>
+                    <div className={styles.addButton}>
                         <Button
-                            className={styles.addButton}
                             disabled={isEmpty}
                             onClick={(e) => {
                                 addToTeam(selectedMembers, selectedTeam);
@@ -274,6 +306,16 @@ export default function TeamModify({
                             variant={"contained"}
                         >
                             Add to team!
+                        </Button>
+                        <Button
+                            disabled={!selectedTeam}
+                            onClick={() => {
+                                setOpenDeleteTeamAlert(true);
+                            }}
+                            variant={"contained"}
+                            color={"error"}
+                        >
+                            Delete team
                         </Button>
                     </div>
                 </div>
@@ -292,6 +334,19 @@ export default function TeamModify({
             <DialogActions></DialogActions>
 
             <AlertDialog
+                openAlert={openDeleteTeamAlert}
+                handleCloseAlert={() => setOpenDeleteTeamAlert(false)}
+                handleAction={deleteTeam}
+                dialogTitle={"Delete team"}
+                dialogContent={
+                    selectedTeam &&
+                    `Are you sure you want to delete the team ${selectedTeam.title}?`
+                }
+                cancel={"No"}
+                confirm={"Yes delete"}
+            />
+
+            <AlertDialog
                 openAlert={teamNameError}
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
@@ -308,6 +363,21 @@ export default function TeamModify({
                 dialogContent={
                     deletableMember &&
                     `Are you sure you want to delete the member ${deletableMember.name} from team ${selectedTeam.title} ?`
+                }
+                cancel={"No"}
+                confirm={"Yes delete"}
+            />
+
+            <AlertDialog
+                sx={{ color: "red"}}
+                className={styles.ultimateWarning}
+                openAlert={openDeleteUserAlert}
+                handleCloseAlert={() => setOpenDeleteUserAlert(false)}
+                handleAction={deleteMember}
+                dialogTitle={"Delete Yourself"}
+                dialogContent={
+                    deletableMember &&
+                    `Are you sure you want to delete yourself from team ${selectedTeam.title}?\n You will lose ALL rights to the team?`
                 }
                 cancel={"No"}
                 confirm={"Yes delete"}

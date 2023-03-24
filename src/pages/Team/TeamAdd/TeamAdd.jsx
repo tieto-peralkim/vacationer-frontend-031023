@@ -47,9 +47,10 @@ export default function TeamAdd({
     const createTeam = (newTeam) => {
         setResult(null);
         if (!nameError) {
+            let firstUser = {name: user.name, vacationerId: user.id}
             const teamToAdd = {
                 title: newTeam,
-                members: user,
+                members: firstUser,
             };
 
             axios
@@ -77,31 +78,33 @@ export default function TeamAdd({
                 <DialogContentText>
                     To create a new team, please provide a name for the team.
                 </DialogContentText>
-                <TextField
-                    className={styles.teamAddTextField}
-                    required
-                    inputProps={{ minLength: 3 }}
-                    label="Team name"
-                    disabled={APIError}
-                    variant="outlined"
-                    value={newTeam}
-                    helperText={
-                        nameError && "Name must be at least 3 characters"
-                    }
-                    onChange={(e) => setNewTeam(e.target.value)}
-                />
-
-                <Button
-                    onClick={() => {
-                        createTeam(newTeam);
-                        handleClose();
-                    }}
-                    disabled={APIError}
-                    variant={"contained"}
-                    className={styles.createButton}
-                >
-                    Create
-                </Button>
+                <div className={styles.teamAddTextField}>
+                    <TextField
+                        className={styles.teamAddTextField}
+                        required
+                        inputProps={{ minLength: 3 }}
+                        label="Team name"
+                        disabled={APIError}
+                        variant="outlined"
+                        value={newTeam}
+                        helperText={
+                            nameError && "Name must be at least 3 characters"
+                        }
+                        onChange={(e) => setNewTeam(e.target.value)}
+                    />
+                </div>
+                <div className={styles.createButton}>
+                    <Button
+                        onClick={() => {
+                            createTeam(newTeam);
+                            handleClose();
+                        }}
+                        disabled={APIError}
+                        variant={"contained"}
+                    >
+                        Create a new team
+                    </Button>
+                </div>
             </DialogContent>
             <DialogActions></DialogActions>
 
