@@ -22,6 +22,7 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Snackbar,
 } from "@mui/material";
 
 export default function TeamModify({
@@ -51,30 +52,36 @@ export default function TeamModify({
     const [openModifyTeamAlert, setOpenModifyTeamAlert] = useState(false);
     const [openDeleteTeamAlert, setOpenDeleteTeamAlert] = useState(false);
     const [alreadyExistsError, setAlreadyExistsError] = useState(false);
+    const [openSnackBar, setopenSnackBar] = useState(false);
 
     useEffect(() => {
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`, {
-                withCredentials: true,
-            })
-            .then((response) => {
-                setSelectedTeam(response.data);
-            })
-            .catch((error) => {
-                console.error("There was a teams get error:", error);
-            });
+        if (selectedTeam != "") {
+            console.log(selectedTeam);
+            //console.log(selectedTeam.length);
+            axios
+                .get(`${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`, {
+                    withCredentials: true,
+                })
+                .then((response) => {
+                    setSelectedTeam(response.data);
+                })
+                .catch((error) => {
+                    console.error("There was a teams get error:", error);
+                });
+        }
     }, [completedAction]);
 
     const handleClose = () => {
-        setAlreadyExistsError(false)
-        setTeamNameError(false)
-        setDeletableMember("")
-        setMemberExistsError(false)
-        setCompletedAction(!completedAction)
+        setAlreadyExistsError(false);
+        setTeamNameError(false);
+        setDeletableMember("");
+        setMemberExistsError(false);
+        setCompletedAction(!completedAction);
         setOpenTeamModify(false);
-        setNewTeam([])
-        setOpenDeleteMemberAlert(false)
-        setOpenDeleteUserAlert(false)
+        setNewTeam([]);
+        setOpenDeleteMemberAlert(false);
+        setOpenDeleteUserAlert(false);
+        setSelectedMembers([]);
     };
 
     const handleChange = (event) => {
@@ -172,12 +179,13 @@ export default function TeamModify({
                     .then((response) => {
                         setCompletedAction(!completedAction);
                         setOpenModifyTeamAlert(false);
+                        setopenSnackBar(true);
                     })
                     .catch((error) => {
                         console.error("There was a put new name error!", error);
                     });
             } else {
-                setAlreadyExistsError(true)
+                setAlreadyExistsError(true);
             }
         } else {
             setTeamNameError(true);
@@ -196,7 +204,7 @@ export default function TeamModify({
                 console.log(response);
                 setCompletedAction(!completedAction);
                 setOpenDeleteTeamAlert(false);
-                handleClose()
+                handleClose();
             })
             .catch((error) => {
                 console.error("There was a delete error!", error);
@@ -209,6 +217,10 @@ export default function TeamModify({
         }
         setMemberExistsError(false);
     }, [selectedTeam, selectedMembers]);
+
+    const handleSnackbarClose = () => {
+        setopenSnackBar(false);
+    };
 
     return (
         <Dialog open={open} onClose={handleClose}>
@@ -254,28 +266,29 @@ export default function TeamModify({
                         selectedTeam.members
                             // some sorting?
                             // .sort((v1, v2) => v1.name - v2.name)
-                            .map((member) => (
-                                member.name !== user.name ?
-                                <Chip
-                                    key={member.vacationerId}
-                                    label={member.name}
-                                    onDelete={() => { 
-                                        setOpenDeleteMemberAlert(true)
-                                        setDeletableMember(member)
-                                    }}
-                                    deleteIcon={<DeleteIcon />}
-                                />
-                                :
-                                <Chip
-                                    key={member.vacationerId}
-                                    label={member.name}
-                                    onDelete={() => { 
-                                        setOpenDeleteUserAlert(true)
-                                        setDeletableMember(member)
-                                    }}
-                                    deleteIcon={<DeleteIcon />}
-                                />
-                            ))}
+                            .map((member) =>
+                                member.name !== user.name ? (
+                                    <Chip
+                                        key={member.vacationerId}
+                                        label={member.name}
+                                        onDelete={() => {
+                                            setOpenDeleteMemberAlert(true);
+                                            setDeletableMember(member);
+                                        }}
+                                        deleteIcon={<DeleteIcon />}
+                                    />
+                                ) : (
+                                    <Chip
+                                        key={member.vacationerId}
+                                        label={member.name}
+                                        onDelete={() => {
+                                            setOpenDeleteUserAlert(true);
+                                            setDeletableMember(member);
+                                        }}
+                                        deleteIcon={<DeleteIcon />}
+                                    />
+                                )
+                            )}
                 </div>
 
                 <div className={styles.topMargin}>
@@ -294,7 +307,8 @@ export default function TeamModify({
                                     (vacationer) =>
                                         !selectedTeam?.members?.some(
                                             (member) =>
-                                                member.vacationerId === vacationer.id
+                                                member.vacationerId ===
+                                                vacationer.id
                                         )
                                 )
                                 .map(
@@ -306,6 +320,7 @@ export default function TeamModify({
                                             value={vacationer}
                                         >
                                             <Checkbox
+                                                key={vacationer.vacationerId}
                                                 checked={
                                                     selectedMembers.indexOf(
                                                         vacationer
@@ -349,17 +364,6 @@ export default function TeamModify({
                         </Button>
                     </div>
                 </div>
-
-                {/* <Button
-                    onClick={() => {
-                        createTeam();
-                        handleClose()
-                    }}
-                    disabled={APIError}
-                    variant={"contained"}
-                >
-                    Create
-                </Button> */}
             </DialogContent>
             <DialogActions></DialogActions>
 
@@ -399,7 +403,7 @@ export default function TeamModify({
             />
 
             <AlertDialog
-                sx={{ color: "red"}}
+                sx={{ color: "red" }}
                 className={styles.ultimateWarning}
                 openAlert={openDeleteUserAlert}
                 handleCloseAlert={() => setOpenDeleteUserAlert(false)}
@@ -419,6 +423,21 @@ export default function TeamModify({
                 dialogTitle={"ERROR!"}
                 dialogContent={"This team name is already taken!"}
             />
+
+            <Snackbar
+                open={openSnackBar}
+                autoHideDuration={3000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+            >
+                <Alert
+                    onClose={handleSnackbarClose}
+                    severity="success"
+                    sx={{ width: "500px" }}
+                >
+                    Team name changed successfully.
+                </Alert>
+            </Snackbar>
         </Dialog>
     );
 }

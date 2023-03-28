@@ -7,7 +7,6 @@ import reportWebVitals from "./reportWebVitals";
 import Admin from "./pages/Admin/Admin";
 import Combo from "./pages/Combo/Combo";
 import UserForm from "./pages/UserForm/UserForm";
-import TeamForm from "./pages/TeamForm/TeamForm";
 import TeamPage from "./pages/Team/TeamPage/TeamPage"
 import LoginFailed from "./pages/Login/LoginFailed";
 

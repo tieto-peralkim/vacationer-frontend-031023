@@ -15,7 +15,7 @@ import { useOutletContext } from "react-router-dom";
 import TeamAdd from "../TeamAdd/TeamAdd";
 import TeamModify from "../TeamModify/TeamModify";
 
-export default function TeamForm({}) {
+export default function TeamPage({}) {
     const [teams, setTeams] = useState([]);
     const [user, setUser, update, setUpdate] = useOutletContext();
     const [vacationers, setVacationers] = useState([]);
@@ -105,8 +105,12 @@ export default function TeamForm({}) {
             />
             {APIError && <ApiAlert />}
             <div className={styles.content}>
-                <Button variant="outlined" onClick={handleClickOpenTeamAdd} className={styles.createTeamButton}>
-                    Create new team
+                <Button
+                    variant="outlined"
+                    onClick={handleClickOpenTeamAdd}
+                    className={styles.createTeamButton}
+                >
+                    Create a new team
                 </Button>
                 <List
                     sx={{
@@ -121,6 +125,7 @@ export default function TeamForm({}) {
                         ) ? (
                             <div className={styles.itemCont}>
                                 <ListItem
+                                    key={team.id}
                                     alignItems="flex-start"
                                     className={styles.listItem}
                                     onClick={() => {
@@ -128,6 +133,7 @@ export default function TeamForm({}) {
                                     }}
                                 >
                                     <ListItemText
+                                        key={team.id}
                                         primary={<p>{team.title}</p>}
                                         secondary={team.members.map(
                                             (member) => (
@@ -135,7 +141,7 @@ export default function TeamForm({}) {
                                                     className={
                                                         styles.memberChip
                                                     }
-                                                    key={member.name}
+                                                    key={member.id}
                                                     color="primary"
                                                     label={member.name}
                                                 />
@@ -145,8 +151,12 @@ export default function TeamForm({}) {
                                 </ListItem>
                             </div>
                         ) : (
-                            <ListItem className={styles.listItemGreyed}>
+                            <ListItem
+                                className={styles.listItemGreyed}
+                                key={team.id}
+                            >
                                 <ListItemText
+                                    key={team.id}
                                     primary={
                                         <p className={styles.greyedTitle}>
                                             {team.title}
@@ -155,7 +165,7 @@ export default function TeamForm({}) {
                                     secondary={team.members.map((member) => (
                                         <Chip
                                             className={styles.memberChipGreyed}
-                                            key={member.name}
+                                            key={member.id}
                                             color="primary"
                                             label={member.name}
                                         />
