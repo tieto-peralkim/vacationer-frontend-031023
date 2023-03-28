@@ -26,6 +26,7 @@ export default function TeamAdd({
     const [teamCreated, setTeamCreated] = useState(false);
     const [newTeam, setNewTeam] = useState([]);
     const [teamNameError, setTeamNameError] = useState(false);
+    const [alreadyExistsError, setAlreadyExistsError] = useState(false);
     const nameError = newTeam.length < 3;
     const [APIError, setAPIError] = useState(false);
     const [initialMember, setInitialMember] = useState(user);
@@ -37,6 +38,9 @@ export default function TeamAdd({
     const handleClose = () => {
         setResult(null);
         setOpenTeamAdd(false);
+        setTeamNameError(false);
+        setAlreadyExistsError(false)
+        setNewTeam([])
     };
 
     useEffect(() => {
@@ -45,26 +49,45 @@ export default function TeamAdd({
     }, [completedAction]);
 
     const createTeam = (newTeam) => {
+        //console.log(newTeam);
+
         setResult(null);
         if (!nameError) {
-            let firstUser = {name: user.name, vacationerId: user.id}
-            const teamToAdd = {
-                title: newTeam,
-                members: firstUser,
-            };
+            let alreadyExists = false;
+            teams.forEach((team) => {
+                if (team.title === newTeam) {
+                    alreadyExists = true;
+                }
+            });
 
-            axios
-                .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
-                    withCredentials: true,
-                })
-                .then((response) => {
-                    setTeamCreated(true);
-                    setCompletedAction(!completedAction);
-                    team = response.data;
-                })
-                .catch((error) => {
-                    console.error("There was a post error!", error);
-                });
+            if (!alreadyExists) {
+                let firstUser = { name: user.name, vacationerId: user.id };
+                const teamToAdd = {
+                    title: newTeam,
+                    members: firstUser,
+                };
+
+                //console.log(teamToAdd);
+
+                axios
+                    .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
+                        withCredentials: true,
+                    })
+                    .then((response) => {
+                        setTeamCreated(true);
+                        setCompletedAction(!completedAction);
+                        setNewTeam([]);
+                        team = response.data;
+                    })
+                    .finally(() => {
+                        handleClose();
+                    })
+                    .catch((error) => {
+                        console.error("There was a post error!", error);
+                    });
+            } else {
+                setAlreadyExistsError(true);
+            }
         } else {
             setTeamNameError(true);
         }
@@ -97,7 +120,6 @@ export default function TeamAdd({
                     <Button
                         onClick={() => {
                             createTeam(newTeam);
-                            handleClose();
                         }}
                         disabled={APIError}
                         variant={"contained"}
@@ -115,6 +137,13 @@ export default function TeamAdd({
                 dialogContent={
                     "This team name is too short (less than 3 characters)!"
                 }
+            />
+
+            <AlertDialog
+                openAlert={alreadyExistsError}
+                handleCloseAlert={() => setAlreadyExistsError(false)}
+                dialogTitle={"ERROR!"}
+                dialogContent={"This team name is already taken!"}
             />
         </Dialog>
     );

@@ -34,11 +34,13 @@ export default function TeamForm({}) {
 
     useEffect(
         () => {
+            console.log("Fetching data...");
             axios
                 .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
                     withCredentials: true,
                 })
                 .then((response) => {
+                    console.log(response.data);
                     setAPIError(false);
                     setTeams(response.data);
                 })
@@ -53,6 +55,7 @@ export default function TeamForm({}) {
                     withCredentials: true,
                 })
                 .then((response) => {
+                    console.log(response.data);
                     setAPIError(false);
                     setVacationers(response.data);
                 })

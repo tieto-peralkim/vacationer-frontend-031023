@@ -50,6 +50,7 @@ export default function TeamModify({
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
     const [openModifyTeamAlert, setOpenModifyTeamAlert] = useState(false);
     const [openDeleteTeamAlert, setOpenDeleteTeamAlert] = useState(false);
+    const [alreadyExistsError, setAlreadyExistsError] = useState(false);
 
     useEffect(() => {
         axios
@@ -65,7 +66,15 @@ export default function TeamModify({
     }, [completedAction]);
 
     const handleClose = () => {
+        setAlreadyExistsError(false)
+        setTeamNameError(false)
+        setDeletableMember("")
+        setMemberExistsError(false)
+        setCompletedAction(!completedAction)
         setOpenTeamModify(false);
+        setNewTeam([])
+        setOpenDeleteMemberAlert(false)
+        setOpenDeleteUserAlert(false)
     };
 
     const handleChange = (event) => {
@@ -132,27 +141,47 @@ export default function TeamModify({
                 setCompletedAction(!completedAction);
                 setOpenDeleteMemberAlert(false);
             })
+            .finally(() => {
+                if (deletableMember.name === user.name) {
+                    handleClose();
+                }
+            })
             .catch((error) => {
                 console.error("There was a delete member error!", error);
             });
     };
 
     const changeTeamName = (newName) => {
-        axios
-            .patch(
-                `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
-                {
-                    newName: newName,
-                },
-                { withCredentials: true }
-            )
-            .then((response) => {
-                setCompletedAction(!completedAction);
-                setOpenModifyTeamAlert(false);
-            })
-            .catch((error) => {
-                console.error("There was a put new name error!", error);
+        if (!nameError) {
+            let alreadyExists = false;
+            teams.forEach((team) => {
+                if (team.title === newTeam) {
+                    alreadyExists = true;
+                }
             });
+
+            if (!alreadyExists) {
+                axios
+                    .patch(
+                        `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
+                        {
+                            newName: newName,
+                        },
+                        { withCredentials: true }
+                    )
+                    .then((response) => {
+                        setCompletedAction(!completedAction);
+                        setOpenModifyTeamAlert(false);
+                    })
+                    .catch((error) => {
+                        console.error("There was a put new name error!", error);
+                    });
+            } else {
+                setAlreadyExistsError(true)
+            }
+        } else {
+            setTeamNameError(true);
+        }
     };
 
     const deleteTeam = () => {
@@ -198,11 +227,12 @@ export default function TeamModify({
                     className={styles.teamAddTextField}
                     required
                     inputProps={{ minLength: 3 }}
-                    label="Change team name"
                     disabled={APIError}
                     variant="outlined"
                     value={newTeam}
-                    helperText={"New name for the team."}
+                    helperText={
+                        nameError && "New name must be at least 3 characters"
+                    }
                     onChange={(e) => setNewTeam(e.target.value)}
                     placeholder={selectedTeam.title}
                 />
@@ -381,6 +411,13 @@ export default function TeamModify({
                 }
                 cancel={"No"}
                 confirm={"Yes delete"}
+            />
+
+            <AlertDialog
+                openAlert={alreadyExistsError}
+                handleCloseAlert={() => setAlreadyExistsError(false)}
+                dialogTitle={"ERROR!"}
+                dialogContent={"This team name is already taken!"}
             />
         </Dialog>
     );
