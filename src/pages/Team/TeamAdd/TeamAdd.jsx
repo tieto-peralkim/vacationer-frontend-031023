@@ -86,10 +86,10 @@ export default function TeamAdd({
     return (
         <Dialog open={open} onClose={handleClose}>
             {APIError && <ApiAlert />}
-            <DialogTitle color="primary">Create a new team</DialogTitle>
+            <DialogTitle color="primary">Create new team</DialogTitle>
             <DialogContent className={styles.addTeamDialogContent}>
                 <DialogContentText>
-                    To create a new team, please provide a name for the team.
+                    Please provide name for the team.
                 </DialogContentText>
                 <div className={styles.teamAddTextField}>
                     <TextField
@@ -114,7 +114,7 @@ export default function TeamAdd({
                         disabled={APIError}
                         variant={"contained"}
                     >
-                        Create a new team
+                        Create team
                     </Button>
                 </div>
             </DialogContent>

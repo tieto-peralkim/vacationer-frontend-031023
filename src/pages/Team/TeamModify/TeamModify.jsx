@@ -193,7 +193,9 @@ export default function TeamModify({
             {APIError && <ApiAlert />}
             <DialogTitle color="primary">
                 Modify team{" "}
-                <p className={styles.teamName}>{selectedTeam.title}</p>
+                <span className={styles.modifyTeamName}>
+                    {selectedTeam.title}
+                </span>
             </DialogTitle>
             <DialogContent className={styles.modifyTeamDialogContent}>
                 <TextField
@@ -291,13 +293,16 @@ export default function TeamModify({
                     <div>
                         <InputLabel>Members to add: </InputLabel>
                         {selectedMembers.map((member) => (
-                            <Chip key={member.name} label={member.name} />
+                            <Chip
+                                key={member.vacationerId}
+                                label={member.name}
+                            />
                         ))}
                     </div>
                     <div className={styles.addButton}>
                         <Button
                             disabled={selectedMembers.length === 0} // Set button disabled if no member is selected
-                            onClick={(e) => {
+                            onClick={() => {
                                 addToTeam(selectedMembers, selectedTeam);
                             }}
                             variant={"contained"}
@@ -345,10 +350,10 @@ export default function TeamModify({
                 openAlert={openDeleteMemberAlert}
                 handleCloseAlert={() => setOpenDeleteMemberAlert(false)}
                 handleAction={deleteMember}
-                dialogTitle={"Delete member"}
+                dialogTitle={"Remove member"}
                 dialogContent={
                     deletableMember &&
-                    `Are you sure you want to delete the member ${deletableMember.name} from team ${selectedTeam.title} ?`
+                    `Are you sure you want to remove member ${deletableMember.name} from team ${selectedTeam.title} ?`
                 }
                 cancel={"No"}
                 confirm={"Yes delete"}
@@ -360,10 +365,10 @@ export default function TeamModify({
                 openAlert={openDeleteUserAlert}
                 handleCloseAlert={() => setOpenDeleteUserAlert(false)}
                 handleAction={deleteMember}
-                dialogTitle={"Delete Yourself"}
+                dialogTitle={`Remove yourself from team ${selectedTeam.title}`}
                 dialogContent={
                     deletableMember &&
-                    `Are you sure you want to delete yourself from team ${selectedTeam.title}?\n You will lose ALL rights to the team?`
+                    `Are you sure? You will lose ALL rights to the team?`
                 }
                 cancel={"No"}
                 confirm={"Yes delete"}

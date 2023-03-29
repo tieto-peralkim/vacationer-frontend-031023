@@ -960,7 +960,6 @@ export default function Calendar({
                     allNames.push(vacationer.name);
                 }
             });
-            console.log(allNames.length);
             return allNames.length - onHolidayCount;
         }
     };
@@ -1324,7 +1323,6 @@ export default function Calendar({
                                                 ).getDay()
                                             )}
                                         </p>
-                                        {console.log(selectedDate.getDay())}
                                     </div>
                                     <div className={styles.dayContent}>
                                         <div className={styles.content}>

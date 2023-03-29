@@ -37,7 +37,6 @@ function NavigationBar() {
         if (Cookies.get("payload")) {
             let userJSON = JSON.parse(Cookies.get("payload").substring(2));
             let userName = JSON.parse(atob(userJSON.payload)).username;
-            console.log("userName", userName);
 
             axios
                 .get(
@@ -48,7 +47,6 @@ function NavigationBar() {
                 )
                 .then((response) => {
                     if (response.data) {
-                        console.log("response.data", response.data);
                         if (response.status === 201) {
                             console.log("luotu!");
                             setNewUserWarning(true);

@@ -14,6 +14,7 @@ import * as React from "react";
 import { useOutletContext } from "react-router-dom";
 import TeamAdd from "../TeamAdd/TeamAdd";
 import TeamModify from "../TeamModify/TeamModify";
+import Typography from "@mui/material/Typography";
 
 export default function TeamPage({}) {
     const [teams, setTeams] = useState([]);
@@ -104,7 +105,7 @@ export default function TeamPage({}) {
                     onClick={handleClickOpenTeamAdd}
                     className={styles.createTeamButton}
                 >
-                    Create a new team
+                    Create new team
                 </Button>
                 <List
                     key={"key"}
@@ -117,7 +118,7 @@ export default function TeamPage({}) {
                     {teams.map((team) =>
                         team.members.some(
                             (member) => member["name"] === user.name
-                        ) ? (
+                        ) || user.admin ? (
                             <div className={styles.itemCont} key={team.id}>
                                 <ListItem
                                     key={team.id}
@@ -128,8 +129,15 @@ export default function TeamPage({}) {
                                     }}
                                 >
                                     <ListItemText
+                                        disableTypography
                                         key={team.id}
-                                        primary={<p>{team.title}</p>}
+                                        primary={
+                                            <Typography
+                                                className={styles.teamName}
+                                            >
+                                                {team.title}
+                                            </Typography>
+                                        }
                                         secondary={team.members.map(
                                             (member) => (
                                                 <Chip
@@ -146,28 +154,37 @@ export default function TeamPage({}) {
                                 </ListItem>
                             </div>
                         ) : (
-                            <ListItem
-                                className={styles.listItemGreyed}
-                                key={team.id}
-                            >
-                                <ListItemText
-                                    disableTypography={true}
+                            <div key={team.id}>
+                                <ListItem
+                                    className={styles.listItemGreyed}
                                     key={team.id}
-                                    primary={
-                                        <p className={styles.greyedTitle}>
-                                            {team.title}
-                                        </p>
-                                    }
-                                    secondary={team.members.map((member) => (
-                                        <Chip
-                                            className={styles.memberChipGreyed}
-                                            key={member.vacationerId}
-                                            color="primary"
-                                            label={member.name}
-                                        />
-                                    ))}
-                                />
-                            </ListItem>
+                                >
+                                    <ListItemText
+                                        key={team.id}
+                                        disableTypography
+                                        primary={
+                                            <Typography
+                                                className={styles.teamName}
+                                            >
+                                                {team.title}
+                                            </Typography>
+                                        }
+                                        className={styles.greyedTitle}
+                                        secondary={team.members.map(
+                                            (member) => (
+                                                <Chip
+                                                    className={
+                                                        styles.memberChipGreyed
+                                                    }
+                                                    key={member.vacationerId}
+                                                    color="primary"
+                                                    label={member.name}
+                                                />
+                                            )
+                                        )}
+                                    />
+                                </ListItem>
+                            </div>
                         )
                     )}
                 </List>

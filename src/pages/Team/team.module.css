@@ -70,7 +70,6 @@
     transition: 0.5s;
     cursor: pointer;
 }
-
 .memberChip {
     width: 100px;
     margin-left: 3px;
@@ -111,7 +110,13 @@ p {
     width: 500px;
 }
 
+
 .teamName {
+    text-align: center;
+}
+
+
+.modifyTeamName {
     font-weight: bold;
 }
 
