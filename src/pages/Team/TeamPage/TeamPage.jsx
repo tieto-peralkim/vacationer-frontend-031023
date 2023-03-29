@@ -32,6 +32,7 @@ export default function TeamPage({}) {
         setAPIError(false);
     }, [completedAction]);
 
+    // Fetch team and vacationer data whenever team or completedAction changes
     useEffect(
         () => {
             console.log("Fetching data...");
@@ -75,8 +76,6 @@ export default function TeamPage({}) {
     };
 
     const handleClickOpenTeamModify = (team) => {
-        console.log(team);
-        console.log(vacationers);
         setSelectedTeam(team);
         setOpenTeamModify(true);
     };
@@ -113,6 +112,7 @@ export default function TeamPage({}) {
                     Create a new team
                 </Button>
                 <List
+                    key={"key"}
                     sx={{
                         width: "100%",
                         maxWidth: 760,
@@ -123,7 +123,7 @@ export default function TeamPage({}) {
                         team.members.some(
                             (member) => member["name"] === user.name
                         ) ? (
-                            <div className={styles.itemCont}>
+                            <div className={styles.itemCont} key={team.id}>
                                 <ListItem
                                     key={team.id}
                                     alignItems="flex-start"
@@ -141,7 +141,7 @@ export default function TeamPage({}) {
                                                     className={
                                                         styles.memberChip
                                                     }
-                                                    key={member.id}
+                                                    key={member.vacationerId}
                                                     color="primary"
                                                     label={member.name}
                                                 />
@@ -156,16 +156,18 @@ export default function TeamPage({}) {
                                 key={team.id}
                             >
                                 <ListItemText
+                                    disableTypography={true}
                                     key={team.id}
                                     primary={
                                         <p className={styles.greyedTitle}>
                                             {team.title}
                                         </p>
                                     }
-                                    secondary={team.members.map((member) => (
+                                    secondary={
+                                        team.members.map((member) => (
                                         <Chip
                                             className={styles.memberChipGreyed}
-                                            key={member.id}
+                                            key={member.vacationerId}
                                             color="primary"
                                             label={member.name}
                                         />

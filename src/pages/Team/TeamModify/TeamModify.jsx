@@ -23,6 +23,8 @@ import {
     MenuItem,
     Select,
     Snackbar,
+    CircularProgress,
+    Backdrop
 } from "@mui/material";
 
 export default function TeamModify({
@@ -37,22 +39,27 @@ export default function TeamModify({
     completedAction,
     setCompletedAction,
 }) {
-    //const [completedAction, setCompletedAction] = useState(false);
     const [user, setUser] = useOutletContext();
     const [newTeam, setNewTeam] = useState([]);
-    const [teamNameError, setTeamNameError] = useState(false);
-    const nameError = newTeam.length < 3;
-    const [APIError, setAPIError] = useState(false);
-    const [selectedMembers, setSelectedMembers] = useState([]);
     const [isEmpty, setIsEmpty] = useState(true);
-    const [memberExistsError, setMemberExistsError] = useState(false);
+    
+    const [selectedMembers, setSelectedMembers] = useState([]);
     const [deletableMember, setDeletableMember] = useState("");
+    
+    const [openSnackBar, setopenSnackBar] = useState(false);
+    const [openBackdrop, setOpenBackdrop] = useState(false);
+    
+    const [APIError, setAPIError] = useState(false);
+    const [teamNameError, setTeamNameError] = useState(false);
+    const [memberExistsError, setMemberExistsError] = useState(false);
+    const [alreadyExistsError, setAlreadyExistsError] = useState(false);
+
     const [openDeleteMemberAlert, setOpenDeleteMemberAlert] = useState(false);
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
     const [openModifyTeamAlert, setOpenModifyTeamAlert] = useState(false);
     const [openDeleteTeamAlert, setOpenDeleteTeamAlert] = useState(false);
-    const [alreadyExistsError, setAlreadyExistsError] = useState(false);
-    const [openSnackBar, setopenSnackBar] = useState(false);
+
+    const nameError = newTeam.length < 3;
 
     useEffect(() => {
         if (selectedTeam != "") {
@@ -71,6 +78,7 @@ export default function TeamModify({
         }
     }, [completedAction]);
 
+    // Whenever we want to close the dialog -> reset all states
     const handleClose = () => {
         setAlreadyExistsError(false);
         setTeamNameError(false);
@@ -84,6 +92,7 @@ export default function TeamModify({
         setSelectedMembers([]);
     };
 
+    // Needed to separate the selected members
     const handleChange = (event) => {
         const {
             target: { value },
@@ -93,10 +102,10 @@ export default function TeamModify({
         );
     };
 
-    const addToTeam = (newMembers, team) => {
-        console.log("newMembers: ", newMembers, "team", team);
+    function addToTeam(newMembers, team) {
         let isDuplicate = false;
 
+        // Is the member to be added already in the team?
         team.members.forEach((teamMember) => {
             newMembers.forEach((newMember) => {
                 if (teamMember.vacationerId === newMember.id) {
@@ -105,7 +114,9 @@ export default function TeamModify({
             });
         });
 
+        // If not: 
         if (!isDuplicate) {
+            setOpenBackdrop(true)
             axios
                 .post(
                     `${process.env.REACT_APP_ADDRESS}/teams/${team.id}`,
@@ -114,11 +125,15 @@ export default function TeamModify({
                         withCredentials: true,
                     }
                 )
-                .then((response) => {})
+                .then((response) => {
+                    setOpenBackdrop(false)
+                })
                 .catch((error) => {
                     setSelectedMembers([]);
                     console.error("There was a team put error!", error);
                 });
+
+            // Reset the states used
             setSelectedMembers([]);
             setCompletedAction(!completedAction);
             setIsEmpty(true);
@@ -141,14 +156,14 @@ export default function TeamModify({
                 const index = teams.findIndex(
                     (el) => el.id === selectedTeam.id
                 );
-                teams[index] = response.data;
-                setTeams(teams);
-                setSelectedTeam(response.data);
+
+                // Reset states used
                 setDeletableMember("");
                 setCompletedAction(!completedAction);
                 setOpenDeleteMemberAlert(false);
             })
             .finally(() => {
+                // If the deleted member was current user -> close the dialog so the team can't be further modified
                 if (deletableMember.name === user.name) {
                     handleClose();
                 }
@@ -160,6 +175,7 @@ export default function TeamModify({
 
     const changeTeamName = (newName) => {
         if (!nameError) {
+            // Check if a team with the new name already exists
             let alreadyExists = false;
             teams.forEach((team) => {
                 if (team.title === newTeam) {
@@ -177,9 +193,10 @@ export default function TeamModify({
                         { withCredentials: true }
                     )
                     .then((response) => {
+                        // Reset states used
                         setCompletedAction(!completedAction);
                         setOpenModifyTeamAlert(false);
-                        setopenSnackBar(true);
+                        setopenSnackBar(true);  // Notify the user when the name change succeeded
                     })
                     .catch((error) => {
                         console.error("There was a put new name error!", error);
@@ -201,7 +218,7 @@ export default function TeamModify({
                 { withCredentials: true }
             )
             .then((response) => {
-                console.log(response);
+                // Reset the states
                 setCompletedAction(!completedAction);
                 setOpenDeleteTeamAlert(false);
                 handleClose();
@@ -211,6 +228,7 @@ export default function TeamModify({
             });
     };
 
+    // Check if the selected team has members selected from the dropdown
     useEffect(() => {
         if (selectedTeam !== "" && selectedMembers.length > 0) {
             setIsEmpty(false);
@@ -234,7 +252,6 @@ export default function TeamModify({
                     Here you can add / remove members to the team, change the
                     teams name or delete the team.
                 </DialogContentText>
-                {/* <Divider className={styles.divider}/> */}
                 <TextField
                     className={styles.teamAddTextField}
                     required
@@ -258,14 +275,10 @@ export default function TeamModify({
                     Change team name
                 </Button>
 
-                {/* <Divider className={styles.divider}/> */}
-
                 <div className={styles.memberDiv}>
                     <InputLabel>Members: </InputLabel>
                     {selectedTeam &&
                         selectedTeam.members
-                            // some sorting?
-                            // .sort((v1, v2) => v1.name - v2.name)
                             .map((member) =>
                                 member.name !== user.name ? (
                                     <Chip
@@ -282,7 +295,7 @@ export default function TeamModify({
                                         key={member.vacationerId}
                                         label={member.name}
                                         onDelete={() => {
-                                            setOpenDeleteUserAlert(true);
+                                            setOpenDeleteUserAlert(true);   // If the user selects himself
                                             setDeletableMember(member);
                                         }}
                                         deleteIcon={<DeleteIcon />}
@@ -300,7 +313,6 @@ export default function TeamModify({
                             multiple
                             onChange={handleChange}
                             renderValue={(selected) => "..."}
-                            //disabled={APIError || !selectedTeam}
                         >
                             {vacationers
                                 .filter(
@@ -316,11 +328,11 @@ export default function TeamModify({
                                         vacationer // Filter out names that already exists in selected team
                                     ) => (
                                         <MenuItem
-                                            key={vacationer.vacationerId}
+                                            key={vacationer.id}
                                             value={vacationer}
                                         >
                                             <Checkbox
-                                                key={vacationer.vacationerId}
+                                                key={vacationer.id}
                                                 checked={
                                                     selectedMembers.indexOf(
                                                         vacationer
@@ -344,7 +356,7 @@ export default function TeamModify({
                     </div>
                     <div className={styles.addButton}>
                         <Button
-                            disabled={isEmpty}
+                            disabled={isEmpty}  // Set button disabled if no member is selected
                             onClick={(e) => {
                                 addToTeam(selectedMembers, selectedTeam);
                             }}
@@ -438,6 +450,13 @@ export default function TeamModify({
                     Team name changed successfully.
                 </Alert>
             </Snackbar>
+
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={openBackdrop}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
         </Dialog>
     );
 }

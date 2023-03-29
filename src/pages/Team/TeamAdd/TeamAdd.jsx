@@ -23,20 +23,17 @@ export default function TeamAdd({
     setCompletedAction,
 }) {
     const [user, setUser, update, setUpdate] = useOutletContext();
-    const [teamCreated, setTeamCreated] = useState(false);
     const [newTeam, setNewTeam] = useState([]);
+    const [initialMember, setInitialMember] = useState(user);
+
     const [teamNameError, setTeamNameError] = useState(false);
     const [alreadyExistsError, setAlreadyExistsError] = useState(false);
-    const nameError = newTeam.length < 3;
     const [APIError, setAPIError] = useState(false);
-    const [initialMember, setInitialMember] = useState(user);
-    const [result, setResult] = useState(null);
+    
+    const nameError = newTeam.length < 3;
 
-    let newTeamId;
-    let team;
-
+    // Reset states when dialog is closed
     const handleClose = () => {
-        setResult(null);
         setOpenTeamAdd(false);
         setTeamNameError(false);
         setAlreadyExistsError(false)
@@ -49,38 +46,32 @@ export default function TeamAdd({
     }, [completedAction]);
 
     const createTeam = (newTeam) => {
-        //console.log(newTeam);
-
-        setResult(null);
         if (!nameError) {
             let alreadyExists = false;
-            teams.forEach((team) => {
+            teams.forEach((team) => {   // Check if there is already a team with given name
                 if (team.title === newTeam) {
                     alreadyExists = true;
                 }
             });
 
             if (!alreadyExists) {
-                let firstUser = { name: user.name, vacationerId: user.id };
+                let firstUser = { name: user.name, vacationerId: user.id }; // Save current user to a variable
+                // Set the user as a member of the new team
                 const teamToAdd = {
                     title: newTeam,
                     members: firstUser,
                 };
-
-                //console.log(teamToAdd);
 
                 axios
                     .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
                         withCredentials: true,
                     })
                     .then((response) => {
-                        setTeamCreated(true);
                         setCompletedAction(!completedAction);
                         setNewTeam([]);
-                        team = response.data;
                     })
                     .finally(() => {
-                        handleClose();
+                        handleClose();  // Finally close the dialog
                     })
                     .catch((error) => {
                         console.error("There was a post error!", error);
