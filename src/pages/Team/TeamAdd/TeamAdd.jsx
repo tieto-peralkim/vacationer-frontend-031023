@@ -18,26 +18,24 @@ export default function TeamAdd({
     open,
     setOpenTeamAdd,
     teams,
-    setTeams,
     completedAction,
     setCompletedAction,
 }) {
     const [user, setUser, update, setUpdate] = useOutletContext();
     const [newTeam, setNewTeam] = useState([]);
-    const [initialMember, setInitialMember] = useState(user);
 
     const [teamNameError, setTeamNameError] = useState(false);
     const [alreadyExistsError, setAlreadyExistsError] = useState(false);
     const [APIError, setAPIError] = useState(false);
-    
+
     const nameError = newTeam.length < 3;
 
     // Reset states when dialog is closed
     const handleClose = () => {
         setOpenTeamAdd(false);
         setTeamNameError(false);
-        setAlreadyExistsError(false)
-        setNewTeam([])
+        setAlreadyExistsError(false);
+        setNewTeam([]);
     };
 
     useEffect(() => {
@@ -48,7 +46,8 @@ export default function TeamAdd({
     const createTeam = (newTeam) => {
         if (!nameError) {
             let alreadyExists = false;
-            teams.forEach((team) => {   // Check if there is already a team with given name
+            teams.forEach((team) => {
+                // Check if there is already a team with given name
                 if (team.title === newTeam) {
                     alreadyExists = true;
                 }
@@ -71,7 +70,7 @@ export default function TeamAdd({
                         setNewTeam([]);
                     })
                     .finally(() => {
-                        handleClose();  // Finally close the dialog
+                        handleClose(); // Finally close the dialog
                     })
                     .catch((error) => {
                         console.error("There was a post error!", error);

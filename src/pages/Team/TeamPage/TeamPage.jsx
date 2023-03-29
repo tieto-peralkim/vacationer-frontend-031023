@@ -33,43 +33,52 @@ export default function TeamPage({}) {
     }, [completedAction]);
 
     // Fetch team and vacationer data whenever team or completedAction changes
-    useEffect(
-        () => {
-            console.log("Fetching data...");
-            axios
-                .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
-                    withCredentials: true,
-                })
-                .then((response) => {
-                    console.log(response.data);
-                    setAPIError(false);
-                    setTeams(response.data);
-                })
-                .catch((error) => {
-                    console.error("There was a teams get error:", error);
-                    if (!APIError) {
-                        setAPIError(true);
-                    }
-                });
-            axios
-                .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
-                    withCredentials: true,
-                })
-                .then((response) => {
-                    console.log(response.data);
-                    setAPIError(false);
-                    setVacationers(response.data);
-                })
-                .catch((error) => {
-                    console.error("There was a vacationers get error!", error);
-                    if (!APIError) {
-                        setAPIError(true);
-                    }
-                });
-        },
-        [completedAction],
-        [teams]
-    );
+    useEffect(() => {
+        console.log("Fetching data...");
+        let updatedTeams;
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                updatedTeams = response.data;
+                console.log("Fetch teams", updatedTeams);
+                setAPIError(false);
+                setTeams(response.data);
+            })
+            .catch((error) => {
+                console.error("There was a teams get error:", error);
+                if (!APIError) {
+                    setAPIError(true);
+                }
+            })
+            .finally(() => {
+                if (selectedTeam) {
+                    console.log("Fetch2 teams", updatedTeams);
+                    updatedTeams.forEach((team) => {
+                        if (team.id === selectedTeam.id) {
+                            setSelectedTeam(team);
+                            console.log("Fetch selectedteam", team);
+                        }
+                    });
+                }
+            });
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                console.log(response.data);
+                setAPIError(false);
+                setVacationers(response.data);
+            })
+            .catch((error) => {
+                console.error("There was a vacationers get error!", error);
+                if (!APIError) {
+                    setAPIError(true);
+                }
+            });
+    }, [completedAction]);
 
     const handleClickOpenTeamAdd = () => {
         setOpenTeamAdd(true);
@@ -86,7 +95,6 @@ export default function TeamPage({}) {
                 open={openTeamAdd}
                 setOpenTeamAdd={setOpenTeamAdd}
                 teams={teams}
-                setTeams={setTeams}
                 completedAction={completedAction}
                 setCompletedAction={setCompletedAction}
             />
@@ -96,9 +104,6 @@ export default function TeamPage({}) {
                 selectedTeam={selectedTeam}
                 vacationers={vacationers}
                 teams={teams}
-                setTeams={setTeams}
-                setVacationers={setVacationers}
-                setSelectedTeam={setSelectedTeam}
                 completedAction={completedAction}
                 setCompletedAction={setCompletedAction}
             />
@@ -163,8 +168,7 @@ export default function TeamPage({}) {
                                             {team.title}
                                         </p>
                                     }
-                                    secondary={
-                                        team.members.map((member) => (
+                                    secondary={team.members.map((member) => (
                                         <Chip
                                             className={styles.memberChipGreyed}
                                             key={member.vacationerId}
