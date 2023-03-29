@@ -118,14 +118,14 @@ export default function TeamModify({
                 setCompletedAction(!completedAction);
                 setOpenDeleteMemberAlert(false);
             })
+            .catch((error) => {
+                console.error("There was a delete member error!", error);
+            })
             .finally(() => {
                 // If the deleted member was current user -> close the dialog so the team can't be further modified
                 if (deletableMember.name === user.name) {
                     handleClose();
                 }
-            })
-            .catch((error) => {
-                console.error("There was a delete member error!", error);
             });
     };
 
@@ -195,7 +195,7 @@ export default function TeamModify({
                 Modify team{" "}
                 <p className={styles.teamName}>{selectedTeam.title}</p>
             </DialogTitle>
-            <DialogContent className={styles.addTeamDialogContent}>
+            <DialogContent className={styles.modifyTeamDialogContent}>
                 <TextField
                     className={styles.teamAddTextField}
                     required
@@ -291,10 +291,7 @@ export default function TeamModify({
                     <div>
                         <InputLabel>Members to add: </InputLabel>
                         {selectedMembers.map((member) => (
-                            <Chip
-                                key={member.vacationerId}
-                                label={member.name}
-                            />
+                            <Chip key={member.name} label={member.name} />
                         ))}
                     </div>
                     <div className={styles.addButton}>

@@ -105,6 +105,12 @@ p {
     flex-direction: column;
 }
 
+.modifyTeamDialogContent {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+}
+
 .teamName {
     font-weight: bold;
 }
@@ -132,5 +138,9 @@ p {
 
 .createTeamButton {
     margin-top: 130px;
+}
+
+.modifyDialog {
+    width: 350px;
 }
 /* -------------------- /REFACTOR ---------------------- */

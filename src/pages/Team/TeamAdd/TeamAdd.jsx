@@ -69,11 +69,11 @@ export default function TeamAdd({
                         setCompletedAction(!completedAction);
                         setNewTeam([]);
                     })
-                    .finally(() => {
-                        handleClose(); // Finally close the dialog
-                    })
                     .catch((error) => {
                         console.error("There was a post error!", error);
+                    })
+                    .finally(() => {
+                        handleClose(); // Finally close the dialog
                     });
             } else {
                 setAlreadyExistsError(true);

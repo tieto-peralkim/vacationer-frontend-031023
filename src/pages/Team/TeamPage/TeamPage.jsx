@@ -27,14 +27,8 @@ export default function TeamPage({}) {
     const [completedAction, setCompletedAction] = useState(false);
     const [APIError, setAPIError] = useState(false);
 
-    useEffect(() => {
-        setUpdate(!update);
-        setAPIError(false);
-    }, [completedAction]);
-
     // Fetch team and vacationer data whenever team or completedAction changes
     useEffect(() => {
-        console.log("Fetching data...");
         let updatedTeams;
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
@@ -42,7 +36,6 @@ export default function TeamPage({}) {
             })
             .then((response) => {
                 updatedTeams = response.data;
-                console.log("Fetch teams", updatedTeams);
                 setAPIError(false);
                 setTeams(response.data);
             })
@@ -54,11 +47,9 @@ export default function TeamPage({}) {
             })
             .finally(() => {
                 if (selectedTeam) {
-                    console.log("Fetch2 teams", updatedTeams);
                     updatedTeams.forEach((team) => {
                         if (team.id === selectedTeam.id) {
                             setSelectedTeam(team);
-                            console.log("Fetch selectedteam", team);
                         }
                     });
                 }
@@ -68,7 +59,6 @@ export default function TeamPage({}) {
                 withCredentials: true,
             })
             .then((response) => {
-                console.log(response.data);
                 setAPIError(false);
                 setVacationers(response.data);
             })
