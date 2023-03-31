@@ -40,6 +40,8 @@ export default function Calendar({
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
     const WORKER_TITLE = "Working";
     const ON_HOLIDAY_TITLE = "On holiday";
+    const WORKER_COLOR = "lightblue";
+    const ON_HOLIDAY_COLOR = "lightgreen";
     const PRESENCE_PERCENTAGE = 0.5;
     const TODAY_COLOR = "#e30f2d";
 
@@ -94,9 +96,8 @@ export default function Calendar({
             });
     }, [selectedYear]);
 
+    // TODO: this has too many depending states
     useEffect(() => {
-        console.log("user Calendar", user);
-
         // Showing all employees of the selected team, not only the ones with holiday
         if (showAllVacationers && teamToShow) {
             console.log("showAllVacationers && teamToShow", teamToShow);
@@ -174,12 +175,10 @@ export default function Calendar({
                 publicMonthsHolidays.push(publicHolidays[i].day);
             }
         }
-        console.log("publicMonthsHolidays", publicMonthsHolidays);
         setPublicHolidaysOfMonth(publicMonthsHolidays);
     }, [selectedDate, publicHolidays]);
 
     const filterHolidays = () => {
-        console.log("flllt", selectedVacationers, teamToShow);
         let filteredVacations = [];
         for (let i = 0; i < teamToShow.members.length; i++) {
             // Filter the team's holidays from all the holidays of the month
@@ -207,7 +206,7 @@ export default function Calendar({
             )
             .then((response) => {
                 setSelectedVacationers(response.data);
-                console.log("response:", response.data);
+                console.log("getHolidaysOfMonth", response.data);
                 setShowSpinner(false);
                 if (APIError) {
                     handleCloseAPIError();
@@ -223,8 +222,8 @@ export default function Calendar({
     // Creates the employee rows, vacationingEmployees is the list of employees with holidays,
     // allEmployees is the list of employees with and without holidays
     const setMonthsHolidays = (vacationingEmployees, allEmployees) => {
-        console.log("vaca1tioningEmployees", vacationingEmployees);
-        console.log("vaca1llEmployees", allEmployees);
+        // console.log("vacationingEmployees", vacationingEmployees);
+        // console.log("allEmployees", allEmployees);
         let pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
             let holidayObject = {};
@@ -244,7 +243,6 @@ export default function Calendar({
             repeatingHolidayer = pureVacations.find(
                 (holiday) => holiday.name === holidayObject.name
             );
-            // console.log("repeatingHolidayer", vacationingEmployees[i].vacations);
             console.log(
                 "vacationingEmployees[i].vacations",
                 vacationingEmployees[i].vacations
@@ -369,7 +367,6 @@ export default function Calendar({
             thirty: getWorkerAmount(data, "thirty"),
             thirtyone: getWorkerAmount(data, "thirtyone"),
         });
-        console.log("data", data);
         setAllHolidaysSelectedTime(data);
     };
 
@@ -400,13 +397,6 @@ export default function Calendar({
             console.log("Total", peopleOnHoliday, teamToShow.members.length);
             return teamToShow.members.length - peopleOnHoliday;
         } else {
-            // console.log(
-            //     "vacationers",
-            //     key,
-            //     ":",
-            //     vacationersAmount.length,
-            //     peopleOnHoliday
-            // );
             return vacationersAmount.length - peopleOnHoliday;
         }
     };
@@ -450,12 +440,6 @@ export default function Calendar({
                 0
             ).getDate();
         }
-
-        console.log(
-            "startingNumber, endingNumber",
-            startingNumber,
-            endingNumber
-        );
         for (let i = startingNumber; i <= endingNumber; i++) {
             switch (i) {
                 case 1:
@@ -781,7 +765,7 @@ export default function Calendar({
 
         let newDate = new Date(selectedDate.getFullYear(), newMonth, 1, 15);
         newDate.setUTCHours(0, 0, 0, 0);
-        console.log("newDate1", newDate, holidaySymbols);
+        console.log("newDate", newDate);
 
         setSelectedDate(newDate);
     };
@@ -822,7 +806,7 @@ export default function Calendar({
             }
         }
         // TODO:
-        // Not working with two last rows
+        // This would add alert color for the dates where there are too few people working. Not working after adding the "Working" row
         // else if (typeof value === "number") {
         //     colorToAdd = "bisque";
         //     if (
@@ -852,18 +836,16 @@ export default function Calendar({
         return null;
     };
 
-    // Setting the last two rows
+    // Setting the background colors of "On holiday" and "Working" rows
     const checkRow = (rowValue) => {
-        // console.log("rowValue:", rowValue);
         if (rowValue === ON_HOLIDAY_TITLE) {
-            return "lightgreen";
+            return ON_HOLIDAY_COLOR;
         } else if (rowValue === WORKER_TITLE) {
-            return "lightblue";
+            return WORKER_COLOR;
         }
     };
 
     const setTodayHeader = (header) => {
-        // console.log("setTodayHeader", header, selectedDate.getDate());
         if (
             today.getFullYear() === selectedDate.getFullYear() &&
             today.getMonth() === selectedDate.getMonth() &&
@@ -876,7 +858,6 @@ export default function Calendar({
     };
 
     const setTodayColumn = (value) => {
-        // console.log("setTodayColumn", value);
         if (
             today.getFullYear() === selectedDate.getFullYear() &&
             today.getMonth() === selectedDate.getMonth() &&
@@ -906,11 +887,7 @@ export default function Calendar({
         let vacationersAmount1 = 0;
 
         try {
-            // iterate through all vacationers
             selectedVacationers.forEach((vacationer) => {
-                // console.log("start: " + vacationer.vacations.start.substring(8,10))
-                // console.log("end: " + vacationer.vacations.end.substring(8,10))
-
                 // if the given day is included in the vacationers holiday add to vacationersAmount
                 if (teamToShow) {
                     if (
@@ -941,8 +918,7 @@ export default function Calendar({
     };
 
     const countWorkers = (dayNumber) => {
-        let onHolidayCount = 0;
-        onHolidayCount = countVacationers(dayNumber);
+        let onHolidayCount = countVacationers(dayNumber);
         let allNames = [];
 
         if (teamToShow) {
@@ -968,9 +944,6 @@ export default function Calendar({
         let vacationerNames = [];
 
         selectedVacationers.forEach((vacationer) => {
-            // console.log("start: " + vacationer.vacations.start.substring(8,10))
-            // console.log(vacationer.name)
-
             // if the given day is included in the vacationers holiday add to vacationersAmount
             if (teamToShow) {
                 if (
@@ -984,9 +957,6 @@ export default function Calendar({
                     });
                 }
             } else {
-                // if (dayNumber == 27) {
-                //     console.log("Vacation end:" + vacationer.vacations.end.substring(8, 10));
-                // }
                 if (
                     dayNumber >= vacationer.vacations.start.substring(8, 10) &&
                     dayNumber <= vacationer.vacations.end.substring(8, 10)
@@ -1071,24 +1041,6 @@ export default function Calendar({
             <div className={styles.wholeCalendar}>
                 <div>
                     <div className={styles.teamChips}>
-                        {/*<Select*/}
-                        {/*    multiple={true}*/}
-                        {/*    value={teamToShow.title}*/}
-                        {/*    onChange={() => {*/}
-                        {/*        setTeamToShow(team);*/}
-                        {/*        console.log("team", team);*/}
-                        {/*    }}*/}
-                        {/*>*/}
-                        {/*    {teams.map((team) => (*/}
-                        {/*        <MenuItem*/}
-                        {/*            className={styles.menuItem}*/}
-                        {/*            key={team.id}*/}
-                        {/*            value={team.title}*/}
-                        {/*        >*/}
-                        {/*            {team.title}*/}
-                        {/*        </MenuItem>*/}
-                        {/*    ))}*/}
-                        {/*</Select>*/}
                         <Chip
                             disabled={APIError || !user.name}
                             className={styles.oneTeamChip}
@@ -1332,8 +1284,10 @@ export default function Calendar({
                                                 }
                                             >
                                                 {getVacationerNames(i + 1).map(
-                                                    (name) => (
-                                                        <p>{name}</p>
+                                                    (name, index) => (
+                                                        <p key={index}>
+                                                            {name}
+                                                        </p>
                                                     )
                                                 )}
                                             </div>
@@ -1343,8 +1297,10 @@ export default function Calendar({
                                                 }
                                             >
                                                 {getWorkerNames(i + 1).map(
-                                                    (name) => (
-                                                        <p>{name}</p>
+                                                    (name, index) => (
+                                                        <p key={index}>
+                                                            {name}
+                                                        </p>
                                                     )
                                                 )}
                                             </div>

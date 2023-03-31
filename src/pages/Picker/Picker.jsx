@@ -6,10 +6,14 @@ import styles from "./picker.module.css";
 
 import fi from "date-fns/locale/fi";
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Button,
     ButtonGroup,
     Checkbox,
     createTheme,
+    Divider,
     FormControl,
     FormControlLabel,
     Grid,
@@ -20,6 +24,7 @@ import {
 import ClearIcon from "@mui/icons-material/Clear";
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
+import { ExpandCircleDown } from "@mui/icons-material";
 
 registerLocale("fi", fi);
 
@@ -61,7 +66,7 @@ export default function Picker({
     const [changingStartedSpace, setChangingStartedSpace] = useState(false);
 
     const [holidays, setHolidays] = useState([]);
-    const [adminspace, setAdminspace] = useState(false);
+    const [adminSpace, setAdminSpace] = useState(false);
     const [calendarDaysExcluded, setCalendarDaysExcluded] = useState([]);
     const [chosenVacationer, setChosenVacationer] = useState("");
 
@@ -102,13 +107,13 @@ export default function Picker({
     }, [user]);
 
     useEffect(() => {
-        if (!adminspace) {
+        if (!adminSpace) {
             resetForm();
             if (user.name) {
                 setExcludedDates(user.vacations);
             }
         }
-    }, [adminspace]);
+    }, [adminSpace]);
 
     useEffect(() => {
         if (endDate === null) {
@@ -127,8 +132,6 @@ export default function Picker({
     }, [startDate]);
 
     useEffect(() => {
-        console.log("user Picker", user);
-
         // set existing holiday dates to be excluded in DatePicker
         setCalendarDaysExcluded(holidays);
     }, [holidays]);
@@ -152,7 +155,7 @@ export default function Picker({
         let vacationer = user;
 
         // If deleting someone else's holiday
-        if (adminspace) {
+        if (adminSpace) {
             vacationer = chosenVacationer;
         }
         axios
@@ -332,181 +335,219 @@ export default function Picker({
     };
 
     return (
-        <ThemeProvider theme={theme}>
-            <div className={styles.content}>
-                <form className={styles.form}>
-                    <div>
-                        {user.admin && (
-                            <div className={styles.selectSection}>
-                                <FormControl>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={adminspace}
-                                                onChange={() => {
-                                                    setAdminspace(!adminspace);
-                                                }}
+        <Accordion className={styles.accordion}>
+            <AccordionSummary
+                sx={{
+                    bgcolor: "lightblue",
+                }}
+                expandIcon={<ExpandCircleDown />}
+            >
+                <div className={styles.dropdownSummary}>
+                    <div className={styles.dropdownText}>
+                        <h3>Your holidays</h3>
+                    </div>
+                    <Button
+                        className={styles.dropdownButton}
+                        variant="contained"
+                        color="primary"
+                        disabled={!user.name}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenCalendar();
+                        }}
+                    >
+                        Add new holiday
+                        {adminSpace && <> of {chosenVacationer.name} </>}
+                    </Button>
+                </div>
+            </AccordionSummary>
+            <Divider className={styles.divider} />
+            <AccordionDetails className={styles.dropdown}>
+                <ThemeProvider theme={theme}>
+                    <div className={styles.content}>
+                        <form className={styles.form}>
+                            <div>
+                                {user.admin && (
+                                    <div className={styles.selectSection}>
+                                        <FormControl>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={adminSpace}
+                                                        onChange={() => {
+                                                            setAdminSpace(
+                                                                !adminSpace
+                                                            );
+                                                        }}
+                                                    />
+                                                }
+                                                label={"ADMIN: Select user"}
                                             />
-                                        }
-                                        label={"ADMIN: Select user"}
-                                    />
-                                </FormControl>
-                                {adminspace && (
-                                    <FormControl>
-                                        <Select
-                                            className={styles.selectBox}
-                                            defaultValue={
-                                                chosenVacationer.name
-                                                    ? chosenVacationer.name
-                                                    : ""
-                                            }
-                                            value={
-                                                chosenVacationer.name
-                                                    ? chosenVacationer.name
-                                                    : ""
-                                            }
-                                            onChange={(e) =>
-                                                selectVacationer(e.target.value)
-                                            }
-                                        >
-                                            {vacationersAmount.map((h) => (
-                                                <MenuItem
-                                                    key={h.id}
-                                                    value={h.name}
+                                        </FormControl>
+                                        {adminSpace && (
+                                            <FormControl>
+                                                <Select
+                                                    className={styles.selectBox}
+                                                    defaultValue={
+                                                        chosenVacationer.name
+                                                            ? chosenVacationer.name
+                                                            : ""
+                                                    }
+                                                    value={
+                                                        chosenVacationer.name
+                                                            ? chosenVacationer.name
+                                                            : ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        selectVacationer(
+                                                            e.target.value
+                                                        )
+                                                    }
                                                 >
-                                                    {h.name}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                                    {vacationersAmount.map(
+                                                        (h) => (
+                                                            <MenuItem
+                                                                key={h.id}
+                                                                value={h.name}
+                                                            >
+                                                                {h.name}
+                                                            </MenuItem>
+                                                        )
+                                                    )}
+                                                </Select>
+                                            </FormControl>
+                                        )}
+                                    </div>
                                 )}
                             </div>
-                        )}
-                        <Button
-                            className={styles.extraMargin}
-                            variant="contained"
-                            color="secondary"
-                            disabled={!user.name}
-                            onClick={() => {
-                                handleOpenCalendar();
-                            }}
-                        >
-                            Add new holiday
-                            {adminspace && <> of {chosenVacationer.name} </>}
-                        </Button>
-                    </div>
-                    <PickerModal
-                        resetForm={resetForm}
-                        openCalendar={openCalendar}
-                        chosenUser={chosenVacationer}
-                        startDate={startDate}
-                        setStartDate={setStartDate}
-                        endDate={endDate}
-                        setEndDate={setEndDate}
-                        daysInDateRange={daysInDateRange}
-                        holidayToEdit={holidayToEdit}
-                        holidays={holidays}
-                        workerLimit={workerLimit}
-                        dailyVacationers={dailyVacationers}
-                        setDailyVacationers={setDailyVacationers}
-                        calendarDaysExcluded={calendarDaysExcluded}
-                        editingSpace={editingSpace}
-                        setEditingSpace={setEditingSpace}
-                        changingStartedSpace={changingStartedSpace}
-                        today={today}
-                        startDateErrorMessage={startDateErrorMessage}
-                        endDateErrorMessage={endDateErrorMessage}
-                        comment={comment}
-                        setComment={setComment}
-                        confirmed={confirmed}
-                        setConfirmed={setConfirmed}
-                        idToEdit={idToEdit}
-                        setHolidays={setHolidays}
-                        setChangingStartedSpace={setChangingStartedSpace}
-                        setOpenCalendar={setOpenCalendar}
-                        resetDates={resetDates}
-                        save={save}
-                        setSave={setSave}
-                        APIError={APIError}
-                        handleOpenAPIError={handleOpenAPIError}
-                        handleCloseAPIError={handleCloseAPIError}
-                        calculatePerDay={calculatePerDay}
-                    />
-                </form>
-                <div className={styles.rightSide}>
-                    <Grid
-                        container
-                        rowSpacing={0.7}
-                        columnSpacing={0.5}
-                        direction="row"
-                        justifyContent="flex-start"
-                    >
-                        {holidays
-                            .sort((v1, v2) => v1.start - v2.start)
-                            .map((holiday) => (
-                                <Grid item xl={2} lg={3} md={4} sm={6} xs={12}>
-                                    <ButtonGroup
-                                        className={styles.buttonGroup}
-                                        size="medium"
-                                        key={holiday.id}
-                                    >
-                                        <Button
-                                            className={styles.buttonStyle}
-                                            onClick={() =>
-                                                editHoliday(holiday.id)
-                                            }
-                                            color="info"
-                                            variant={
-                                                holiday.confirmed
-                                                    ? "contained"
-                                                    : "outlined"
-                                            }
-                                            disabled={!holiday.upcoming}
+                            <PickerModal
+                                resetForm={resetForm}
+                                openCalendar={openCalendar}
+                                chosenUser={chosenVacationer}
+                                startDate={startDate}
+                                setStartDate={setStartDate}
+                                endDate={endDate}
+                                setEndDate={setEndDate}
+                                daysInDateRange={daysInDateRange}
+                                holidayToEdit={holidayToEdit}
+                                holidays={holidays}
+                                workerLimit={workerLimit}
+                                dailyVacationers={dailyVacationers}
+                                setDailyVacationers={setDailyVacationers}
+                                calendarDaysExcluded={calendarDaysExcluded}
+                                editingSpace={editingSpace}
+                                setEditingSpace={setEditingSpace}
+                                changingStartedSpace={changingStartedSpace}
+                                today={today}
+                                startDateErrorMessage={startDateErrorMessage}
+                                endDateErrorMessage={endDateErrorMessage}
+                                comment={comment}
+                                setComment={setComment}
+                                confirmed={confirmed}
+                                setConfirmed={setConfirmed}
+                                idToEdit={idToEdit}
+                                setHolidays={setHolidays}
+                                setChangingStartedSpace={
+                                    setChangingStartedSpace
+                                }
+                                setOpenCalendar={setOpenCalendar}
+                                resetDates={resetDates}
+                                save={save}
+                                setSave={setSave}
+                                APIError={APIError}
+                                handleOpenAPIError={handleOpenAPIError}
+                                handleCloseAPIError={handleCloseAPIError}
+                                calculatePerDay={calculatePerDay}
+                            />
+                        </form>
+                        <div className={styles.rightSide}>
+                            <Grid
+                                container
+                                rowSpacing={0.7}
+                                columnSpacing={0.5}
+                                direction="row"
+                                justifyContent="flex-start"
+                            >
+                                {holidays
+                                    .sort((v1, v2) => v1.start - v2.start)
+                                    .map((holiday) => (
+                                        <Grid
+                                            item
+                                            xl={2}
+                                            lg={3}
+                                            md={4}
+                                            sm={6}
+                                            xs={12}
+                                            key={holiday.id}
                                         >
-                                            {startAndEndTimeJSX(holiday)}
-                                        </Button>
-                                        <Button
-                                            onClick={() =>
-                                                confirmDeletion(holiday)
-                                            }
-                                            color={"error"}
-                                            variant="contained"
-                                            disabled={!holiday.upcoming}
-                                        >
-                                            <ClearIcon />
-                                        </Button>
-                                    </ButtonGroup>
-                                </Grid>
-                            ))}
-                    </Grid>
-                </div>
-                {user.name && holidays.length === 0 && <p>No vacations...</p>}
-                <AlertDialog
-                    openAlert={openDeletionAlert}
-                    handleCloseAlert={handleCloseDeletionAlert}
-                    handleAction={deleteHoliday}
-                    dialogTitle={"Delete holiday"}
-                    dialogContent={
-                        holidayToDelete.start &&
-                        `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString(
-                            "fi-FI"
+                                            <ButtonGroup
+                                                className={styles.buttonGroup}
+                                                size="medium"
+                                                key={holiday.id}
+                                            >
+                                                <Button
+                                                    className={
+                                                        styles.buttonStyle
+                                                    }
+                                                    onClick={() =>
+                                                        editHoliday(holiday.id)
+                                                    }
+                                                    color="info"
+                                                    variant={
+                                                        holiday.confirmed
+                                                            ? "contained"
+                                                            : "outlined"
+                                                    }
+                                                >
+                                                    {startAndEndTimeJSX(
+                                                        holiday
+                                                    )}
+                                                </Button>
+                                                <Button
+                                                    onClick={() =>
+                                                        confirmDeletion(holiday)
+                                                    }
+                                                    color={"error"}
+                                                    variant="contained"
+                                                >
+                                                    <ClearIcon />
+                                                </Button>
+                                            </ButtonGroup>
+                                        </Grid>
+                                    ))}
+                            </Grid>
+                        </div>
+                        {user.name && holidays.length === 0 && (
+                            <p>No vacations...</p>
                         )}
+                        <AlertDialog
+                            openAlert={openDeletionAlert}
+                            handleCloseAlert={handleCloseDeletionAlert}
+                            handleAction={deleteHoliday}
+                            dialogTitle={"Delete holiday"}
+                            dialogContent={
+                                holidayToDelete.start &&
+                                `Are you sure you want to delete the holiday ${holidayToDelete.start.toLocaleDateString(
+                                    "fi-FI"
+                                )}
                                    - ${holidayToDelete.end.toLocaleDateString(
                                        "fi-FI"
                                    )} ?`
-                    }
-                    cancel={"No"}
-                    confirm={"Yes delete"}
-                />
-                <div className={styles.marginTop}>
-                    <Button variant={"contained"} size={"small"}>
-                        Confirmed
-                    </Button>
-                    <Button variant={"outlined"} size={"small"}>
-                        Un-confirmed
-                    </Button>
-                </div>
-            </div>
-        </ThemeProvider>
+                            }
+                            cancel={"No"}
+                            confirm={"Yes delete"}
+                        />
+                        <div className={styles.marginTop}>
+                            <span className={styles.confirmedBox}>
+                                Confirmed
+                            </span>
+                            <span className={styles.unconfirmedBox}>
+                                Unconfirmed
+                            </span>
+                        </div>
+                    </div>
+                </ThemeProvider>
+            </AccordionDetails>
+        </Accordion>
     );
 }
