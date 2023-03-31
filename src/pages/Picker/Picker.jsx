@@ -36,6 +36,7 @@ export default function Picker({
     APIError,
     handleOpenAPIError,
     handleCloseAPIError,
+    shortenLongNames,
 }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
@@ -357,7 +358,9 @@ export default function Picker({
                         }}
                     >
                         Add new holiday
-                        {adminSpace && <> of {chosenVacationer.name} </>}
+                        {adminSpace && (
+                            <> of {shortenLongNames(chosenVacationer.name)} </>
+                        )}
                     </Button>
                 </div>
             </AccordionSummary>
