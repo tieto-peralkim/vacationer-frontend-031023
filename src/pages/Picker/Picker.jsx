@@ -338,7 +338,7 @@ export default function Picker({
         <Accordion className={styles.accordion}>
             <AccordionSummary
                 sx={{
-                    bgcolor: "#D5FACD",
+                    bgcolor: "lightblue",
                 }}
                 expandIcon={<ExpandCircleDown />}
             >
@@ -361,6 +361,7 @@ export default function Picker({
                     </Button>
                 </div>
             </AccordionSummary>
+            <Divider className={styles.divider} />
             <AccordionDetails className={styles.dropdown}>
                 <ThemeProvider theme={theme}>
                     <div className={styles.content}>
@@ -541,7 +542,7 @@ export default function Picker({
                                 Confirmed
                             </span>
                             <span className={styles.unconfirmedBox}>
-                                Un-confirmed
+                                Unconfirmed
                             </span>
                         </div>
                     </div>

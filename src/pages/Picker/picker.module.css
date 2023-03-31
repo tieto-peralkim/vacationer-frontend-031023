@@ -53,12 +53,15 @@ ul {
 }
 .dropdownText {}
 .dropdown {
-  background-color: #D5FACD;
+}
+.divider {
+  background-color: black;
 }
 .accordion {
   border: 0.1em solid black;
 }
 .confirmedBox{
+  border-radius: 4px;
   width: max-content;
   color: white;
   background-color: #1876d2;
@@ -66,6 +69,7 @@ ul {
   padding: 0.2em;
 }
 .unconfirmedBox{
+  border-radius: 4px;
   width: max-content;
   color: #1876d2;
   border: 0.1em solid #1876d2;

@@ -40,6 +40,8 @@ export default function Calendar({
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
     const WORKER_TITLE = "Working";
     const ON_HOLIDAY_TITLE = "On holiday";
+    const WORKER_COLOR = "lightblue";
+    const ON_HOLIDAY_COLOR = "lightgreen";
     const PRESENCE_PERCENTAGE = 0.5;
     const TODAY_COLOR = "#e30f2d";
 
@@ -834,13 +836,12 @@ export default function Calendar({
         return null;
     };
 
-    // Setting the last two rows
+    // Setting the background colors of "On holiday" and "Working" rows
     const checkRow = (rowValue) => {
-        // console.log("rowValue:", rowValue);
         if (rowValue === ON_HOLIDAY_TITLE) {
-            return "lightgreen";
+            return ON_HOLIDAY_COLOR;
         } else if (rowValue === WORKER_TITLE) {
-            return "lightblue";
+            return WORKER_COLOR;
         }
     };
 
@@ -1283,8 +1284,10 @@ export default function Calendar({
                                                 }
                                             >
                                                 {getVacationerNames(i + 1).map(
-                                                    (name) => (
-                                                        <p>{name}</p>
+                                                    (name, index) => (
+                                                        <p key={index}>
+                                                            {name}
+                                                        </p>
                                                     )
                                                 )}
                                             </div>
@@ -1294,8 +1297,10 @@ export default function Calendar({
                                                 }
                                             >
                                                 {getWorkerNames(i + 1).map(
-                                                    (name) => (
-                                                        <p>{name}</p>
+                                                    (name, index) => (
+                                                        <p key={index}>
+                                                            {name}
+                                                        </p>
                                                     )
                                                 )}
                                             </div>
