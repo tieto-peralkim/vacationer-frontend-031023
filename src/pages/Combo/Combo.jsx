@@ -20,6 +20,15 @@ export default function Combo() {
         setAPIError(false);
     };
 
+    const shortenLongNames = (longName) => {
+        let maxLength = 14;
+        if (longName.length > maxLength) {
+            return longName.slice(0, maxLength) + "...";
+        } else {
+            return longName;
+        }
+    };
+
     // Update simple list of vacationers
     useEffect(() => {
         axios
@@ -49,6 +58,7 @@ export default function Combo() {
             {APIError && <ApiAlert />}
             <div className={styles.content}>
                 <Picker
+                    shortenLongNames={shortenLongNames}
                     handleOpenAPIError={handleOpenAPIError}
                     handleCloseAPIError={handleCloseAPIError}
                     APIError={APIError}
@@ -58,6 +68,7 @@ export default function Combo() {
                     user={user}
                 />
                 <Calendar
+                    shortenLongNames={shortenLongNames}
                     vacationersAmount={vacationersAmount}
                     save={save}
                     handleOpenAPIError={handleOpenAPIError}

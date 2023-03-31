@@ -13,6 +13,7 @@ import {
     CircularProgress,
     FormControlLabel,
     FormGroup,
+    Switch,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -20,6 +21,7 @@ import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
 
 export default function Calendar({
+    shortenLongNames,
     user,
     vacationersAmount,
     save,
@@ -54,7 +56,7 @@ export default function Calendar({
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("");
 
     const [showSpinner, setShowSpinner] = useState(false);
-    const [showAllVacationers, setShowAllVacationers] = useState(false);
+    const [showAllVacationers, setShowAllVacationers] = useState(true);
 
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst);
     const [selectedYear, setSelectedYear] = useState(
@@ -227,13 +229,8 @@ export default function Calendar({
         let pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
             let holidayObject = {};
-            if (vacationingEmployees[i].name.length > 13) {
-                holidayObject.name =
-                    vacationingEmployees[i].name.slice(0, 13) + "...";
-            } else {
-                holidayObject.name = vacationingEmployees[i].name;
-            }
 
+            holidayObject.name = shortenLongNames(vacationingEmployees[i].name);
             holidayObject.start = vacationingEmployees[i].vacations.start;
             holidayObject.end = vacationingEmployees[i].vacations.end;
             holidayObject.comment = vacationingEmployees[i].vacations.comment;
@@ -282,12 +279,9 @@ export default function Calendar({
 
             for (let i = 0; i < employeesWithNoHolidays.length; i++) {
                 let holidayObject = {};
-                if (employeesWithNoHolidays[i].name.length > 13) {
-                    holidayObject.name =
-                        employeesWithNoHolidays[i].name.slice(0, 13) + "...";
-                } else {
-                    holidayObject.name = employeesWithNoHolidays[i].name;
-                }
+                holidayObject.name = shortenLongNames(
+                    employeesWithNoHolidays[i].name
+                );
 
                 pureVacations.push(holidayObject);
             }
@@ -1092,16 +1086,16 @@ export default function Calendar({
                     <FormGroup>
                         {!isMobile ? (
                             <FormControlLabel
-                                checked={showAllVacationers}
+                                checked={!showAllVacationers}
                                 onChange={() => {
                                     setShowAllVacationers(!showAllVacationers);
                                 }}
-                                control={<Checkbox color="success" />}
+                                control={<Switch color="success" />}
                                 disabled={APIError || !user.name}
                                 label={
                                     teamToShow
-                                        ? `Show all employees of team ${teamToShow.title} `
-                                        : "Show all employees"
+                                        ? `Show only people on holiday from ${teamToShow.title} team`
+                                        : "Show only people on holiday"
                                 }
                             />
                         ) : (
