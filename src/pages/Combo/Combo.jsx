@@ -2,18 +2,10 @@ import Picker from "../Picker/Picker";
 import Calendar from "../Calendar/Calendar";
 import ApiAlert from "../../components/ApiAlert";
 import styles from "./combo.module.css";
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Divider,
-} from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-// Combines Calendar and Picker
 export default function Combo() {
     const [save, setSave] = useState(false);
     const [APIError, setAPIError] = useState(false);
@@ -56,22 +48,15 @@ export default function Combo() {
         <>
             {APIError && <ApiAlert />}
             <div className={styles.content}>
-                <Accordion>
-                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        Your holidays: add, edit and remove
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Picker
-                            handleOpenAPIError={handleOpenAPIError}
-                            handleCloseAPIError={handleCloseAPIError}
-                            APIError={APIError}
-                            vacationersAmount={vacationersAmount}
-                            save={save}
-                            setSave={setSave}
-                            user={user}
-                        />
-                    </AccordionDetails>
-                </Accordion>
+                <Picker
+                    handleOpenAPIError={handleOpenAPIError}
+                    handleCloseAPIError={handleCloseAPIError}
+                    APIError={APIError}
+                    vacationersAmount={vacationersAmount}
+                    save={save}
+                    setSave={setSave}
+                    user={user}
+                />
                 <Calendar
                     vacationersAmount={vacationersAmount}
                     save={save}
