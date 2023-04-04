@@ -5,16 +5,13 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import ApiAlert from "../../../components/ApiAlert";
+import { useState } from "react";
 import styles from "../team.module.css";
 import { useOutletContext } from "react-router-dom";
 import {
-    Divider,
     Alert,
     Checkbox,
     Chip,
@@ -35,8 +32,10 @@ export default function TeamModify({
     teams,
     completedAction,
     setCompletedAction,
+    openAPIError,
 }) {
-    const [user, setUser] = useOutletContext();
+    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
+        useOutletContext();
     const [newTeam, setNewTeam] = useState([]);
 
     const [selectedMembers, setSelectedMembers] = useState([]);
@@ -45,18 +44,15 @@ export default function TeamModify({
     const [openSnackBar, setopenSnackBar] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
 
-    const [APIError, setAPIError] = useState(false);
     const [teamNameError, setTeamNameError] = useState(false);
     const [alreadyExistsError, setAlreadyExistsError] = useState(false);
 
     const [openDeleteMemberAlert, setOpenDeleteMemberAlert] = useState(false);
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
-    const [openModifyTeamAlert, setOpenModifyTeamAlert] = useState(false);
     const [openDeleteTeamAlert, setOpenDeleteTeamAlert] = useState(false);
 
     const nameError = newTeam.length < 3;
 
-    // Whenever we want to close the dialog -> reset all states
     const handleClose = () => {
         setAlreadyExistsError(false);
         setTeamNameError(false);
@@ -77,6 +73,7 @@ export default function TeamModify({
         setSelectedMembers(
             typeof value === "string" ? value.split(",") : value
         );
+        console.log("selectedMembers", selectedMembers);
     };
 
     function addToTeam(newMembers, team) {
@@ -89,15 +86,17 @@ export default function TeamModify({
                     withCredentials: true,
                 }
             )
-            .then(() => {
+            .then((response) => {
+                console.log("Added members? ", response.data.message);
                 setOpenBackdrop(false);
-
-                setSelectedMembers([]);
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
-                setSelectedMembers([]);
+                openAPIError();
                 console.error("There was a team put error!", error);
+            })
+            .finally(() => {
+                setSelectedMembers([]);
             });
     }
 
@@ -108,17 +107,13 @@ export default function TeamModify({
                 deletableMember,
                 { withCredentials: true }
             )
-            .then((response) => {
-                const index = teams.findIndex(
-                    (el) => el.id === selectedTeam.id
-                );
-
-                // Reset states used
+            .then(() => {
                 setDeletableMember("");
                 setCompletedAction(!completedAction);
                 setOpenDeleteMemberAlert(false);
             })
             .catch((error) => {
+                openAPIError();
                 console.error("There was a delete member error!", error);
             })
             .finally(() => {
@@ -131,7 +126,6 @@ export default function TeamModify({
 
     const changeTeamName = (newName) => {
         if (!nameError) {
-            // Check if a team with the new name already exists
             let alreadyExists = false;
             teams.forEach((team) => {
                 if (team.title === newTeam) {
@@ -148,13 +142,12 @@ export default function TeamModify({
                         },
                         { withCredentials: true }
                     )
-                    .then((response) => {
-                        // Reset states used
+                    .then(() => {
                         setCompletedAction(!completedAction);
-                        setOpenModifyTeamAlert(false);
                         setopenSnackBar(true); // Notify the user when the name change succeeded
                     })
                     .catch((error) => {
+                        openAPIError();
                         console.error("There was a put new name error!", error);
                     });
             } else {
@@ -174,12 +167,12 @@ export default function TeamModify({
                 { withCredentials: true }
             )
             .then((response) => {
-                // Reset the states
                 setCompletedAction(!completedAction);
                 setOpenDeleteTeamAlert(false);
                 handleClose();
             })
             .catch((error) => {
+                openAPIError();
                 console.error("There was a delete error!", error);
             });
     };
@@ -190,7 +183,6 @@ export default function TeamModify({
 
     return (
         <Dialog open={open} onClose={handleClose}>
-            {APIError && <ApiAlert />}
             <DialogTitle color="primary">
                 Modify team{" "}
                 <span className={styles.modifyTeamName}>
@@ -202,7 +194,6 @@ export default function TeamModify({
                     className={styles.teamAddTextField}
                     required
                     inputProps={{ minLength: 3 }}
-                    disabled={APIError}
                     variant="outlined"
                     value={newTeam}
                     helperText={
@@ -257,7 +248,7 @@ export default function TeamModify({
                             value={selectedMembers}
                             multiple
                             onChange={handleChange}
-                            renderValue={(selected) => "..."}
+                            renderValue={() => "..."}
                         >
                             {vacationers
                                 .filter(
@@ -293,10 +284,7 @@ export default function TeamModify({
                     <div>
                         <InputLabel>Members to add: </InputLabel>
                         {selectedMembers.map((member) => (
-                            <Chip
-                                key={member.vacationerId}
-                                label={member.name}
-                            />
+                            <Chip key={member.id} label={member.name} />
                         ))}
                     </div>
                     <div className={styles.addButton}>

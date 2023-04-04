@@ -22,25 +22,31 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
+import Login from "./pages/Login/Login";
+import ApiAlert from "./components/ApiAlert";
 
 function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
     const [user, setUser] = useState({});
-    const [update, setUpdate] = useState(false);
+    const [updateUser, setUpdateUser] = useState(false);
     const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
+    const [APIError, setAPIError] = useState(false);
+    const [loginAttempted, setLoginAttempted] = useState(false);
 
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
+    const [userName, setUserName] = useState("");
 
     useEffect(() => {
         // Get username from base64 value of the cookie
         if (Cookies.get("payload")) {
             let userJSON = JSON.parse(Cookies.get("payload").substring(2));
-            let userName = JSON.parse(atob(userJSON.payload)).username;
+            let userToSearch = JSON.parse(atob(userJSON.payload)).username;
+            setUserName(userToSearch);
 
             axios
                 .get(
-                    `${process.env.REACT_APP_ADDRESS}/vacationers/getById/${userName}`,
+                    `${process.env.REACT_APP_ADDRESS}/vacationers/getById/${userToSearch}`,
                     {
                         withCredentials: true,
                     }
@@ -62,51 +68,68 @@ function NavigationBar() {
                     }
                 })
                 .catch((error) => {
+                    setAPIError(true);
                     console.error("There was a user get error:", error);
                 });
         }
-    }, [update]);
+    }, [updateUser]);
 
     return (
         <div>
             <AppBar position="sticky">
                 <Toolbar>
-                    <IconButton onClick={() => setIsOpen(!isOpen)}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography className={styles.leftPart} variant="h7">
-                        {deletedWarning && (
-                            <>
-                                <DangerousIcon />
-                            </>
-                        )}
-                        {!user.name ? (
-                            <div>No user</div>
-                        ) : (
-                            <Link to="/profile" className={styles.loginTitle}>
-                                <PersonPin className={styles.userIcon} />
-                                {user.name}
-                            </Link>
-                        )}
-                        {newUserWarning && <FiberNewIcon />}
-                    </Typography>
-                    <Typography className={styles.rightPart} variant="h7">
-                        {!user.name ? (
-                            <a
-                                href={`${process.env.REACT_APP_ADDRESS}/auth`}
-                                className={styles.loginTitle}
+                    {!APIError && (
+                        <>
+                            <IconButton onClick={() => setIsOpen(!isOpen)}>
+                                <MenuIcon />
+                            </IconButton>
+
+                            <Typography
+                                className={styles.leftPart}
+                                variant="h7"
                             >
-                                Login
-                            </a>
-                        ) : (
-                            <a
-                                href={logoutAddress}
-                                className={styles.loginTitle}
+                                {deletedWarning && (
+                                    <>
+                                        <DangerousIcon />
+                                    </>
+                                )}
+                                {!userName ? (
+                                    <div>No user</div>
+                                ) : (
+                                    <Link
+                                        to="/profile"
+                                        className={styles.loginTitle}
+                                    >
+                                        <PersonPin
+                                            className={styles.userIcon}
+                                        />
+                                        {user.name}
+                                    </Link>
+                                )}
+                                {newUserWarning && <FiberNewIcon />}
+                            </Typography>
+                            <Typography
+                                className={styles.rightPart}
+                                variant="h7"
                             >
-                                Logout
-                            </a>
-                        )}
-                    </Typography>
+                                {!userName ? (
+                                    <a
+                                        href={`${process.env.REACT_APP_ADDRESS}/auth`}
+                                        className={styles.loginTitle}
+                                    >
+                                        Login
+                                    </a>
+                                ) : (
+                                    <a
+                                        href={logoutAddress}
+                                        className={styles.loginTitle}
+                                    >
+                                        Logout
+                                    </a>
+                                )}
+                            </Typography>
+                        </>
+                    )}
                     <Typography className={styles.headline} variant="h5">
                         <Link to="/" className={styles.title}>
                             <BeachAccessIcon />
@@ -184,7 +207,32 @@ function NavigationBar() {
                 </Box>
             </Drawer>
             <div className={styles.outlet}>
-                <Outlet context={[user, setUser, update, setUpdate]} />
+                {APIError ? (
+                    <ApiAlert />
+                ) : (
+                    <>
+                        {userName ? (
+                            <Outlet
+                                context={[
+                                    user,
+                                    setUser,
+                                    updateUser,
+                                    setUpdateUser,
+                                    APIError,
+                                    setAPIError,
+                                ]}
+                            />
+                        ) : (
+                            <Login
+                                context={[
+                                    user,
+                                    loginAttempted,
+                                    setLoginAttempted,
+                                ]}
+                            />
+                        )}
+                    </>
+                )}
             </div>
         </div>
     );

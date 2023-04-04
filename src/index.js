@@ -7,18 +7,18 @@ import reportWebVitals from "./reportWebVitals";
 import Admin from "./pages/Admin/Admin";
 import Combo from "./pages/Combo/Combo";
 import UserForm from "./pages/UserForm/UserForm";
-import TeamPage from "./pages/Team/TeamPage/TeamPage"
+import TeamPage from "./pages/Team/TeamPage/TeamPage";
 import LoginFailed from "./pages/Login/LoginFailed";
 
 ReactDOM.render(
     <BrowserRouter>
         <Routes>
+            <Route path="loginFailed" element={<LoginFailed />} />
             <Route path="/" element={<NavigationBar />}>
                 <Route index element={<Combo />} />
                 <Route path="profile" element={<UserForm />} />
                 <Route path="teams" element={<TeamPage />} />
                 <Route path="admin" element={<Admin />} />
-                <Route path="loginFailed" element={<LoginFailed />} />
                 <Route path="*" element={<Combo />} />
             </Route>
         </Routes>

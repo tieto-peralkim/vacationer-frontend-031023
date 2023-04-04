@@ -1,6 +1,5 @@
 import Picker from "../Picker/Picker";
 import Calendar from "../Calendar/Calendar";
-import ApiAlert from "../../components/ApiAlert";
 import styles from "./combo.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -8,17 +7,10 @@ import { useOutletContext } from "react-router-dom";
 
 export default function Combo() {
     const [save, setSave] = useState(false);
-    const [APIError, setAPIError] = useState(false);
 
-    const [user, setUser, update, setUpdate] = useOutletContext();
+    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
+        useOutletContext();
     const [vacationersAmount, setVacationersAmount] = useState([]);
-
-    const handleOpenAPIError = () => {
-        setAPIError(true);
-    };
-    const handleCloseAPIError = () => {
-        setAPIError(false);
-    };
 
     const shortenLongNames = (longName) => {
         let maxLength = 14;
@@ -40,28 +32,24 @@ export default function Combo() {
                 console.log("Saved, setVacationersAmount:", response.data);
             })
             .catch((error) => {
+                setAPIError(true);
                 console.error(
                     "There was a get vacationers total error:",
                     error
                 );
-                handleOpenAPIError();
             });
     }, [save]);
 
     // When data has changed, update the user
     useEffect(() => {
-        setUpdate(!update);
+        setUpdateUser(!updateUser);
     }, [save]);
 
     return (
         <>
-            {APIError && <ApiAlert />}
             <div className={styles.content}>
                 <Picker
                     shortenLongNames={shortenLongNames}
-                    handleOpenAPIError={handleOpenAPIError}
-                    handleCloseAPIError={handleCloseAPIError}
-                    APIError={APIError}
                     vacationersAmount={vacationersAmount}
                     save={save}
                     setSave={setSave}
@@ -71,9 +59,6 @@ export default function Combo() {
                     shortenLongNames={shortenLongNames}
                     vacationersAmount={vacationersAmount}
                     save={save}
-                    handleOpenAPIError={handleOpenAPIError}
-                    handleCloseAPIError={handleCloseAPIError}
-                    APIError={APIError}
                     user={user}
                 />
             </div>

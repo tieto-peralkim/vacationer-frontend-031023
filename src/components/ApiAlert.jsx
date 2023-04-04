@@ -4,7 +4,7 @@ import styles from "./apialert.module.css";
 export default function ApiAlert() {
     return (
         <Alert severity="error" className={styles.alertAPI}>
-            No connection to API, login or contact admin
+            No connection to API, API is down
         </Alert>
     );
 }

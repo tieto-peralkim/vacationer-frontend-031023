@@ -12,12 +12,10 @@ import {
 } from "@mui/material";
 import styles from "./admin.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
-import ApiAlert from "../../components/ApiAlert";
 import { Navigate, useOutletContext } from "react-router-dom";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
-    const [APIError, setAPIError] = useState(false);
     const [selectedDeletedUser, setSelectedDeletedUser] = useState("");
     const [selectedDeletedTeam, setSelectedDeletedTeam] = useState("");
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
@@ -35,7 +33,8 @@ export default function Admin() {
     const [newUser, setNewUser] = useState("");
     const nameError = newUser.length < 3;
 
-    const [user, setUser] = useOutletContext();
+    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
+        useOutletContext();
     const [completedAction, setCompletedAction] = useState(false);
     const [openFinalDeleteUserAlert, setOpenFinalDeleteUserAlert] =
         useState(false);
@@ -59,19 +58,41 @@ export default function Admin() {
                 withCredentials: true,
             })
             .then((response) => {
-                setAPIError(false);
                 setVacationers(response.data);
                 console.log("vacationers", response.data);
             })
             .catch((error) => {
                 console.error("There was a vacationers get error!", error);
-                if (!APIError) {
-                    setAPIError(true);
-                }
+                setAPIError(true);
+            });
+
+        Promise.all([
+            axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers/deleted`, {
+                withCredentials: true,
+            }),
+            axios.get(`${process.env.REACT_APP_ADDRESS}/teams/deleted`, {
+                withCredentials: true,
+            }),
+        ])
+            .then((response) => {
+                console.log(
+                    "response.data",
+                    response[0].data,
+                    response[1].data
+                );
+                setDeletedVacationers(response[0].data);
+                setDeletedTeams(response[1].data);
+            })
+            .catch((error) => {
+                setAPIError(true);
+                console.error(
+                    "There was a get deleted vacationers/teams error!",
+                    error
+                );
             });
     }, [completedAction]);
 
-    // For returning the user to the user list
+    // For undeleting the user
     const returnUser = () => {
         axios
             .put(
@@ -85,11 +106,12 @@ export default function Admin() {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
+                setAPIError(true);
                 console.error("There was a return user error:", error);
             });
     };
 
-    // For returning the user to the user list
+    // For undeleting team
     const returnTeam = () => {
         axios
             .put(
@@ -103,11 +125,12 @@ export default function Admin() {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
+                setAPIError(true);
                 console.error("There was a return team error:", error);
             });
     };
 
-    // For removing the user from the database
+    // For removing a user from the database
     const finalDeleteUser = () => {
         axios
             .delete(
@@ -120,11 +143,12 @@ export default function Admin() {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
+                setAPIError(true);
                 console.error("There was a final delete user error:", error);
             });
     };
 
-    // For removing the team from the database
+    // For removing a team from the database
     const finalDeleteTeam = () => {
         console.log("deleting team", selectedDeletedTeam);
         axios
@@ -139,36 +163,9 @@ export default function Admin() {
             })
             .catch((error) => {
                 console.error("There was a delete error:", error);
+                setAPIError(true);
             });
     };
-
-    useEffect(() => {
-        emptySelections();
-        Promise.all([
-            axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers/deleted`, {
-                withCredentials: true,
-            }),
-            axios.get(`${process.env.REACT_APP_ADDRESS}/teams/deleted`, {
-                withCredentials: true,
-            }),
-        ])
-            .then((response) => {
-                setAPIError(false);
-                console.log(
-                    "response.data",
-                    response[0].data,
-                    response[1].data
-                );
-                setDeletedVacationers(response[0].data);
-                setDeletedTeams(response[1].data);
-            })
-            .catch((error) => {
-                if (!APIError) {
-                    setAPIError(true);
-                }
-                console.error("There was a vacationers get error!", error);
-            });
-    }, [completedAction]);
 
     const sendSlackMessage = () => {
         axios
@@ -180,9 +177,7 @@ export default function Admin() {
             })
             .catch((error) => {
                 console.error("There was a sendSlackMessage error!", error);
-                if (!APIError) {
-                    setAPIError(true);
-                }
+                setAPIError(true);
             });
     };
 
@@ -208,6 +203,7 @@ export default function Admin() {
                     setNewUser("");
                 })
                 .catch((error) => {
+                    setAPIError(true);
                     console.error("There was a user creation error!", error);
                     setUserCreationMessage(error.response.data);
                 });
@@ -231,6 +227,7 @@ export default function Admin() {
                 removeUserFromTeams(selectedUser);
             })
             .catch((error) => {
+                setAPIError(true);
                 console.error("There was a delete user error!", error);
             });
     };
@@ -249,6 +246,7 @@ export default function Admin() {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
+                setAPIError(true);
                 console.error("There was a set admin error!", error);
             });
     };
@@ -260,10 +258,11 @@ export default function Admin() {
                 removableUser,
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
+                setAPIError(true);
                 console.error(
                     "There was a delete user from all teams error!",
                     error
@@ -273,7 +272,6 @@ export default function Admin() {
 
     return user.admin ? (
         <>
-            {APIError && <ApiAlert />}
             <div className={styles.content}>
                 <div className={styles.borderedBox}>
                     <InputLabel>{CREATE_TITLE}</InputLabel>
