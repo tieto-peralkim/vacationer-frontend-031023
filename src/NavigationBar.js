@@ -4,6 +4,7 @@ import styles from "./NavigationBar.module.css";
 import {
     AppBar,
     Box,
+    CircularProgress,
     Drawer,
     IconButton,
     List,
@@ -32,10 +33,24 @@ function NavigationBar() {
     const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [APIError, setAPIError] = useState(false);
-    const [loginAttempted, setLoginAttempted] = useState(false);
-
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
     const [userName, setUserName] = useState("");
+    const [showSpinner, setShowSpinner] = useState(true);
+
+    useEffect(() => {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/checkStatus`)
+            .then(() => {
+                console.log("API OK");
+            })
+            .catch((error) => {
+                setAPIError(true);
+                console.error("API ERROR:", error);
+            })
+            .finally(() => {
+                setShowSpinner(false);
+            });
+    }, []);
 
     useEffect(() => {
         // Get username from base64 value of the cookie
@@ -52,6 +67,7 @@ function NavigationBar() {
                     }
                 )
                 .then((response) => {
+                    setAPIError(false);
                     if (response.data) {
                         if (response.status === 201) {
                             console.log("luotu!");
@@ -70,6 +86,9 @@ function NavigationBar() {
                 .catch((error) => {
                     setAPIError(true);
                     console.error("There was a user get error:", error);
+                })
+                .finally(() => {
+                    setShowSpinner(false);
                 });
         }
     }, [updateUser]);
@@ -78,7 +97,7 @@ function NavigationBar() {
         <div>
             <AppBar position="sticky">
                 <Toolbar>
-                    {!APIError && (
+                    {!APIError && !showSpinner && (
                         <>
                             <IconButton onClick={() => setIsOpen(!isOpen)}>
                                 <MenuIcon />
@@ -114,7 +133,7 @@ function NavigationBar() {
                             >
                                 {!userName ? (
                                     <a
-                                        href={`${process.env.REACT_APP_ADDRESS}/auth`}
+                                        href={`${process.env.REACT_APP_ADDRESS}/login`}
                                         className={styles.loginTitle}
                                     >
                                         Login
@@ -207,11 +226,12 @@ function NavigationBar() {
                 </Box>
             </Drawer>
             <div className={styles.outlet}>
+                {showSpinner && <CircularProgress />}
                 {APIError ? (
                     <ApiAlert />
                 ) : (
                     <>
-                        {userName ? (
+                        {!showSpinner && userName ? (
                             <Outlet
                                 context={[
                                     user,
@@ -223,13 +243,7 @@ function NavigationBar() {
                                 ]}
                             />
                         ) : (
-                            <Login
-                                context={[
-                                    user,
-                                    loginAttempted,
-                                    setLoginAttempted,
-                                ]}
-                            />
+                            !showSpinner && <Login />
                         )}
                     </>
                 )}

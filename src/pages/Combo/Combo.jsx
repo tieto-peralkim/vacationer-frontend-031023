@@ -7,7 +7,6 @@ import { useOutletContext } from "react-router-dom";
 
 export default function Combo() {
     const [save, setSave] = useState(false);
-
     const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
         useOutletContext();
     const [vacationersAmount, setVacationersAmount] = useState([]);
@@ -21,8 +20,10 @@ export default function Combo() {
         }
     };
 
-    // Update simple list of vacationers
+    // When data has changed, update user and simple list of vacationers
     useEffect(() => {
+        setUpdateUser(!updateUser);
+        console.log("arvot", APIError, user);
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
                 withCredentials: true,
@@ -38,11 +39,6 @@ export default function Combo() {
                     error
                 );
             });
-    }, [save]);
-
-    // When data has changed, update the user
-    useEffect(() => {
-        setUpdateUser(!updateUser);
     }, [save]);
 
     return (

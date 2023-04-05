@@ -10,7 +10,7 @@ import { ExpandCircleDown } from "@mui/icons-material";
 
 export default function Login() {
     const handleClick = () => {
-        window.location.replace(`${process.env.REACT_APP_ADDRESS}/auth`);
+        window.location.replace(`${process.env.REACT_APP_ADDRESS}/login`);
     };
     return (
         <>
