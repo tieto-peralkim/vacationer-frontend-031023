@@ -25,17 +25,14 @@ import ClearIcon from "@mui/icons-material/Clear";
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
 import { ExpandCircleDown } from "@mui/icons-material";
+import { useOutletContext } from "react-router-dom";
 
 registerLocale("fi", fi);
 
 export default function Picker({
-    user,
     save,
     setSave,
     vacationersAmount,
-    APIError,
-    handleOpenAPIError,
-    handleCloseAPIError,
     shortenLongNames,
 }) {
     // Max number of workers on holiday in a day
@@ -44,6 +41,9 @@ export default function Picker({
     //  Dates are in UTC time
     const today = new Date();
     today.setUTCHours(0, 0, 0);
+
+    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
+        useOutletContext();
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -168,13 +168,10 @@ export default function Picker({
                 setSave(!save);
                 resetForm();
                 resetDates();
-                if (APIError) {
-                    handleCloseAPIError();
-                }
             })
             .catch((error) => {
                 console.error("There was a delete holiday error!", error);
-                handleOpenAPIError();
+                setAPIError(true);
             })
             .finally(() => {
                 handleCloseDeletionAlert();
@@ -285,13 +282,10 @@ export default function Picker({
                     setChosenVacationer(response.data);
                     console.log("response on", response.data);
                     setExcludedDates(response.data.vacations);
-                    if (APIError) {
-                        handleCloseAPIError();
-                    }
                 })
                 .catch((error) => {
                     console.error("There was a vacationers get error:", error);
-                    handleOpenAPIError();
+                    setAPIError(true);
                 });
         }
     };
@@ -315,13 +309,10 @@ export default function Picker({
             .then((response) => {
                 console.log("setDailyVacationers", response.data);
                 setDailyVacationers(response.data);
-                if (APIError) {
-                    handleCloseAPIError();
-                }
             })
             .catch((error) => {
                 console.error("There was a timespan get error!", error);
-                handleOpenAPIError();
+                setAPIError(true);
             });
     };
 
@@ -336,7 +327,7 @@ export default function Picker({
     };
 
     return (
-        <Accordion className={styles.accordion}>
+        <Accordion className={styles.accordion} disabled={APIError}>
             <AccordionSummary
                 sx={{
                     bgcolor: "lightblue",
@@ -457,9 +448,6 @@ export default function Picker({
                                 resetDates={resetDates}
                                 save={save}
                                 setSave={setSave}
-                                APIError={APIError}
-                                handleOpenAPIError={handleOpenAPIError}
-                                handleCloseAPIError={handleCloseAPIError}
                                 calculatePerDay={calculatePerDay}
                             />
                         </form>

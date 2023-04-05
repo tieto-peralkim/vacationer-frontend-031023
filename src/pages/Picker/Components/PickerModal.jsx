@@ -4,9 +4,6 @@ import {
     Box,
     Button,
     Checkbox,
-    Dialog,
-    DialogContent,
-    DialogTitle,
     FormControlLabel,
     FormGroup,
     Modal,
@@ -18,6 +15,7 @@ import DatePicker from "react-datepicker";
 import { useEffect, useState } from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
+import { useOutletContext } from "react-router-dom";
 
 export default function PickerModal({
     resetForm,
@@ -44,18 +42,16 @@ export default function PickerModal({
     startDateErrorMessage,
     endDateErrorMessage,
     idToEdit,
-    setHolidays,
     setChangingStartedSpace,
     setEditingSpace,
     setOpenCalendar,
     resetDates,
     save,
     setSave,
-    APIError,
-    handleOpenAPIError,
-    handleCloseAPIError,
     calculatePerDay,
 }) {
+    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
+        useOutletContext();
     const [alertingDates, setAlertingDates] = useState([]);
     const [openEditAlert, setOpenEditAlert] = useState(false);
     const [openAddAlert, setOpenAddAlert] = useState(false);
@@ -168,14 +164,10 @@ export default function PickerModal({
                     handleCloseCalendar();
                     resetForm();
                     setSave(!save);
-                    if (APIError) {
-                        handleCloseAPIError();
-                    }
                 })
                 .catch((error) => {
                     console.error("There was a post new holiday error!", error);
-
-                    handleOpenAPIError();
+                    setAPIError(true);
                 });
         }
     };
@@ -238,13 +230,10 @@ export default function PickerModal({
                 handleCloseCalendar();
                 resetForm();
                 setSave(!save);
-                if (APIError) {
-                    handleCloseAPIError();
-                }
             })
             .catch((error) => {
                 console.error("There was a put error!", error);
-                handleOpenAPIError();
+                setAPIError(true);
             });
     };
 

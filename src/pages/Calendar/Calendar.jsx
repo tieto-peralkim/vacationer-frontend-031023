@@ -8,7 +8,6 @@ import axios from "axios";
 import {
     Box,
     Button,
-    Checkbox,
     Chip,
     CircularProgress,
     FormControlLabel,
@@ -19,17 +18,16 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
+import { useOutletContext } from "react-router-dom";
 
 export default function Calendar({
     shortenLongNames,
-    user,
     vacationersAmount,
     save,
-    APIError,
-    handleOpenAPIError,
-    handleCloseAPIError,
 }) {
     const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
+    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
+        useOutletContext();
 
     const today = new Date();
     const thisMonthFirst = new Date(
@@ -94,6 +92,7 @@ export default function Calendar({
                 console.log("publicDays", publicDays);
             })
             .catch((error) => {
+                setAPIError(true);
                 console.error("There was a Public holiday API error!", error);
             });
     }, [selectedYear]);
@@ -155,12 +154,9 @@ export default function Calendar({
             .then((response) => {
                 setTeams(response.data);
                 console.log("TEAMS", response.data);
-                if (APIError) {
-                    handleCloseAPIError();
-                }
             })
             .catch((error) => {
-                handleOpenAPIError();
+                setAPIError(true);
                 console.error("There was a teams get error!", error);
             });
     }, [save]);
@@ -210,12 +206,9 @@ export default function Calendar({
                 setSelectedVacationers(response.data);
                 console.log("getHolidaysOfMonth", response.data);
                 setShowSpinner(false);
-                if (APIError) {
-                    handleCloseAPIError();
-                }
             })
             .catch((error) => {
-                handleOpenAPIError();
+                setAPIError(true);
                 console.error("There was a get holidaysbetween error!", error);
                 setShowSpinner(false);
             });

@@ -1,0 +1,11 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    list-style-position: inside;
+    margin-top: 2em;
+    gap: 2em;
+}
+.loginButton {
+    width: 30em;
+}

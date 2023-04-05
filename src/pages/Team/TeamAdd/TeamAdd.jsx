@@ -9,10 +9,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import ApiAlert from "../../../components/ApiAlert";
 import styles from "../team.module.css";
 import { useOutletContext } from "react-router-dom";
-import Cookies from "js-cookie";
 
 export default function TeamAdd({
     open,
@@ -20,17 +18,17 @@ export default function TeamAdd({
     teams,
     completedAction,
     setCompletedAction,
+    openAPIError,
 }) {
-    const [user, setUser, update, setUpdate] = useOutletContext();
+    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
+        useOutletContext();
     const [newTeam, setNewTeam] = useState([]);
 
     const [teamNameError, setTeamNameError] = useState(false);
     const [alreadyExistsError, setAlreadyExistsError] = useState(false);
-    const [APIError, setAPIError] = useState(false);
 
     const nameError = newTeam.length < 3;
 
-    // Reset states when dialog is closed
     const handleClose = () => {
         setOpenTeamAdd(false);
         setTeamNameError(false);
@@ -39,22 +37,20 @@ export default function TeamAdd({
     };
 
     useEffect(() => {
-        setUpdate(!update);
-        setAPIError(false);
+        setUpdateuser(!updateUser);
     }, [completedAction]);
 
     const createTeam = (newTeam) => {
         if (!nameError) {
             let alreadyExists = false;
             teams.forEach((team) => {
-                // Check if there is already a team with given name
                 if (team.title === newTeam) {
                     alreadyExists = true;
                 }
             });
 
             if (!alreadyExists) {
-                let firstUser = { name: user.name, vacationerId: user.id }; // Save current user to a variable
+                let firstUser = { name: user.name, vacationerId: user.id };
                 // Set the user as a member of the new team
                 const teamToAdd = {
                     title: newTeam,
@@ -70,10 +66,11 @@ export default function TeamAdd({
                         setNewTeam([]);
                     })
                     .catch((error) => {
+                        openAPIError();
                         console.error("There was a post error!", error);
                     })
                     .finally(() => {
-                        handleClose(); // Finally close the dialog
+                        handleClose();
                     });
             } else {
                 setAlreadyExistsError(true);
@@ -85,7 +82,6 @@ export default function TeamAdd({
 
     return (
         <Dialog open={open} onClose={handleClose}>
-            {APIError && <ApiAlert />}
             <DialogTitle color="primary">Create new team</DialogTitle>
             <DialogContent className={styles.addTeamDialogContent}>
                 <DialogContentText>

@@ -1,24 +1,17 @@
-import {
-    List,
-    ListItem,
-    Divider,
-    ListItemText,
-    Chip,
-    Button,
-} from "@mui/material";
+import { List, ListItem, ListItemText, Chip, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import styles from "../team.module.css";
 import axios from "axios";
-import ApiAlert from "../../../components/ApiAlert";
 import * as React from "react";
 import { useOutletContext } from "react-router-dom";
 import TeamAdd from "../TeamAdd/TeamAdd";
 import TeamModify from "../TeamModify/TeamModify";
 import Typography from "@mui/material/Typography";
 
-export default function TeamPage({}) {
+export default function TeamPage() {
     const [teams, setTeams] = useState([]);
-    const [user, setUser, update, setUpdate] = useOutletContext();
+    const [user, setUser, updateUser, setupdateUser, APIError, setAPIError] =
+        useOutletContext();
     const [vacationers, setVacationers] = useState([]);
 
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
@@ -26,25 +19,32 @@ export default function TeamPage({}) {
     const [selectedTeam, setSelectedTeam] = useState("");
 
     const [completedAction, setCompletedAction] = useState(false);
-    const [APIError, setAPIError] = useState(false);
 
-    // Fetch team and vacationer data whenever team or completedAction changes
+    const openAPIError = () => {
+        setAPIError(true);
+    };
+
     useEffect(() => {
         let updatedTeams;
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
+        Promise.all([
+            axios.get(`${process.env.REACT_APP_ADDRESS}/teams`, {
                 withCredentials: true,
-            })
+            }),
+            axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
+                withCredentials: true,
+            }),
+        ])
             .then((response) => {
-                updatedTeams = response.data;
-                setAPIError(false);
-                setTeams(response.data);
+                updatedTeams = response[0].data;
+                setTeams(updatedTeams);
+                setVacationers(response[1].data);
             })
             .catch((error) => {
-                console.error("There was a teams get error:", error);
-                if (!APIError) {
-                    setAPIError(true);
-                }
+                console.error(
+                    "There was a teams/total vacationers get error:",
+                    error
+                );
+                openAPIError();
             })
             .finally(() => {
                 if (selectedTeam) {
@@ -53,20 +53,6 @@ export default function TeamPage({}) {
                             setSelectedTeam(team);
                         }
                     });
-                }
-            });
-        axios
-            .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
-                withCredentials: true,
-            })
-            .then((response) => {
-                setAPIError(false);
-                setVacationers(response.data);
-            })
-            .catch((error) => {
-                console.error("There was a vacationers get error!", error);
-                if (!APIError) {
-                    setAPIError(true);
                 }
             });
     }, [completedAction]);
@@ -88,6 +74,7 @@ export default function TeamPage({}) {
                 teams={teams}
                 completedAction={completedAction}
                 setCompletedAction={setCompletedAction}
+                openAPIError={openAPIError}
             />
             <TeamModify
                 open={openTeamModify}
@@ -97,98 +84,104 @@ export default function TeamPage({}) {
                 teams={teams}
                 completedAction={completedAction}
                 setCompletedAction={setCompletedAction}
+                openAPIError={openAPIError}
             />
-            {APIError && <ApiAlert />}
-            <div className={styles.content}>
-                <Button
-                    variant="outlined"
-                    onClick={handleClickOpenTeamAdd}
-                    className={styles.createTeamButton}
-                >
-                    Create new team
-                </Button>
-                <List
-                    key={"key"}
-                    sx={{
-                        width: "100%",
-                        maxWidth: 760,
-                        bgcolor: "background.paper",
-                    }}
-                >
-                    {teams.map((team) =>
-                        team.members.some(
-                            (member) => member["name"] === user.name
-                        ) || user.admin ? (
-                            <div className={styles.itemCont} key={team.id}>
-                                <ListItem
-                                    key={team.id}
-                                    alignItems="flex-start"
-                                    className={styles.listItem}
-                                    onClick={() => {
-                                        handleClickOpenTeamModify(team);
-                                    }}
-                                >
-                                    <ListItemText
-                                        disableTypography
+            {user.name && (
+                <div className={styles.content}>
+                    <Button
+                        variant="outlined"
+                        onClick={handleClickOpenTeamAdd}
+                        className={styles.createTeamButton}
+                    >
+                        Create new team
+                    </Button>
+                    <List
+                        key={"key"}
+                        sx={{
+                            width: "100%",
+                            maxWidth: 760,
+                            bgcolor: "background.paper",
+                        }}
+                    >
+                        {teams.map((team) =>
+                            team.members.some(
+                                (member) => member["name"] === user.name
+                            ) || user.admin ? (
+                                <div className={styles.itemCont} key={team.id}>
+                                    <ListItem
                                         key={team.id}
-                                        primary={
-                                            <Typography
-                                                className={styles.teamName}
-                                            >
-                                                {team.title}
-                                            </Typography>
-                                        }
-                                        secondary={team.members.map(
-                                            (member) => (
-                                                <Chip
-                                                    className={
-                                                        styles.memberChip
-                                                    }
-                                                    key={member.vacationerId}
-                                                    color="primary"
-                                                    label={member.name}
-                                                />
-                                            )
-                                        )}
-                                    />
-                                </ListItem>
-                            </div>
-                        ) : (
-                            <div key={team.id}>
-                                <ListItem
-                                    className={styles.listItemGreyed}
-                                    key={team.id}
-                                >
-                                    <ListItemText
+                                        alignItems="flex-start"
+                                        className={styles.listItem}
+                                        onClick={() => {
+                                            handleClickOpenTeamModify(team);
+                                        }}
+                                    >
+                                        <ListItemText
+                                            disableTypography
+                                            key={team.id}
+                                            primary={
+                                                <Typography
+                                                    className={styles.teamName}
+                                                >
+                                                    {team.title}
+                                                </Typography>
+                                            }
+                                            secondary={team.members.map(
+                                                (member) => (
+                                                    <Chip
+                                                        className={
+                                                            styles.memberChip
+                                                        }
+                                                        key={
+                                                            member.vacationerId
+                                                        }
+                                                        color="primary"
+                                                        label={member.name}
+                                                    />
+                                                )
+                                            )}
+                                        />
+                                    </ListItem>
+                                </div>
+                            ) : (
+                                <div key={team.id}>
+                                    <ListItem
+                                        className={styles.listItemGreyed}
                                         key={team.id}
-                                        disableTypography
-                                        primary={
-                                            <Typography
-                                                className={styles.teamName}
-                                            >
-                                                {team.title}
-                                            </Typography>
-                                        }
-                                        className={styles.greyedTitle}
-                                        secondary={team.members.map(
-                                            (member) => (
-                                                <Chip
-                                                    className={
-                                                        styles.memberChipGreyed
-                                                    }
-                                                    key={member.vacationerId}
-                                                    color="primary"
-                                                    label={member.name}
-                                                />
-                                            )
-                                        )}
-                                    />
-                                </ListItem>
-                            </div>
-                        )
-                    )}
-                </List>
-            </div>
+                                    >
+                                        <ListItemText
+                                            key={team.id}
+                                            disableTypography
+                                            primary={
+                                                <Typography
+                                                    className={styles.teamName}
+                                                >
+                                                    {team.title}
+                                                </Typography>
+                                            }
+                                            className={styles.greyedTitle}
+                                            secondary={team.members.map(
+                                                (member) => (
+                                                    <Chip
+                                                        className={
+                                                            styles.memberChipGreyed
+                                                        }
+                                                        key={
+                                                            member.vacationerId
+                                                        }
+                                                        color="primary"
+                                                        label={member.name}
+                                                    />
+                                                )
+                                            )}
+                                        />
+                                    </ListItem>
+                                </div>
+                            )
+                        )}
+                    </List>
+                </div>
+            )}
         </>
     );
 }

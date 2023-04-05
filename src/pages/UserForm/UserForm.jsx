@@ -6,9 +6,8 @@ import { useEffect, useState } from "react";
 import ModifyDialog from "../Dialogs/ModifyDialog";
 import { CompactPicker } from "react-color";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import ApiAlert from "../../components/ApiAlert";
 
-export default function UserForm({}) {
+export default function UserForm() {
     let navigate = useNavigate();
     const [holidayColor, setHolidayColor] = useState("");
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
@@ -18,7 +17,8 @@ export default function UserForm({}) {
     const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
         useState("");
 
-    const [user, setUser, update, setUpdate] = useOutletContext();
+    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
+        useOutletContext();
     const [completedAction, setCompletedAction] = useState(false);
 
     const [userCreationMessage, setUserCreationMessage] = useState("");
@@ -30,7 +30,6 @@ export default function UserForm({}) {
     const symbolNumberError = !isNaN(holidaySymbol);
     const unconfirmedSymbolError = !isNaN(unconfirmedHolidaySymbol);
     const [userUpdatedAt, setUserUpdatedAt] = useState();
-    const [APIError, setAPIError] = useState(false);
 
     const handleHolidayColorChange = (color) => {
         setHolidayColor(color.hex);
@@ -49,16 +48,10 @@ export default function UserForm({}) {
     };
 
     useEffect(() => {
-        setUpdate(!update);
-        setAPIError(false);
+        setUpdateuser(!updateUser);
     }, [completedAction]);
 
     useEffect(() => {
-        if (!user.name) {
-            setAPIError(true);
-        } else {
-            setAPIError(false);
-        }
         if (user && user.calendarSettings && user.updatedAt) {
             let date = new Date(user.updatedAt);
             console.log("date", date);
@@ -102,9 +95,8 @@ export default function UserForm({}) {
                 })
                 .catch((error) => {
                     console.error("There was a user name change error!", error);
-                    if (!APIError) {
-                        setAPIError(true);
-                    }
+                    setAPIError(true);
+
                     setUserCreationMessage(error);
                 });
         } else {
@@ -128,6 +120,7 @@ export default function UserForm({}) {
                     "There was a put changeUserNameinTeams error!",
                     error
                 );
+                setAPIError(true);
             });
     };
 
@@ -175,9 +168,7 @@ export default function UserForm({}) {
                     navigate("/");
                 })
                 .catch((error) => {
-                    if (!APIError) {
-                        setAPIError(true);
-                    }
+                    setAPIError(true);
                     console.error(
                         "There was a calendar settings change error!",
                         error
@@ -190,7 +181,6 @@ export default function UserForm({}) {
 
     return (
         <>
-            {APIError && <ApiAlert />}
             <div className={styles.content}>
                 {user.name && (
                     <div className={styles.borderedBox}>
@@ -213,6 +203,12 @@ export default function UserForm({}) {
                         <div>
                             user updated: <i>{userUpdatedAt}</i>
                         </div>
+                        <a
+                            href={`${process.env.REACT_APP_ADDRESS}/checkAuthorization`}
+                            target={"_blank"}
+                        >
+                            Check Github permissions of the app
+                        </a>
                         <div className={styles.colorPickers}>
                             <div className={styles.rowFlex}>
                                 <TextField
@@ -319,7 +315,7 @@ export default function UserForm({}) {
             <AlertDialog
                 openAlert={userCreationMessage !== ""}
                 handleCloseAlert={() => setUserCreationMessage("")}
-                dialogTitle={"API ERROR!"}
+                dialogTitle={"ERROR!"}
                 dialogContent={userCreationMessage}
             />
             <AlertDialog
