@@ -7,8 +7,15 @@ import {
     Divider,
 } from "@mui/material";
 import { ExpandCircleDown } from "@mui/icons-material";
+import { useLocation } from "react-router-dom";
 
 export default function Login() {
+    let location = useLocation();
+    let loginFailed = false;
+    if (location.state) {
+        loginFailed = location.state.loginFailed;
+    }
+
     const handleClick = () => {
         window.location.replace(`${process.env.REACT_APP_ADDRESS}/login`);
     };
@@ -23,49 +30,58 @@ export default function Login() {
                     >
                         Login
                     </Button>
-                    <Accordion
-                        sx={{
-                            width: "70%",
-                        }}
-                    >
-                        <AccordionSummary
-                            sx={{
-                                bgcolor: "lightgreen",
-                            }}
-                            expandIcon={<ExpandCircleDown color="primary" />}
-                        >
-                            Troubleshoot failed login
-                        </AccordionSummary>
-                        <Divider />
-                        <AccordionDetails>
-                            <div>
-                                <ol>
-                                    <li>
-                                        Create Github work credentials and
-                                        request organizational access from
-                                        admins.
-                                    </li>
+                    {loginFailed && (
+                        <>
+                            <Accordion
+                                sx={{
+                                    width: "70%",
+                                }}
+                                expanded={true}
+                            >
+                                <AccordionSummary
+                                    sx={{
+                                        bgcolor: "orangered",
+                                    }}
+                                >
+                                    Login failed.
+                                </AccordionSummary>
+                                <Divider />
+                                <AccordionDetails
+                                    sx={{
+                                        bgcolor: "orange",
+                                    }}
+                                >
+                                    <div>
+                                        <ol>
+                                            <li>
+                                                Create Github work credentials
+                                                and request organizational
+                                                access from admins.
+                                            </li>
 
-                                    <li>
-                                        Confirm you are using Github work
-                                        credentials, go to{" "}
-                                        <a
-                                            href={"https://github.com/"}
-                                            target={"_blank"}
-                                        >
-                                            Github
-                                        </a>{" "}
-                                        and check your credentials first. Then
-                                        retry.
-                                    </li>
-                                    <li>
-                                        If login link doesn't connect, API might
-                                        be down. Please inform the admins.
-                                    </li>
-                                </ol>
-                            </div>
-                        </AccordionDetails>
-                    </Accordion>
+                                            <li>
+                                                Confirm you are using Github
+                                                work credentials, go to{" "}
+                                                <a
+                                                    href={"https://github.com/"}
+                                                    target={"_blank"}
+                                                >
+                                                    Github
+                                                </a>{" "}
+                                                and check your credentials
+                                                first. Then retry.
+                                            </li>
+                                            <li>
+                                                If login link doesn't connect,
+                                                API might be down. Please inform
+                                                the admins.
+                                            </li>
+                                        </ol>
+                                    </div>
+                                </AccordionDetails>
+                            </Accordion>
+                        </>
+                    )}
                 </div>
             </div>
         </>
