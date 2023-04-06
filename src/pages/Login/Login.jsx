@@ -47,9 +47,7 @@ export default function Login() {
                                 </AccordionSummary>
                                 <Divider />
                                 <AccordionDetails
-                                    sx={{
-                                        bgcolor: "orange",
-                                    }}
+                                    className={styles.accordionDetails}
                                 >
                                     <div>
                                         <ol>

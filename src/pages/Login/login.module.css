@@ -9,3 +9,9 @@
 .loginButton {
     width: 30em;
 }
+.accordionSummary {
+    background-color: rgba(255, 157, 27, 0.5);
+}
+.accordionDetails {
+    background-color: rgba(255, 157, 27, 0.5);
+}
