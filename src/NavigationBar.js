@@ -1,9 +1,10 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import styles from "./NavigationBar.module.css";
 import {
     AppBar,
     Box,
+    CircularProgress,
     Drawer,
     IconButton,
     List,
@@ -23,7 +24,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
 import Login from "./pages/Login/Login";
-import ApiAlert from "./components/ApiAlert";
+import CustomAlert from "./components/CustomAlert";
 
 function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -32,10 +33,25 @@ function NavigationBar() {
     const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [APIError, setAPIError] = useState(false);
-    const [loginAttempted, setLoginAttempted] = useState(false);
-
+    const loginAddress = `${process.env.REACT_APP_ADDRESS}/login`;
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
     const [userName, setUserName] = useState("");
+    const [showSpinner, setShowSpinner] = useState(true);
+
+    useEffect(() => {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/checkStatus`)
+            .then(() => {
+                console.log("API OK");
+            })
+            .catch((error) => {
+                setAPIError(true);
+                console.error("API ERROR:", error);
+            })
+            .finally(() => {
+                setShowSpinner(false);
+            });
+    }, []);
 
     useEffect(() => {
         // Get username from base64 value of the cookie
@@ -52,6 +68,7 @@ function NavigationBar() {
                     }
                 )
                 .then((response) => {
+                    setAPIError(false);
                     if (response.data) {
                         if (response.status === 201) {
                             console.log("luotu!");
@@ -70,7 +87,12 @@ function NavigationBar() {
                 .catch((error) => {
                     setAPIError(true);
                     console.error("There was a user get error:", error);
+                })
+                .finally(() => {
+                    setShowSpinner(false);
                 });
+        } else {
+            console.log("No cookies!");
         }
     }, [updateUser]);
 
@@ -78,58 +100,48 @@ function NavigationBar() {
         <div>
             <AppBar position="sticky">
                 <Toolbar>
-                    {!APIError && (
-                        <>
-                            <IconButton onClick={() => setIsOpen(!isOpen)}>
-                                <MenuIcon />
-                            </IconButton>
+                    <>
+                        <IconButton onClick={() => setIsOpen(!isOpen)}>
+                            <MenuIcon />
+                        </IconButton>
 
-                            <Typography
-                                className={styles.leftPart}
-                                variant="h7"
-                            >
-                                {deletedWarning && (
-                                    <>
-                                        <DangerousIcon />
-                                    </>
-                                )}
-                                {!userName ? (
-                                    <div>No user</div>
-                                ) : (
-                                    <Link
-                                        to="/profile"
-                                        className={styles.loginTitle}
-                                    >
-                                        <PersonPin
-                                            className={styles.userIcon}
-                                        />
-                                        {user.name}
-                                    </Link>
-                                )}
-                                {newUserWarning && <FiberNewIcon />}
-                            </Typography>
-                            <Typography
-                                className={styles.rightPart}
-                                variant="h7"
-                            >
-                                {!userName ? (
-                                    <a
-                                        href={`${process.env.REACT_APP_ADDRESS}/auth`}
-                                        className={styles.loginTitle}
-                                    >
-                                        Login
-                                    </a>
-                                ) : (
-                                    <a
-                                        href={logoutAddress}
-                                        className={styles.loginTitle}
-                                    >
-                                        Logout
-                                    </a>
-                                )}
-                            </Typography>
-                        </>
-                    )}
+                        <Typography className={styles.leftPart} variant="h7">
+                            {deletedWarning && (
+                                <>
+                                    <DangerousIcon />
+                                </>
+                            )}
+                            {!userName ? (
+                                <div>No user</div>
+                            ) : (
+                                <Link
+                                    to="/profile"
+                                    className={styles.loginTitle}
+                                >
+                                    <PersonPin className={styles.userIcon} />
+                                    {user.name}
+                                </Link>
+                            )}
+                            {newUserWarning && <FiberNewIcon />}
+                        </Typography>
+                        <Typography className={styles.rightPart} variant="h7">
+                            {!userName ? (
+                                <a
+                                    href={loginAddress}
+                                    className={styles.loginTitle}
+                                >
+                                    Login
+                                </a>
+                            ) : (
+                                <a
+                                    href={logoutAddress}
+                                    className={styles.loginTitle}
+                                >
+                                    Logout
+                                </a>
+                            )}
+                        </Typography>
+                    </>
                     <Typography className={styles.headline} variant="h5">
                         <Link to="/" className={styles.title}>
                             <BeachAccessIcon />
@@ -207,11 +219,12 @@ function NavigationBar() {
                 </Box>
             </Drawer>
             <div className={styles.outlet}>
+                {showSpinner && <CircularProgress />}
                 {APIError ? (
-                    <ApiAlert />
+                    <CustomAlert text={"No connection to API"} />
                 ) : (
                     <>
-                        {userName ? (
+                        {!showSpinner && userName ? (
                             <Outlet
                                 context={[
                                     user,
@@ -223,13 +236,7 @@ function NavigationBar() {
                                 ]}
                             />
                         ) : (
-                            <Login
-                                context={[
-                                    user,
-                                    loginAttempted,
-                                    setLoginAttempted,
-                                ]}
-                            />
+                            !showSpinner && <Login />
                         )}
                     </>
                 )}
