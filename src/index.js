@@ -9,7 +9,6 @@ import Combo from "./pages/Combo/Combo";
 import UserForm from "./pages/UserForm/UserForm";
 import TeamPage from "./pages/Team/TeamPage/TeamPage";
 import LoginFailed from "./pages/Login/LoginFailed";
-import Login from "./pages/Login/Login";
 
 ReactDOM.render(
     <BrowserRouter>

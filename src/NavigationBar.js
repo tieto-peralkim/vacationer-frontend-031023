@@ -24,7 +24,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
 import Login from "./pages/Login/Login";
-import ApiAlert from "./components/ApiAlert";
+import CustomAlert from "./components/CustomAlert";
 
 function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -33,6 +33,7 @@ function NavigationBar() {
     const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [APIError, setAPIError] = useState(false);
+    const loginAddress = `${process.env.REACT_APP_ADDRESS}/login`;
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
     const [userName, setUserName] = useState("");
     const [showSpinner, setShowSpinner] = useState(true);
@@ -90,6 +91,8 @@ function NavigationBar() {
                 .finally(() => {
                     setShowSpinner(false);
                 });
+        } else {
+            console.log("No cookies!");
         }
     }, [updateUser]);
 
@@ -97,58 +100,48 @@ function NavigationBar() {
         <div>
             <AppBar position="sticky">
                 <Toolbar>
-                    {!APIError && !showSpinner && (
-                        <>
-                            <IconButton onClick={() => setIsOpen(!isOpen)}>
-                                <MenuIcon />
-                            </IconButton>
+                    <>
+                        <IconButton onClick={() => setIsOpen(!isOpen)}>
+                            <MenuIcon />
+                        </IconButton>
 
-                            <Typography
-                                className={styles.leftPart}
-                                variant="h7"
-                            >
-                                {deletedWarning && (
-                                    <>
-                                        <DangerousIcon />
-                                    </>
-                                )}
-                                {!userName ? (
-                                    <div>No user</div>
-                                ) : (
-                                    <Link
-                                        to="/profile"
-                                        className={styles.loginTitle}
-                                    >
-                                        <PersonPin
-                                            className={styles.userIcon}
-                                        />
-                                        {user.name}
-                                    </Link>
-                                )}
-                                {newUserWarning && <FiberNewIcon />}
-                            </Typography>
-                            <Typography
-                                className={styles.rightPart}
-                                variant="h7"
-                            >
-                                {!userName ? (
-                                    <a
-                                        href={`${process.env.REACT_APP_ADDRESS}/login`}
-                                        className={styles.loginTitle}
-                                    >
-                                        Login
-                                    </a>
-                                ) : (
-                                    <a
-                                        href={logoutAddress}
-                                        className={styles.loginTitle}
-                                    >
-                                        Logout
-                                    </a>
-                                )}
-                            </Typography>
-                        </>
-                    )}
+                        <Typography className={styles.leftPart} variant="h7">
+                            {deletedWarning && (
+                                <>
+                                    <DangerousIcon />
+                                </>
+                            )}
+                            {!userName ? (
+                                <div>No user</div>
+                            ) : (
+                                <Link
+                                    to="/profile"
+                                    className={styles.loginTitle}
+                                >
+                                    <PersonPin className={styles.userIcon} />
+                                    {user.name}
+                                </Link>
+                            )}
+                            {newUserWarning && <FiberNewIcon />}
+                        </Typography>
+                        <Typography className={styles.rightPart} variant="h7">
+                            {!userName ? (
+                                <a
+                                    href={loginAddress}
+                                    className={styles.loginTitle}
+                                >
+                                    Login
+                                </a>
+                            ) : (
+                                <a
+                                    href={logoutAddress}
+                                    className={styles.loginTitle}
+                                >
+                                    Logout
+                                </a>
+                            )}
+                        </Typography>
+                    </>
                     <Typography className={styles.headline} variant="h5">
                         <Link to="/" className={styles.title}>
                             <BeachAccessIcon />
@@ -228,7 +221,7 @@ function NavigationBar() {
             <div className={styles.outlet}>
                 {showSpinner && <CircularProgress />}
                 {APIError ? (
-                    <ApiAlert />
+                    <CustomAlert text={"No connection to API"} />
                 ) : (
                     <>
                         {!showSpinner && userName ? (

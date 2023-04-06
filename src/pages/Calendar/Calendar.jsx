@@ -1087,7 +1087,7 @@ export default function Calendar({
                                 disabled={APIError || !user.name}
                                 label={
                                     teamToShow
-                                        ? `Show only people on holiday from ${teamToShow.title} team`
+                                        ? `Show only people on holiday in team ${teamToShow.title}`
                                         : "Show only people on holiday"
                                 }
                             />
