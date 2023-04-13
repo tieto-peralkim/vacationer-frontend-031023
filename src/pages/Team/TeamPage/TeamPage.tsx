@@ -3,20 +3,33 @@ import { useEffect, useState } from "react";
 import styles from "../team.module.css";
 import axios from "axios";
 import * as React from "react";
-import { useOutletContext } from "react-router-dom";
 import TeamAdd from "../TeamAdd/TeamAdd";
 import TeamModify from "../TeamModify/TeamModify";
 import Typography from "@mui/material/Typography";
+import { useOutletVariables } from "../../../NavigationBar";
+
+export interface Team {
+    id: string;
+    title: string;
+    members: [
+        {
+            name: string;
+            vacationerId: string;
+        }
+    ];
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 export default function TeamPage() {
     const [teams, setTeams] = useState([]);
-    const [user, setUser, updateUser, setupdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
+        useOutletVariables();
     const [vacationers, setVacationers] = useState([]);
 
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
     const [openTeamModify, setOpenTeamModify] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState("");
+    const [selectedTeam, setSelectedTeam] = useState<Team>();
 
     const [completedAction, setCompletedAction] = useState(false);
 

@@ -6,15 +6,14 @@ import {
     Button,
     Divider,
 } from "@mui/material";
-import { ExpandCircleDown } from "@mui/icons-material";
 import { useLocation } from "react-router-dom";
 
 export default function Login() {
-    let location = useLocation();
-    let loginFailed = false;
-    if (location.state) {
-        loginFailed = location.state.loginFailed;
+    interface LocationState {
+        loginFailed: string;
     }
+    const location = useLocation().state as LocationState;
+    let loginFailed = location ? location.loginFailed : false;
 
     const handleClick = () => {
         window.location.replace(`${process.env.REACT_APP_ADDRESS}/login`);

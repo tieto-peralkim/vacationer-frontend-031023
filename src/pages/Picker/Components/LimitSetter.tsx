@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import styles from "../picker.module.css";
 
 export default function LimitSetter({
-    holidayToEdit,
     endDate,
     setAlertingDates,
     workerLimit,

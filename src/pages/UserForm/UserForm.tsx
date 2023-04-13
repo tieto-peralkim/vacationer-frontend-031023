@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import ModifyDialog from "../Dialogs/ModifyDialog";
 import { CompactPicker } from "react-color";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../NavigationBar";
 
 export default function UserForm() {
     let navigate = useNavigate();
@@ -17,8 +18,8 @@ export default function UserForm() {
     const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
         useState("");
 
-    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
+        useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
 
     const [userCreationMessage, setUserCreationMessage] = useState("");
@@ -27,9 +28,9 @@ export default function UserForm() {
     const [symbolAlarmError, setSymbolAlarmError] = useState(false);
 
     const [openModifyUserAlert, setOpenModifyUserAlert] = useState(false);
-    const symbolNumberError = !isNaN(holidaySymbol);
-    const unconfirmedSymbolError = !isNaN(unconfirmedHolidaySymbol);
-    const [userUpdatedAt, setUserUpdatedAt] = useState();
+    const symbolNumberError = holidaySymbol !== "";
+    const unconfirmedSymbolError = unconfirmedHolidaySymbol !== "";
+    const [userUpdatedAt, setUserUpdatedAt] = useState("");
 
     const handleHolidayColorChange = (color) => {
         setHolidayColor(color.hex);
@@ -48,7 +49,7 @@ export default function UserForm() {
     };
 
     useEffect(() => {
-        setUpdateuser(!updateUser);
+        setUpdateUser(!updateUser);
     }, [completedAction]);
 
     useEffect(() => {
@@ -319,23 +320,32 @@ export default function UserForm() {
 
             <AlertDialog
                 openAlert={userCreationMessage !== ""}
+                handleAction={() => void 0}
                 handleCloseAlert={() => setUserCreationMessage("")}
                 dialogTitle={"ERROR!"}
                 dialogContent={userCreationMessage}
+                cancel={""}
+                confirm={""}
             />
             <AlertDialog
                 openAlert={userNameError}
+                handleAction={() => void 0}
                 handleCloseAlert={() => setUserNameError(false)}
                 dialogTitle={"ERROR!"}
                 dialogContent={
                     "This username is too short (less than 3 characters)!"
                 }
+                cancel={""}
+                confirm={""}
             />
             <AlertDialog
+                handleAction={() => void 0}
                 openAlert={symbolAlarmError}
                 handleCloseAlert={() => setSymbolAlarmError(false)}
                 dialogTitle={"ERROR!"}
                 dialogContent={"Symbols can not be numbers!"}
+                cancel={""}
+                confirm={""}
             />
         </>
     );

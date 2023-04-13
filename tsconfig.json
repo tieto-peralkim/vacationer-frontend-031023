@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "ES3",
+    "ignoreDeprecations": "5.0",
+    "jsx": "react-jsx",
+    "plugins": [{"name": "typescript-plugin-css-modules"}],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}

@@ -21,8 +21,9 @@
   },
   "scripts": {
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "node dist/app.js",
+    "dev": "npx tsc --watch  --preserveWatchOutput",
+    "build": "npx tsc",
     "test": "jest",
     "eject": "react-scripts eject"
   },
@@ -44,11 +45,20 @@
       "last 1 safari version"
     ]
   },
+  "resolutions": {
+    "csstype": "3.0.10"
+  },
   "devDependencies": {
-    "react-scripts": "^5.0.1",
     "@babel/preset-env": "^7.21.4",
     "@babel/preset-react": "^7.18.6",
+    "@types/react": "^18.0.38",
+    "@types/react-dom": "^18.0.11",
     "prettier": "2.8.8",
-    "react-test-renderer": "^18.2.0"
+    "react-scripts": "^5.0.1",
+    "react-test-renderer": "^18.2.0",
+    "typescript": "^5.0.4"
+  },
+  "overrides": {
+    "typescript": "^5.0.4"
   }
 }

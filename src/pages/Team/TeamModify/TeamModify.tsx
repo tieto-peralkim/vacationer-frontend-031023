@@ -10,7 +10,8 @@ import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import { useState } from "react";
 import styles from "../team.module.css";
-import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../../NavigationBar";
+
 import {
     Alert,
     Checkbox,
@@ -34,12 +35,15 @@ export default function TeamModify({
     setCompletedAction,
     openAPIError,
 }) {
-    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
-        useOutletContext();
-    const [newTeam, setNewTeam] = useState([]);
+    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
+        useOutletVariables();
+    const [newTeam, setNewTeam] = useState("");
 
     const [selectedMembers, setSelectedMembers] = useState([]);
-    const [deletableMember, setDeletableMember] = useState("");
+    const [deletableMember, setDeletableMember] = useState({
+        name: "",
+        id: "",
+    });
 
     const [openSnackBar, setopenSnackBar] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -56,10 +60,10 @@ export default function TeamModify({
     const handleClose = () => {
         setAlreadyExistsError(false);
         setTeamNameError(false);
-        setDeletableMember("");
+        setDeletableMember({ name: "", id: "" });
         setCompletedAction(!completedAction);
         setOpenTeamModify(false);
-        setNewTeam([]);
+        setNewTeam("");
         setOpenDeleteMemberAlert(false);
         setOpenDeleteUserAlert(false);
         setSelectedMembers([]);
@@ -108,7 +112,7 @@ export default function TeamModify({
                 { withCredentials: true }
             )
             .then(() => {
-                setDeletableMember("");
+                setDeletableMember({ name: "", id: "" });
                 setCompletedAction(!completedAction);
                 setOpenDeleteMemberAlert(false);
             })
@@ -212,6 +216,7 @@ export default function TeamModify({
                                     onDelete={() => {
                                         setOpenDeleteMemberAlert(true);
                                         setDeletableMember(member);
+                                        console.log("hän", member);
                                     }}
                                     deleteIcon={<DeleteIcon />}
                                 />
@@ -315,12 +320,15 @@ export default function TeamModify({
             />
 
             <AlertDialog
+                handleAction={() => void 0}
                 openAlert={teamNameError}
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
                 dialogContent={
                     "This team name is too short (less than 3 characters)!"
                 }
+                cancel={""}
+                confirm={""}
             />
 
             <AlertDialog
@@ -337,8 +345,8 @@ export default function TeamModify({
             />
 
             <AlertDialog
-                sx={{ color: "red" }}
-                className={styles.ultimateWarning}
+                // sx={{ color: "red" }}
+                // className={styles.ultimateWarning}
                 openAlert={openDeleteUserAlert}
                 handleCloseAlert={() => setOpenDeleteUserAlert(false)}
                 handleAction={deleteMember}
@@ -352,10 +360,13 @@ export default function TeamModify({
             />
 
             <AlertDialog
+                handleAction={() => void 0}
                 openAlert={alreadyExistsError}
                 handleCloseAlert={() => setAlreadyExistsError(false)}
                 dialogTitle={"ERROR!"}
                 dialogContent={"This team name is already taken!"}
+                cancel={""}
+                confirm={""}
             />
 
             <Snackbar

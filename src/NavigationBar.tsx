@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useOutletContext } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import styles from "./NavigationBar.module.css";
 import {
@@ -26,9 +26,45 @@ import { PersonPin } from "@mui/icons-material";
 import Login from "./pages/Login/Login";
 import CustomAlert from "./components/CustomAlert";
 
+export interface Vacationer {
+    id: string;
+    name: string;
+    nameId: string;
+    vacations: [
+        {
+            start: string;
+            end: string;
+            comment: string;
+            confirmed: boolean;
+        }
+    ];
+    admin: boolean;
+    calendarSettings: [
+        {
+            holidayColor: string;
+            unConfirmedHolidayColor: string;
+            weekendColor: string;
+            weekendHolidayColor: string;
+            holidaySymbol: string;
+            unConfirmedHolidaySymbol: string;
+        }
+    ];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+type ContextType = {
+    user: Vacationer;
+    setUser: (user: Vacationer) => void;
+    updateUser: boolean;
+    setUpdateUser: (boolean) => void;
+    APIError: boolean;
+    setAPIError: (boolean) => void;
+};
+
 function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState<Vacationer>();
     const [updateUser, setUpdateUser] = useState(false);
     const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
@@ -48,7 +84,7 @@ function NavigationBar() {
                 setAPIError(true);
                 console.error("API ERROR:", error);
             })
-            .finally(() => {
+            .then(() => {
                 setShowSpinner(false);
             });
     }, []);
@@ -88,7 +124,7 @@ function NavigationBar() {
                     setAPIError(true);
                     console.error("There was a user get error:", error);
                 })
-                .finally(() => {
+                .then(() => {
                     setShowSpinner(false);
                 });
         } else {
@@ -105,7 +141,7 @@ function NavigationBar() {
                             <MenuIcon />
                         </IconButton>
 
-                        <Typography className={styles.leftPart} variant="h7">
+                        <Typography className={styles.leftPart} variant="h6">
                             {deletedWarning && (
                                 <>
                                     <DangerousIcon />
@@ -119,12 +155,12 @@ function NavigationBar() {
                                     className={styles.loginTitle}
                                 >
                                     <PersonPin className={styles.userIcon} />
-                                    {user.name}
+                                    {user && user.name}
                                 </Link>
                             )}
                             {newUserWarning && <FiberNewIcon />}
                         </Typography>
-                        <Typography className={styles.rightPart} variant="h7">
+                        <Typography className={styles.rightPart} variant="h6">
                             {!userName || APIError ? (
                                 <a
                                     href={loginAddress}
@@ -200,7 +236,7 @@ function NavigationBar() {
                                     </div>
                                 </ListItem>
                             </Link>
-                            {user.admin && (
+                            {user && user.admin && (
                                 <Link to="/admin">
                                     <ListItem
                                         className={styles.navigation}
@@ -245,6 +281,10 @@ function NavigationBar() {
             </div>
         </div>
     );
+}
+
+export function useOutletVariables() {
+    return useOutletContext<ContextType>();
 }
 
 export default NavigationBar;

@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../../NavigationBar";
 
 export default function PickerModal({
     resetForm,
@@ -33,25 +34,25 @@ export default function PickerModal({
     setDailyVacationers,
     calendarDaysExcluded,
     editingSpace,
+    setEditingSpace,
     changingStartedSpace,
     today,
+    startDateErrorMessage,
+    endDateErrorMessage,
     comment,
     setComment,
     confirmed,
     setConfirmed,
-    startDateErrorMessage,
-    endDateErrorMessage,
     idToEdit,
     setChangingStartedSpace,
-    setEditingSpace,
     setOpenCalendar,
     resetDates,
     save,
     setSave,
     calculatePerDay,
 }) {
-    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
+        useOutletVariables();
     const [alertingDates, setAlertingDates] = useState([]);
     const [openEditAlert, setOpenEditAlert] = useState(false);
     const [openAddAlert, setOpenAddAlert] = useState(false);
@@ -359,9 +360,7 @@ export default function PickerModal({
                         )}
                     </Stack>
                     <LimitSetter
-                        holidayToEdit={holidayToEdit}
                         endDate={endDate}
-                        holidays={holidays}
                         setAlertingDates={setAlertingDates}
                         workerLimit={workerLimit}
                         dailyVacationers={dailyVacationers}

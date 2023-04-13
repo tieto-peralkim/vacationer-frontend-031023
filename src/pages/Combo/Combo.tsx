@@ -4,11 +4,12 @@ import styles from "./combo.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../NavigationBar";
 
 export default function Combo() {
     const [save, setSave] = useState(false);
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
+        useOutletVariables();
     const [vacationersAmount, setVacationersAmount] = useState([]);
 
     const shortenLongNames = (longName) => {
@@ -49,13 +50,11 @@ export default function Combo() {
                     vacationersAmount={vacationersAmount}
                     save={save}
                     setSave={setSave}
-                    user={user}
                 />
                 <Calendar
                     shortenLongNames={shortenLongNames}
                     vacationersAmount={vacationersAmount}
                     save={save}
-                    user={user}
                 />
             </div>
         </>
