@@ -111,7 +111,7 @@ function NavigationBar() {
                                     <DangerousIcon />
                                 </>
                             )}
-                            {!userName ? (
+                            {APIError ? (
                                 <div>No user</div>
                             ) : (
                                 <Link
@@ -125,7 +125,7 @@ function NavigationBar() {
                             {newUserWarning && <FiberNewIcon />}
                         </Typography>
                         <Typography className={styles.rightPart} variant="h7">
-                            {!userName ? (
+                            {!userName || APIError ? (
                                 <a
                                     href={loginAddress}
                                     className={styles.loginTitle}
@@ -150,74 +150,76 @@ function NavigationBar() {
                     </Typography>
                 </Toolbar>
             </AppBar>
-            <Drawer
-                anchor={"left"}
-                open={isOpen}
-                onClose={() => setIsOpen(!isOpen)}
-            >
-                <Box>
-                    <List>
-                        <Link to="/">
-                            <ListItem
-                                className={styles.navigation}
-                                button
-                                onClick={() => setIsOpen(!isOpen)}
-                            >
-                                <ListItemIcon>
-                                    <BeachAccessIcon />
-                                </ListItemIcon>
-                                <div className={styles.navigationText}>
-                                    Calendar
-                                </div>
-                            </ListItem>
-                        </Link>
-                        <Link to="/profile">
-                            <ListItem
-                                className={styles.navigation}
-                                button
-                                onClick={() => setIsOpen(!isOpen)}
-                            >
-                                <ListItemIcon>
-                                    <PersonIcon />
-                                </ListItemIcon>
-                                <div className={styles.navigationText}>
-                                    Profile
-                                </div>
-                            </ListItem>
-                        </Link>
-                        <Link to="/teams">
-                            <ListItem
-                                className={styles.navigation}
-                                button
-                                onClick={() => setIsOpen(!isOpen)}
-                            >
-                                <ListItemIcon>
-                                    <GroupsIcon />
-                                </ListItemIcon>
-                                <div className={styles.navigationText}>
-                                    Teams
-                                </div>
-                            </ListItem>
-                        </Link>
-                        {user.admin && (
-                            <Link to="/admin">
+            {!APIError && (
+                <Drawer
+                    anchor={"left"}
+                    open={isOpen}
+                    onClose={() => setIsOpen(!isOpen)}
+                >
+                    <Box>
+                        <List>
+                            <Link to="/">
                                 <ListItem
                                     className={styles.navigation}
                                     button
                                     onClick={() => setIsOpen(!isOpen)}
                                 >
                                     <ListItemIcon>
-                                        <SettingsIcon />
+                                        <BeachAccessIcon />
                                     </ListItemIcon>
                                     <div className={styles.navigationText}>
-                                        Admin settings
+                                        Calendar
                                     </div>
                                 </ListItem>
                             </Link>
-                        )}
-                    </List>
-                </Box>
-            </Drawer>
+                            <Link to="/profile">
+                                <ListItem
+                                    className={styles.navigation}
+                                    button
+                                    onClick={() => setIsOpen(!isOpen)}
+                                >
+                                    <ListItemIcon>
+                                        <PersonIcon />
+                                    </ListItemIcon>
+                                    <div className={styles.navigationText}>
+                                        Profile
+                                    </div>
+                                </ListItem>
+                            </Link>
+                            <Link to="/teams">
+                                <ListItem
+                                    className={styles.navigation}
+                                    button
+                                    onClick={() => setIsOpen(!isOpen)}
+                                >
+                                    <ListItemIcon>
+                                        <GroupsIcon />
+                                    </ListItemIcon>
+                                    <div className={styles.navigationText}>
+                                        Teams
+                                    </div>
+                                </ListItem>
+                            </Link>
+                            {user.admin && (
+                                <Link to="/admin">
+                                    <ListItem
+                                        className={styles.navigation}
+                                        button
+                                        onClick={() => setIsOpen(!isOpen)}
+                                    >
+                                        <ListItemIcon>
+                                            <SettingsIcon />
+                                        </ListItemIcon>
+                                        <div className={styles.navigationText}>
+                                            Admin settings
+                                        </div>
+                                    </ListItem>
+                                </Link>
+                            )}
+                        </List>
+                    </Box>
+                </Drawer>
+            )}
             <div className={styles.outlet}>
                 {showSpinner && <CircularProgress />}
                 {APIError ? (
