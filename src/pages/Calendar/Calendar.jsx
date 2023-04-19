@@ -92,7 +92,6 @@ export default function Calendar({
                 console.log("publicDays", publicDays);
             })
             .catch((error) => {
-                setAPIError(true);
                 console.error("There was a Public holiday API error!", error);
             });
     }, [selectedYear]);
