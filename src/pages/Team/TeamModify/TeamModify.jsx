@@ -126,33 +126,22 @@ export default function TeamModify({
 
     const changeTeamName = (newName) => {
         if (!nameError) {
-            let alreadyExists = false;
-            teams.forEach((team) => {
-                if (team.title === newTeam) {
-                    alreadyExists = true;
-                }
-            });
-
-            if (!alreadyExists) {
-                axios
-                    .patch(
-                        `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
-                        {
-                            newName: newName,
-                        },
-                        { withCredentials: true }
-                    )
-                    .then(() => {
-                        setCompletedAction(!completedAction);
-                        setopenSnackBar(true); // Notify the user when the name change succeeded
-                    })
-                    .catch((error) => {
-                        openAPIError();
-                        console.error("There was a put new name error!", error);
-                    });
-            } else {
-                setAlreadyExistsError(true);
-            }
+            axios
+                .patch(
+                    `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
+                    {
+                        newName: newName,
+                    },
+                    { withCredentials: true }
+                )
+                .then(() => {
+                    setCompletedAction(!completedAction);
+                    setopenSnackBar(true); // Notify the user when the name change succeeded
+                })
+                .catch((error) => {
+                    openAPIError();
+                    console.error("There was a put new name error!", error);
+                });
         } else {
             setTeamNameError(true);
         }

@@ -94,10 +94,15 @@ export default function UserForm() {
                     setOpenModifyUserAlert(false);
                 })
                 .catch((error) => {
-                    console.error("There was a user name change error!", error);
-                    setAPIError(true);
-
-                    setUserCreationMessage(error);
+                    if (error.response.status == 409) {
+                        setUserCreationMessage(error.response.data);
+                    } else {
+                        console.error(
+                            "There was a user name change error!",
+                            error
+                        );
+                        setAPIError(true);
+                    }
                 });
         } else {
             setUserNameError(true);

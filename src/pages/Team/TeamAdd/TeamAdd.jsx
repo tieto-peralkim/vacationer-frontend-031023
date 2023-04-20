@@ -42,64 +42,28 @@ export default function TeamAdd({
 
     const createTeam = (newTeam) => {
         if (!nameError) {
-            let updatedTeams;
+            let firstUser = { name: user.name, vacationerId: user.id };
+            // Set the user as a member of the new team
+            const teamToAdd = {
+                title: newTeam,
+                members: firstUser,
+            };
 
-            Promise.all([
-                axios.get(`${process.env.REACT_APP_ADDRESS}/teams/all`, {
+            axios
+                .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
                     withCredentials: true,
-                }),
-            ])
+                })
                 .then((response) => {
-                    updatedTeams = response[0].data;
-
-                    let alreadyExists = false;
-
-                    updatedTeams.forEach((team) => {
-                        if (team.title === newTeam) {
-                            alreadyExists = true;
-                        }
-                    });
-
-                    if (!alreadyExists) {
-                        let firstUser = {
-                            name: user.name,
-                            vacationerId: user.id,
-                        };
-                        // Set the user as a member of the new team
-                        const teamToAdd = {
-                            title: newTeam,
-                            members: firstUser,
-                        };
-
-                        axios
-                            .post(
-                                `${process.env.REACT_APP_ADDRESS}/teams`,
-                                teamToAdd,
-                                {
-                                    withCredentials: true,
-                                }
-                            )
-                            .then((response) => {
-                                setCompletedAction(!completedAction);
-                                setNewTeam([]);
-                            })
-                            .catch((error) => {
-                                openAPIError();
-                                console.error("There was a post error!", error);
-                            })
-                            .finally(() => {
-                                handleClose();
-                            });
-                    } else {
-                        setAlreadyExistsError(true);
-                    }
+                    setCompletedAction(!completedAction);
+                    setNewTeam([]);
                 })
                 .catch((error) => {
-                    console.error(
-                        "There was a teams/total vacationers get error:",
-                        error
-                    );
+                    console.log(error.response.status);
                     openAPIError();
+                    console.error("There was a post error!", error);
+                })
+                .finally(() => {
+                    handleClose();
                 });
         } else {
             setTeamNameError(true);
