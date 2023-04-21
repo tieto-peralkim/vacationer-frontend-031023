@@ -94,7 +94,7 @@ export default function UserForm() {
                     setOpenModifyUserAlert(false);
                 })
                 .catch((error) => {
-                    if (error.response.status == 409) {
+                    if (error.response.status === 409) {
                         setUserCreationMessage(error.response.data);
                     } else {
                         console.error(
