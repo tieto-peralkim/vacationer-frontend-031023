@@ -42,39 +42,29 @@ export default function TeamAdd({
 
     const createTeam = (newTeam) => {
         if (!nameError) {
-            let alreadyExists = false;
-            teams.forEach((team) => {
-                if (team.title === newTeam) {
-                    alreadyExists = true;
-                }
-            });
+            let firstUser = { name: user.name, vacationerId: user.id };
+            // Set the user as a member of the new team
+            const teamToAdd = {
+                title: newTeam,
+                members: firstUser,
+            };
 
-            if (!alreadyExists) {
-                let firstUser = { name: user.name, vacationerId: user.id };
-                // Set the user as a member of the new team
-                const teamToAdd = {
-                    title: newTeam,
-                    members: firstUser,
-                };
-
-                axios
-                    .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
-                        withCredentials: true,
-                    })
-                    .then((response) => {
-                        setCompletedAction(!completedAction);
-                        setNewTeam([]);
-                    })
-                    .catch((error) => {
-                        openAPIError();
-                        console.error("There was a post error!", error);
-                    })
-                    .finally(() => {
-                        handleClose();
-                    });
-            } else {
-                setAlreadyExistsError(true);
-            }
+            axios
+                .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
+                    withCredentials: true,
+                })
+                .then((response) => {
+                    setCompletedAction(!completedAction);
+                    setNewTeam([]);
+                })
+                .catch((error) => {
+                    console.log(error.response.status);
+                    openAPIError();
+                    console.error("There was a post error!", error);
+                })
+                .finally(() => {
+                    handleClose();
+                });
         } else {
             setTeamNameError(true);
         }
