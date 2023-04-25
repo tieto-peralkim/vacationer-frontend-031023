@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import ModifyDialog from "../Dialogs/ModifyDialog";
 import { CompactPicker } from "react-color";
 import { useNavigate, useOutletContext } from "react-router-dom";
-import { useOutletVariables } from "../../NavigationBar";
 
 export default function UserForm() {
     let navigate = useNavigate();
@@ -18,8 +17,8 @@ export default function UserForm() {
     const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
         useState("");
 
-    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
-        useOutletVariables();
+    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
+        useOutletContext();
     const [completedAction, setCompletedAction] = useState(false);
 
     const [userCreationMessage, setUserCreationMessage] = useState("");
@@ -28,8 +27,11 @@ export default function UserForm() {
     const [symbolAlarmError, setSymbolAlarmError] = useState(false);
 
     const [openModifyUserAlert, setOpenModifyUserAlert] = useState(false);
-    const symbolNumberError = holidaySymbol !== "";
-    const unconfirmedSymbolError = unconfirmedHolidaySymbol !== "";
+    const symbolNumberError =
+        holidaySymbol.trim().length === 0 || !isNaN(Number(holidaySymbol));
+    const unconfirmedSymbolError =
+        unconfirmedHolidaySymbol.trim().length === 0 ||
+        !isNaN(Number(unconfirmedHolidaySymbol));
     const [userUpdatedAt, setUserUpdatedAt] = useState("");
 
     const handleHolidayColorChange = (color) => {
@@ -188,7 +190,7 @@ export default function UserForm() {
     return (
         <>
             <div className={styles.content}>
-                {user.name && (
+                {user && user.name && (
                     <div className={styles.borderedBox}>
                         <div className={styles.allButtons}>
                             <Button
@@ -343,7 +345,7 @@ export default function UserForm() {
                 openAlert={symbolAlarmError}
                 handleCloseAlert={() => setSymbolAlarmError(false)}
                 dialogTitle={"ERROR!"}
-                dialogContent={"Symbols can not be numbers!"}
+                dialogContent={"Symbols can not be numbers or empty!"}
                 cancel={""}
                 confirm={""}
             />

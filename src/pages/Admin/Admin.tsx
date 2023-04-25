@@ -13,12 +13,29 @@ import {
 import styles from "./admin.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
 import { Navigate, useOutletContext } from "react-router-dom";
-import { useOutletVariables, Vacationer } from "../../NavigationBar";
-import { Team } from "../Team/TeamPage/TeamPage";
+import { Vacationer } from "../../NavigationBar";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
-    const [selectedDeletedUser, setSelectedDeletedUser] = useState<any>();
+    const [selectedDeletedUser, setSelectedDeletedUser] = useState<Vacationer>({
+        admin: false,
+        calendarSettings: [
+            {
+                holidayColor: "",
+                holidaySymbol: "",
+                unConfirmedHolidayColor: "",
+                unConfirmedHolidaySymbol: "",
+                weekendColor: "",
+                weekendHolidayColor: "",
+            },
+        ],
+        createdAt: undefined,
+        id: "",
+        name: "",
+        nameId: "",
+        updatedAt: undefined,
+        vacations: [{ comment: "", confirmed: false, end: "", start: "" }],
+    });
     const [selectedDeletedTeam, setSelectedDeletedTeam] = useState<any>();
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
     const [openChangeAdminAlert, setOpenChangeAdminAlert] = useState(false);
@@ -35,8 +52,8 @@ export default function Admin() {
     const [newUser, setNewUser] = useState("");
     const nameError = newUser.length < 3;
 
-    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
-        useOutletVariables();
+    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
+        useOutletContext();
     const [completedAction, setCompletedAction] = useState(false);
     const [openFinalDeleteUserAlert, setOpenFinalDeleteUserAlert] =
         useState(false);
@@ -47,7 +64,25 @@ export default function Admin() {
     const CREATE_TITLE = "Create user";
 
     const emptySelections = () => {
-        setSelectedDeletedUser("");
+        setSelectedDeletedUser({
+            admin: false,
+            calendarSettings: [
+                {
+                    holidayColor: "",
+                    holidaySymbol: "",
+                    unConfirmedHolidayColor: "",
+                    unConfirmedHolidaySymbol: "",
+                    weekendColor: "",
+                    weekendHolidayColor: "",
+                },
+            ],
+            createdAt: undefined,
+            id: "",
+            name: "",
+            nameId: "",
+            updatedAt: undefined,
+            vacations: [{ comment: "", confirmed: false, end: "", start: "" }],
+        });
         setSelectedDeletedTeam({
             id: "",
             title: "",
@@ -379,7 +414,7 @@ export default function Admin() {
                                 displayEmpty={true}
                                 disabled={APIError}
                                 onChange={(e) => {
-                                    setSelectedDeletedUser(e.target.value);
+                                    setSelectedDeletedUser(e);
                                 }}
                             >
                                 {deletedVacationers &&

@@ -6,7 +6,7 @@ import * as React from "react";
 import TeamAdd from "../TeamAdd/TeamAdd";
 import TeamModify from "../TeamModify/TeamModify";
 import Typography from "@mui/material/Typography";
-import { useOutletVariables } from "../../../NavigationBar";
+import { useOutletContext } from "react-router-dom";
 
 export interface Team {
     id: string;
@@ -23,13 +23,19 @@ export interface Team {
 
 export default function TeamPage() {
     const [teams, setTeams] = useState([]);
-    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
-        useOutletVariables();
+    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
+        useOutletContext();
     const [vacationers, setVacationers] = useState([]);
 
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
     const [openTeamModify, setOpenTeamModify] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState<Team>();
+    const [selectedTeam, setSelectedTeam] = useState<Team>({
+        createdAt: undefined,
+        id: "",
+        members: [{ name: "", vacationerId: "" }],
+        title: "",
+        updatedAt: undefined,
+    });
 
     const [completedAction, setCompletedAction] = useState(false);
 
@@ -99,7 +105,7 @@ export default function TeamPage() {
                 setCompletedAction={setCompletedAction}
                 openAPIError={openAPIError}
             />
-            {user.name && (
+            {user && user.name && (
                 <div className={styles.content}>
                     <Button
                         variant="outlined"

@@ -11,7 +11,6 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import styles from "../team.module.css";
 import { useOutletContext } from "react-router-dom";
-import { useOutletVariables } from "../../../NavigationBar";
 
 export default function TeamAdd({
     open,
@@ -21,8 +20,8 @@ export default function TeamAdd({
     setCompletedAction,
     openAPIError,
 }) {
-    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
-        useOutletVariables();
+    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
+        useOutletContext();
     const [newTeam, setNewTeam] = useState("");
 
     const [teamNameError, setTeamNameError] = useState(false);

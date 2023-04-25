@@ -44,8 +44,8 @@ export default function Picker({
     const today = new Date();
     today.setUTCHours(0, 0, 0);
 
-    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
-        useOutletVariables();
+    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
+        useOutletContext();
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -134,7 +134,7 @@ export default function Picker({
     }, []);
 
     useEffect(() => {
-        if (user.name) {
+        if (user && user.name) {
             setExcludedDates(user.vacations);
         }
         resetForm();
@@ -143,7 +143,7 @@ export default function Picker({
     useEffect(() => {
         if (!adminSpace) {
             resetForm();
-            if (user.name) {
+            if (user && user.name) {
                 setExcludedDates(user.vacations);
             }
         }
@@ -378,7 +378,7 @@ export default function Picker({
                         className={styles.dropdownButton}
                         variant="contained"
                         color="primary"
-                        disabled={!user.name}
+                        disabled={user && !user.name}
                         onClick={(e) => {
                             e.stopPropagation();
                             handleOpenCalendar();
@@ -397,7 +397,7 @@ export default function Picker({
                     <div className={styles.content}>
                         <form className={styles.form}>
                             <div>
-                                {user.admin && (
+                                {user && user.admin && (
                                     <div className={styles.selectSection}>
                                         <FormControl>
                                             <FormControlLabel
@@ -543,7 +543,7 @@ export default function Picker({
                                     ))}
                             </Grid>
                         </div>
-                        {user.name && holidays.length === 0 && (
+                        {user && user.name && holidays.length === 0 && (
                             <p>No vacations...</p>
                         )}
                         <AlertDialog

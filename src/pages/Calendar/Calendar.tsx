@@ -19,7 +19,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
 import { Team } from "../Team/TeamPage/TeamPage";
-import { useOutletVariables } from "../../NavigationBar";
+import { useOutletContext } from "react-router-dom";
 
 export default function Calendar({
     shortenLongNames,
@@ -27,8 +27,8 @@ export default function Calendar({
     save,
 }) {
     const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
-    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
-        useOutletVariables();
+    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
+        useOutletContext();
 
     const today = new Date();
     const thisMonthFirst = new Date(
@@ -37,6 +37,7 @@ export default function Calendar({
         1,
         15
     );
+    const disableConditions = APIError || !user.id;
     thisMonthFirst.setUTCHours(0, 0, 0, 0);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
     const WORKER_TITLE = "Working";
@@ -65,8 +66,19 @@ export default function Calendar({
     const [publicHolidays, setPublicHolidays] = useState([]);
 
     const hiddenColumns = [];
-    const [teams, setTeams] = useState<Team[]>();
-    const [teamToShow, setTeamToShow] = useState<Team>();
+    const [teams, setTeams] = useState<Team[]>([]);
+    const [teamToShow, setTeamToShow] = useState<Team>({
+        id: "",
+        title: "",
+        members: [
+            {
+                name: "",
+                vacationerId: "",
+            },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
     const [selectedVacationers, setSelectedVacationers] = useState([]);
 
     // Fetching Finnish public holidays from Public holiday API (https://date.nager.at/)
@@ -98,12 +110,12 @@ export default function Calendar({
     // TODO: this has too many depending states
     useEffect(() => {
         // Showing all employees of the selected team, not only the ones with holiday
-        if (showAllVacationers && teamToShow) {
+        if (showAllVacationers && teamToShow.id) {
             console.log("showAllVacationers && teamToShow", teamToShow);
             setMonthsHolidays(filterHolidays(), teamToShow.members);
         }
         // Showing all vacationing employees of the selected team
-        else if (teamToShow) {
+        else if (teamToShow.id) {
             console.log("teamToShow:", teamToShow);
             setMonthsHolidays(filterHolidays(), null);
         }
@@ -125,7 +137,7 @@ export default function Calendar({
 
     // Setting calendar settings of selected user
     useEffect(() => {
-        if (user.calendarSettings) {
+        if (user && user.calendarSettings) {
             setHolidayColor(user.calendarSettings[0].holidayColor);
             setUnConfirmedHolidayColor(
                 user.calendarSettings[0].unConfirmedHolidayColor
@@ -362,7 +374,7 @@ export default function Calendar({
             }
         }
         // If a team has been selected
-        if (teamToShow) {
+        if (teamToShow.id) {
             return peopleOnHoliday;
         } else {
             return peopleOnHoliday;
@@ -377,8 +389,7 @@ export default function Calendar({
             }
         }
         // If a team has been selected
-        if (teamToShow) {
-            console.log("Total", peopleOnHoliday, teamToShow.members.length);
+        if (teamToShow.id) {
             return teamToShow.members.length - peopleOnHoliday;
         } else {
             return vacationersAmount.length - peopleOnHoliday;
@@ -794,13 +805,13 @@ export default function Calendar({
         // else if (typeof value === "number") {
         //     colorToAdd = "bisque";
         //     if (
-        //         !teamToShow &&
+        //         !teamToShow.id &&
         //         value < PRESENCE_PERCENTAGE * vacationersAmount.length
         //     ) {
         //         colorToAdd = "orange";
         //     }
         //     if (
-        //         teamToShow &&
+        //         teamToShow.id &&
         //         value < PRESENCE_PERCENTAGE * teamToShow.members.length
         //     ) {
         //         colorToAdd = "orange";
@@ -873,7 +884,7 @@ export default function Calendar({
         try {
             selectedVacationers.forEach((vacationer) => {
                 // if the given day is included in the vacationers holiday add to vacationersAmount
-                if (teamToShow) {
+                if (teamToShow.id) {
                     if (
                         dayNumber >=
                             vacationer.vacations.start.substring(8, 10) &&
@@ -905,7 +916,7 @@ export default function Calendar({
         let onHolidayCount = countVacationers(dayNumber);
         let allNames = [];
 
-        if (teamToShow) {
+        if (teamToShow.id) {
             return teamToShow.members.length - onHolidayCount;
         } else {
             teams.forEach((team) => {
@@ -929,7 +940,7 @@ export default function Calendar({
 
         selectedVacationers.forEach((vacationer) => {
             // if the given day is included in the vacationers holiday add to vacationersAmount
-            if (teamToShow) {
+            if (teamToShow.id) {
                 if (
                     dayNumber >= vacationer.vacations.start.substring(8, 10) &&
                     dayNumber <= vacationer.vacations.end.substring(8, 10)
@@ -957,7 +968,7 @@ export default function Calendar({
         let workerNames = [];
         let onHolidayNames = getVacationerNames(dayNumber);
 
-        if (teamToShow) {
+        if (teamToShow.id) {
             teamToShow.members.forEach((member) => {
                 if (onHolidayNames.length > 0) {
                     onHolidayNames.forEach((vacationer) => {
@@ -1025,55 +1036,57 @@ export default function Calendar({
             <div className={styles.wholeCalendar}>
                 <div>
                     <div className={styles.teamChips}>
-                        !teamToShow ?
-                        <Chip
-                            disabled={APIError || !user.name}
-                            className={styles.oneTeamChip}
-                            label="All teams"
-                            color="secondary"
-                            onClick={() => {
-                                setMonthsHolidays(selectedVacationers, null);
-                                setTeamToShow({
-                                    id: "",
-                                    title: "",
-                                    members: [
-                                        {
-                                            name: "",
-                                            vacationerId: "",
-                                        },
-                                    ],
-                                    createdAt: new Date(),
-                                    updatedAt: new Date(),
-                                });
-                            }}
-                        />
-                        :
-                        <Chip
-                            disabled={APIError || !user.name}
-                            className={styles.oneTeamChip}
-                            variant={"outlined"}
-                            label="All teams"
-                            color="secondary"
-                            onClick={() => {
-                                setMonthsHolidays(selectedVacationers, null);
-                                setTeamToShow({
-                                    id: "",
-                                    title: "",
-                                    members: [
-                                        {
-                                            name: "",
-                                            vacationerId: "",
-                                        },
-                                    ],
-                                    createdAt: new Date(),
-                                    updatedAt: new Date(),
-                                });
-                            }}
-                        />
+                        {teamToShow.id.length === 0 ? (
+                            <Chip
+                                label="All teams"
+                                color="secondary"
+                                onClick={() => {
+                                    setMonthsHolidays(
+                                        selectedVacationers,
+                                        null
+                                    );
+                                    setTeamToShow({
+                                        id: "",
+                                        title: "",
+                                        members: [
+                                            {
+                                                name: "",
+                                                vacationerId: "",
+                                            },
+                                        ],
+                                        createdAt: new Date(),
+                                        updatedAt: new Date(),
+                                    });
+                                }}
+                            />
+                        ) : (
+                            <Chip
+                                variant={"outlined"}
+                                label="All teams"
+                                color="secondary"
+                                onClick={() => {
+                                    setMonthsHolidays(
+                                        selectedVacationers,
+                                        null
+                                    );
+                                    setTeamToShow({
+                                        id: "",
+                                        title: "",
+                                        members: [
+                                            {
+                                                name: "",
+                                                vacationerId: "",
+                                            },
+                                        ],
+                                        createdAt: new Date(),
+                                        updatedAt: new Date(),
+                                    });
+                                }}
+                            />
+                        )}
                         {teams.map((team) =>
-                            teamToShow.title === team.title ? (
+                            teamToShow.id && teamToShow.title === team.title ? (
                                 <Chip
-                                    className={styles.oneTeamChip}
                                     key={team.id}
                                     color="primary"
                                     label={team.title}
@@ -1084,7 +1097,6 @@ export default function Calendar({
                                 />
                             ) : (
                                 <Chip
-                                    className={styles.oneTeamChip}
                                     key={team.id}
                                     variant={"outlined"}
                                     color="primary"
@@ -1096,19 +1108,18 @@ export default function Calendar({
                                 />
                             )
                         )}
-                        {teamToShow &&
+                        {teamToShow.id &&
                             teamToShow.members
                                 // some sorting?
                                 // .sort((v1, v2) => v1.name - v2.name)
                                 .map((member) => (
                                     <Chip
-                                        className={styles.oneTeamChip}
                                         label={member.name}
                                         key={member.vacationerId}
                                     />
                                 ))}
                     </div>
-                    {user.name && (
+                    {user && user.name && (
                         <div className={styles.infoBox}>
                             {holidaySymbols[0]} = confirmed holiday <br />{" "}
                             {holidaySymbols[1]} = un-confirmed holiday
@@ -1124,9 +1135,9 @@ export default function Calendar({
                                     setShowAllVacationers(!showAllVacationers);
                                 }}
                                 control={<Switch color="success" />}
-                                disabled={APIError || !user.name}
+                                disabled={disableConditions}
                                 label={
-                                    teamToShow
+                                    teamToShow.id
                                         ? `Show only people on holiday in team ${teamToShow.title}`
                                         : "Show only people on holiday"
                                 }
@@ -1139,13 +1150,13 @@ export default function Calendar({
                         <Button
                             onClick={() => changeMonth(-1)}
                             startIcon={<ArrowBackIosIcon />}
-                            disabled={APIError || !user.name}
+                            disabled={disableConditions}
                         >
                             Prev
                         </Button>
                         <div className={styles.monthSelection}>
                             <DatePicker
-                                disabled={APIError || !user.name}
+                                disabled={disableConditions}
                                 selected={selectedDate}
                                 onChange={(date) => setSelectedDate(date)}
                                 dateFormat="MM/yyyy"
@@ -1158,7 +1169,7 @@ export default function Calendar({
                         <Button
                             onClick={() => changeMonth(1)}
                             endIcon={<ArrowForwardIosIcon />}
-                            disabled={APIError || !user.name}
+                            disabled={disableConditions}
                         >
                             Next
                         </Button>

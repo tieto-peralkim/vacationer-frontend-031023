@@ -1,4 +1,4 @@
-import { Link, Outlet, useOutletContext } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import styles from "./NavigationBar.module.css";
 import {
@@ -53,18 +53,36 @@ export interface Vacationer {
     updatedAt: Date;
 }
 
-type ContextType = {
-    user: Vacationer;
-    setUser: (user: Vacationer) => void;
-    updateUser: boolean;
-    setUpdateUser: (boolean) => void;
-    APIError: boolean;
-    setAPIError: (boolean) => void;
-};
+// type ContextType = {
+//     user: Vacationer | null;
+//     setUser: (user: Vacationer) => void;
+//     updateUser: boolean | null;
+//     setUpdateUser: (updateUser: boolean) => void;
+//     APIError: boolean | null;
+//     setAPIError: (APIError: boolean) => void;
+// };
 
 function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
-    const [user, setUser] = useState<Vacationer>();
+    const [user, setUser] = useState<Vacationer>({
+        admin: false,
+        calendarSettings: [
+            {
+                holidayColor: "",
+                holidaySymbol: "",
+                unConfirmedHolidayColor: "",
+                unConfirmedHolidaySymbol: "",
+                weekendColor: "",
+                weekendHolidayColor: "",
+            },
+        ],
+        createdAt: undefined,
+        id: "",
+        name: "",
+        nameId: "",
+        updatedAt: undefined,
+        vacations: [{ comment: "", confirmed: false, end: "", start: "" }],
+    });
     const [updateUser, setUpdateUser] = useState(false);
     const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
@@ -283,8 +301,8 @@ function NavigationBar() {
     );
 }
 
-export function useOutletVariables() {
-    return useOutletContext<ContextType>();
-}
+// export function useOutletVariables() {
+//     return useOutletContext<ContextType>();
+// }
 
 export default NavigationBar;

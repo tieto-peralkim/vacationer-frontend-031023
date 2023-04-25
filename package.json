@@ -21,8 +21,8 @@
   },
   "scripts": {
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
-    "start": "node dist/app.js",
-    "dev": "npx tsc --watch  --preserveWatchOutput",
+    "start": "react-scripts start",
+    "dev": "tsc --watch  --preserveWatchOutput",
     "build": "npx tsc",
     "test": "jest",
     "eject": "react-scripts eject"
@@ -53,6 +53,8 @@
     "@babel/preset-react": "^7.18.6",
     "@types/react": "^18.0.38",
     "@types/react-dom": "^18.0.11",
+    "@types/js-cookie": "^3.0.3",
+    "@types/react-datepicker": "^4.10.0",
     "prettier": "2.8.8",
     "react-scripts": "^5.0.1",
     "react-test-renderer": "^18.2.0",

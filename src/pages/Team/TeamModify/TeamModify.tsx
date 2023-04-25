@@ -10,7 +10,7 @@ import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import { useState } from "react";
 import styles from "../team.module.css";
-import { useOutletVariables } from "../../../NavigationBar";
+import { useOutletContext } from "react-router-dom";
 
 import {
     Alert,
@@ -24,6 +24,10 @@ import {
     CircularProgress,
     Backdrop,
 } from "@mui/material";
+export interface Member {
+    name: "";
+    id: "";
+}
 
 export default function TeamModify({
     open,
@@ -35,15 +39,12 @@ export default function TeamModify({
     setCompletedAction,
     openAPIError,
 }) {
-    const { user, setUser, updateUser, setUpdateUser, APIError, setAPIError } =
-        useOutletVariables();
+    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
+        useOutletContext();
     const [newTeam, setNewTeam] = useState("");
 
-    const [selectedMembers, setSelectedMembers] = useState([]);
-    const [deletableMember, setDeletableMember] = useState({
-        name: "",
-        id: "",
-    });
+    const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
+    const [deletableMember, setDeletableMember] = useState<Member>();
 
     const [openSnackBar, setopenSnackBar] = useState(false);
     const [openBackdrop, setOpenBackdrop] = useState(false);
@@ -99,7 +100,7 @@ export default function TeamModify({
                 openAPIError();
                 console.error("There was a team put error!", error);
             })
-            .finally(() => {
+            .then(() => {
                 setSelectedMembers([]);
             });
     }
@@ -120,7 +121,7 @@ export default function TeamModify({
                 openAPIError();
                 console.error("There was a delete member error!", error);
             })
-            .finally(() => {
+            .then(() => {
                 // If the deleted member was current user -> close the dialog so the team can't be further modified
                 if (deletableMember.name === user.name) {
                     handleClose();
@@ -304,7 +305,7 @@ export default function TeamModify({
                     </div>
                 </div>
             </DialogContent>
-            <DialogActions></DialogActions>
+            <DialogActions />
 
             <AlertDialog
                 openAlert={openDeleteTeamAlert}
