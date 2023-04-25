@@ -10,7 +10,6 @@ import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import { useState } from "react";
 import styles from "../team.module.css";
-import { useOutletContext } from "react-router-dom";
 
 import {
     Alert,
@@ -24,6 +23,8 @@ import {
     CircularProgress,
     Backdrop,
 } from "@mui/material";
+import { useOutletVariables } from "../../../NavigationBar";
+
 export interface Member {
     name: "";
     id: "";
@@ -39,8 +40,7 @@ export default function TeamModify({
     setCompletedAction,
     openAPIError,
 }) {
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
     const [newTeam, setNewTeam] = useState("");
 
     const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
@@ -180,7 +180,7 @@ export default function TeamModify({
             <DialogTitle color="primary">
                 Modify team{" "}
                 <span className={styles.modifyTeamName}>
-                    {selectedTeam.title}
+                    {selectedTeam && selectedTeam.title}
                 </span>
             </DialogTitle>
             <DialogContent className={styles.modifyTeamDialogContent}>
@@ -194,7 +194,7 @@ export default function TeamModify({
                         nameError && "New name must be at least 3 characters"
                     }
                     onChange={(e) => setNewTeam(e.target.value)}
-                    placeholder={selectedTeam.title}
+                    placeholder={selectedTeam && selectedTeam.title}
                 />
                 <Button
                     disabled={!selectedTeam}
@@ -278,9 +278,10 @@ export default function TeamModify({
                     </FormControl>
                     <div>
                         <InputLabel>Members to add: </InputLabel>
-                        {selectedMembers.map((member) => (
-                            <Chip key={member.id} label={member.name} />
-                        ))}
+                        {selectedMembers.length > 0 &&
+                            selectedMembers.map((member) => (
+                                <Chip key={member.id} label={member.name} />
+                            ))}
                     </div>
                     <div className={styles.addButton}>
                         <Button
@@ -351,7 +352,10 @@ export default function TeamModify({
                 openAlert={openDeleteUserAlert}
                 handleCloseAlert={() => setOpenDeleteUserAlert(false)}
                 handleAction={deleteMember}
-                dialogTitle={`Remove yourself from team ${selectedTeam.title}`}
+                dialogTitle={
+                    selectedTeam &&
+                    `Remove yourself from team ${selectedTeam.title}`
+                }
                 dialogContent={
                     deletableMember &&
                     `Are you sure? You will lose ALL rights to the team?`

@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useOutletContext } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import styles from "./NavigationBar.module.css";
 import {
@@ -19,7 +19,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
@@ -53,37 +53,20 @@ export interface Vacationer {
     updatedAt: Date;
 }
 
-// type ContextType = {
-//     user: Vacationer | null;
-//     setUser: (user: Vacationer) => void;
-//     updateUser: boolean | null;
-//     setUpdateUser: (updateUser: boolean) => void;
-//     APIError: boolean | null;
-//     setAPIError: (APIError: boolean) => void;
-// };
+type ContextType = {
+    user: Vacationer | null;
+    updateUser: (user: Vacationer) => void;
+    APIError: boolean | null;
+    setAPIError: (APIError: boolean) => void;
+    newUserState: boolean;
+    somethingNew: (boolean) => void;
+};
 
 function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
-    const [user, setUser] = useState<Vacationer>({
-        admin: false,
-        calendarSettings: [
-            {
-                holidayColor: "",
-                holidaySymbol: "",
-                unConfirmedHolidayColor: "",
-                unConfirmedHolidaySymbol: "",
-                weekendColor: "",
-                weekendHolidayColor: "",
-            },
-        ],
-        createdAt: undefined,
-        id: "",
-        name: "",
-        nameId: "",
-        updatedAt: undefined,
-        vacations: [{ comment: "", confirmed: false, end: "", start: "" }],
-    });
-    const [updateUser, setUpdateUser] = useState(false);
+    const [user, setUser] = useState<Vacationer | null>();
+    // state for updating user
+    const [newUserState, setNewUserState] = useState(false);
     const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [APIError, setAPIError] = useState(false);
@@ -108,6 +91,7 @@ function NavigationBar() {
     }, []);
 
     useEffect(() => {
+        console.log("Updating user!");
         // Get username from base64 value of the cookie
         if (Cookies.get("payload")) {
             let userJSON = JSON.parse(Cookies.get("payload").substring(2));
@@ -148,7 +132,7 @@ function NavigationBar() {
         } else {
             console.log("No cookies!");
         }
-    }, [updateUser]);
+    }, [newUserState]);
 
     return (
         <div>
@@ -282,14 +266,14 @@ function NavigationBar() {
                     <>
                         {!showSpinner && userName ? (
                             <Outlet
-                                context={[
+                                context={{
                                     user,
-                                    setUser,
-                                    updateUser,
-                                    setUpdateUser,
+                                    updateUser: setUser,
                                     APIError,
                                     setAPIError,
-                                ]}
+                                    newUserState,
+                                    somethingNew: setNewUserState,
+                                }}
                             />
                         ) : (
                             !showSpinner && <Login />
@@ -301,8 +285,8 @@ function NavigationBar() {
     );
 }
 
-// export function useOutletVariables() {
-//     return useOutletContext<ContextType>();
-// }
+export function useOutletVariables() {
+    return useOutletContext<ContextType>();
+}
 
 export default NavigationBar;

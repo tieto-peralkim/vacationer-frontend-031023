@@ -2,7 +2,16 @@
 import { useBreakpoint } from "styled-breakpoints/react-styled";
 import { down } from "styled-breakpoints";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+    forwardRef,
+    DetailedHTMLProps,
+    ButtonHTMLAttributes,
+    MouseEventHandler,
+    Ref,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 import { useTable } from "react-table";
 import axios from "axios";
 import {
@@ -19,7 +28,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
 import { Team } from "../Team/TeamPage/TeamPage";
-import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../NavigationBar";
 
 export default function Calendar({
     shortenLongNames,
@@ -27,8 +36,8 @@ export default function Calendar({
     save,
 }) {
     const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+
+    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
 
     const today = new Date();
     const thisMonthFirst = new Date(
@@ -37,7 +46,7 @@ export default function Calendar({
         1,
         15
     );
-    const disableConditions = APIError || !user.id;
+    const disableConditions = APIError || !user;
     thisMonthFirst.setUTCHours(0, 0, 0, 0);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
     const WORKER_TITLE = "Working";
@@ -863,15 +872,6 @@ export default function Calendar({
             return "solid 1px black";
         }
     };
-    //
-    // const MonthInputButton = forwardRef(({ value, onClick }, ref) => (
-    //     <Button onClick={onClick} ref={ref}>
-    //         {selectedDate.toLocaleString("en-GB", {
-    //             month: "long",
-    //             year: "numeric",
-    //         })}
-    //     </Button>
-    // ));
 
     /**
      * Counts how many vacationers exist in a given day.
@@ -1163,7 +1163,6 @@ export default function Calendar({
                                 showMonthYearPicker
                                 showFullMonthYearPicker
                                 showFourColumnMonthYearPicker
-                                // customInput={<MonthInputButton />}
                             />
                         </div>
                         <Button

@@ -44,8 +44,7 @@ export default function Picker({
     const today = new Date();
     today.setUTCHours(0, 0, 0);
 
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -131,6 +130,7 @@ export default function Picker({
 
     useEffect(() => {
         setChosenVacationer(user);
+        console.log("valittuna", user);
     }, []);
 
     useEffect(() => {

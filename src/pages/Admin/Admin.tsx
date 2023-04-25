@@ -12,31 +12,15 @@ import {
 } from "@mui/material";
 import styles from "./admin.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
-import { Navigate, useOutletContext } from "react-router-dom";
-import { Vacationer } from "../../NavigationBar";
+import { Navigate } from "react-router-dom";
+import { useOutletVariables, Vacationer } from "../../NavigationBar";
+import { Team } from "../Team/TeamPage/TeamPage";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
-    const [selectedDeletedUser, setSelectedDeletedUser] = useState<Vacationer>({
-        admin: false,
-        calendarSettings: [
-            {
-                holidayColor: "",
-                holidaySymbol: "",
-                unConfirmedHolidayColor: "",
-                unConfirmedHolidaySymbol: "",
-                weekendColor: "",
-                weekendHolidayColor: "",
-            },
-        ],
-        createdAt: undefined,
-        id: "",
-        name: "",
-        nameId: "",
-        updatedAt: undefined,
-        vacations: [{ comment: "", confirmed: false, end: "", start: "" }],
-    });
-    const [selectedDeletedTeam, setSelectedDeletedTeam] = useState<any>();
+    const [selectedDeletedUser, setSelectedDeletedUser] =
+        useState<Vacationer | null>(null);
+    const [selectedDeletedTeam, setSelectedDeletedTeam] = useState<Team>(null);
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
     const [openChangeAdminAlert, setOpenChangeAdminAlert] = useState(false);
     const [adminStatus, setAdminStatus] = useState(false);
@@ -52,8 +36,7 @@ export default function Admin() {
     const [newUser, setNewUser] = useState("");
     const nameError = newUser.length < 3;
 
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
     const [openFinalDeleteUserAlert, setOpenFinalDeleteUserAlert] =
         useState(false);
@@ -64,37 +47,8 @@ export default function Admin() {
     const CREATE_TITLE = "Create user";
 
     const emptySelections = () => {
-        setSelectedDeletedUser({
-            admin: false,
-            calendarSettings: [
-                {
-                    holidayColor: "",
-                    holidaySymbol: "",
-                    unConfirmedHolidayColor: "",
-                    unConfirmedHolidaySymbol: "",
-                    weekendColor: "",
-                    weekendHolidayColor: "",
-                },
-            ],
-            createdAt: undefined,
-            id: "",
-            name: "",
-            nameId: "",
-            updatedAt: undefined,
-            vacations: [{ comment: "", confirmed: false, end: "", start: "" }],
-        });
-        setSelectedDeletedTeam({
-            id: "",
-            title: "",
-            members: [
-                {
-                    name: "",
-                    vacationerId: "",
-                },
-            ],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        });
+        setSelectedDeletedUser(null);
+        setSelectedDeletedTeam(null);
         setSelectedUser("");
         setAdminStatus(false);
     };
@@ -114,22 +68,21 @@ export default function Admin() {
                 setAPIError(true);
             });
 
-        Promise.all([
-            axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers/deleted`, {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/vacationers/deleted`, {
                 withCredentials: true,
-            }),
-            axios.get(`${process.env.REACT_APP_ADDRESS}/teams/deleted`, {
-                withCredentials: true,
-            }),
-        ])
+            })
             .then((response) => {
-                console.log(
-                    "response.data",
-                    response[0].data,
-                    response[1].data
+                setDeletedVacationers(response.data);
+                return axios.get(
+                    `${process.env.REACT_APP_ADDRESS}/teams/deleted`,
+                    {
+                        withCredentials: true,
+                    }
                 );
-                setDeletedVacationers(response[0].data);
-                setDeletedTeams(response[1].data);
+            })
+            .then((response) => {
+                setDeletedTeams(response.data);
             })
             .catch((error) => {
                 setAPIError(true);
@@ -318,7 +271,7 @@ export default function Admin() {
             });
     };
 
-    return user.admin ? (
+    return user && user.admin ? (
         <>
             <div className={styles.content}>
                 <div className={styles.borderedBox}>
@@ -358,6 +311,7 @@ export default function Admin() {
                                 value={selectedUser}
                                 onChange={(e) => {
                                     setSelectedUser(e.target.value);
+                                    console.log("value", e.target.value);
                                 }}
                             >
                                 {vacationers.map((vacationer) => (
@@ -413,8 +367,8 @@ export default function Admin() {
                                 className={styles.nameSelectBox}
                                 displayEmpty={true}
                                 disabled={APIError}
-                                onChange={(e) => {
-                                    setSelectedDeletedUser(e);
+                                onChange={(e: any) => {
+                                    setSelectedDeletedUser(e.target.value);
                                 }}
                             >
                                 {deletedVacationers &&
@@ -460,8 +414,7 @@ export default function Admin() {
                             <Select
                                 disabled={APIError}
                                 className={styles.nameSelectBox}
-                                displayEmpty={true}
-                                onChange={(e) => {
+                                onChange={(e: any) => {
                                     setSelectedDeletedTeam(e.target.value);
                                 }}
                             >

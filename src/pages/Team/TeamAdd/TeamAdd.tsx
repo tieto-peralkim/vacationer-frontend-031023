@@ -8,9 +8,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "../team.module.css";
-import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../../NavigationBar";
 
 export default function TeamAdd({
     open,
@@ -20,8 +20,7 @@ export default function TeamAdd({
     setCompletedAction,
     openAPIError,
 }) {
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
     const [newTeam, setNewTeam] = useState("");
 
     const [teamNameError, setTeamNameError] = useState(false);
@@ -35,10 +34,6 @@ export default function TeamAdd({
         setAlreadyExistsError(false);
         setNewTeam("");
     };
-
-    useEffect(() => {
-        setUpdateUser(!updateUser);
-    }, [completedAction]);
 
     const createTeam = (newTeam) => {
         if (!nameError) {
@@ -54,7 +49,7 @@ export default function TeamAdd({
                 })
                 .then((response) => {
                     setCompletedAction(!completedAction);
-                    setNewTeam([]);
+                    setNewTeam("");
                 })
                 .catch((error) => {
                     console.log(error.response.status);

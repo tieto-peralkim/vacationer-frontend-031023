@@ -15,7 +15,7 @@ import DatePicker from "react-datepicker";
 import { useEffect, useState } from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
-import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../../NavigationBar";
 
 export default function PickerModal({
     resetForm,
@@ -50,8 +50,7 @@ export default function PickerModal({
     setSave,
     calculatePerDay,
 }) {
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
     const [alertingDates, setAlertingDates] = useState([]);
     const [openEditAlert, setOpenEditAlert] = useState(false);
     const [openAddAlert, setOpenAddAlert] = useState(false);

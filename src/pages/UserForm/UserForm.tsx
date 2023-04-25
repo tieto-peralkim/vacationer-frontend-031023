@@ -5,7 +5,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import ModifyDialog from "../Dialogs/ModifyDialog";
 import { CompactPicker } from "react-color";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useOutletVariables } from "../../NavigationBar";
 
 export default function UserForm() {
     let navigate = useNavigate();
@@ -17,8 +18,14 @@ export default function UserForm() {
     const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
         useState("");
 
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const {
+        user,
+        updateUser,
+        APIError,
+        setAPIError,
+        newUserState,
+        somethingNew,
+    } = useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
 
     const [userCreationMessage, setUserCreationMessage] = useState("");
@@ -51,7 +58,8 @@ export default function UserForm() {
     };
 
     useEffect(() => {
-        setUpdateUser(!updateUser);
+        somethingNew(!newUserState);
+        console.log("updating soon", user);
     }, [completedAction]);
 
     useEffect(() => {
@@ -171,9 +179,8 @@ export default function UserForm() {
                 //     { withCredentials: true }
                 // )
                 .then((response) => {
-                    console.log(response);
+                    console.log("updating calendar settings");
                     setCompletedAction(!completedAction);
-                    navigate("/");
                 })
                 .catch((error) => {
                     setAPIError(true);

@@ -6,7 +6,7 @@ import * as React from "react";
 import TeamAdd from "../TeamAdd/TeamAdd";
 import TeamModify from "../TeamModify/TeamModify";
 import Typography from "@mui/material/Typography";
-import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../../NavigationBar";
 
 export interface Team {
     id: string;
@@ -23,19 +23,12 @@ export interface Team {
 
 export default function TeamPage() {
     const [teams, setTeams] = useState([]);
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
     const [vacationers, setVacationers] = useState([]);
 
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
     const [openTeamModify, setOpenTeamModify] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState<Team>({
-        createdAt: undefined,
-        id: "",
-        members: [{ name: "", vacationerId: "" }],
-        title: "",
-        updatedAt: undefined,
-    });
+    const [selectedTeam, setSelectedTeam] = useState<Team | null>();
 
     const [completedAction, setCompletedAction] = useState(false);
 
@@ -45,18 +38,24 @@ export default function TeamPage() {
 
     useEffect(() => {
         let updatedTeams;
-        Promise.all([
-            axios.get(`${process.env.REACT_APP_ADDRESS}/teams`, {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
                 withCredentials: true,
-            }),
-            axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
-                withCredentials: true,
-            }),
-        ])
+            })
             .then((response) => {
-                updatedTeams = response[0].data;
+                console.log(response);
+                updatedTeams = response.data;
                 setTeams(updatedTeams);
-                setVacationers(response[1].data);
+
+                return axios.get(
+                    `${process.env.REACT_APP_ADDRESS}/vacationers/total`,
+                    {
+                        withCredentials: true,
+                    }
+                );
+            })
+            .then((response) => {
+                setVacationers(response.data);
             })
             .catch((error) => {
                 console.error(
@@ -65,7 +64,7 @@ export default function TeamPage() {
                 );
                 openAPIError();
             })
-            .finally(() => {
+            .then(() => {
                 if (selectedTeam) {
                     updatedTeams.forEach((team) => {
                         if (team.id === selectedTeam.id) {
