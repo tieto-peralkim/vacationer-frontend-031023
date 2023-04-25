@@ -368,7 +368,6 @@ export default function PickerModal({
                     />
                     <div className={styles.datePicker}>
                         <DatePicker
-                            locale="en"
                             selected={startDate}
                             onChange={onChange}
                             selectsRange

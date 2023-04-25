@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./picker.module.css";
-
-import fi from "date-fns/locale/fi";
 import {
     Accordion,
     AccordionDetails,
@@ -26,8 +23,6 @@ import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
 import { ExpandCircleDown } from "@mui/icons-material";
 import { useOutletContext } from "react-router-dom";
-
-registerLocale("fi", fi);
 
 export default function Picker({
     save,
