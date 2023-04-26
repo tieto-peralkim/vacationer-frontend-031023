@@ -1007,7 +1007,14 @@ export default function Calendar({
     }: {
         value: string;
         onClick: MouseEventHandler<HTMLInputElement>;
-    }) => <Button onClick={onClick}>{value}</Button>;
+    }) => (
+        <Button onClick={onClick}>
+            {selectedDate.toLocaleString("en-GB", {
+                month: "long",
+                year: "numeric",
+            })}
+        </Button>
+    );
 
     const getDayFromInt = (day) => {
         switch (day) {
