@@ -16,10 +16,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import SettingsIcon from "@mui/icons-material/Settings";
 import GroupsIcon from "@mui/icons-material/Groups";
-import DangerousIcon from "@mui/icons-material/Dangerous";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import Typography from "@mui/material/Typography";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
@@ -67,7 +66,6 @@ function NavigationBar() {
     const [user, setUser] = useState<Vacationer | null>();
     // state for updating user
     const [newUserState, setNewUserState] = useState(false);
-    const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [APIError, setAPIError] = useState(false);
     const loginAddress = `${process.env.REACT_APP_ADDRESS}/login`;
@@ -112,11 +110,6 @@ function NavigationBar() {
                             console.log("luotu!");
                             setNewUserWarning(true);
                         }
-                        if (response.data[0].deletedAt) {
-                            setDeletedWarning(true);
-                        } else {
-                            setDeletedWarning(false);
-                        }
                         setUser(response.data[0]);
                     } else {
                         console.log("No user received");
@@ -144,11 +137,6 @@ function NavigationBar() {
                         </IconButton>
 
                         <Typography className={styles.leftPart} variant="h6">
-                            {deletedWarning && (
-                                <>
-                                    <DangerousIcon />
-                                </>
-                            )}
                             {APIError ? (
                                 <div>No user</div>
                             ) : (
