@@ -1233,27 +1233,6 @@ export default function Calendar({
                                                             // );
                                                             return (
                                                                 <td
-                                                                    {...cell.getCellProps(
-                                                                        {
-                                                                            onClick:
-                                                                                () => {
-                                                                                    console.log(
-                                                                                        "loki1",
-                                                                                        cell.value
-                                                                                    );
-                                                                                    console.log(
-                                                                                        "loki2",
-                                                                                        cell
-                                                                                            .row
-                                                                                            .original
-                                                                                            .name,
-                                                                                        cell
-                                                                                            .column
-                                                                                            .Header
-                                                                                    );
-                                                                                },
-                                                                        }
-                                                                    )}
                                                                     style={{
                                                                         fontWeight:
                                                                             setBold(
