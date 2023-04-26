@@ -3,20 +3,32 @@ import { useEffect, useState } from "react";
 import styles from "../team.module.css";
 import axios from "axios";
 import * as React from "react";
-import { useOutletContext } from "react-router-dom";
 import TeamAdd from "../TeamAdd/TeamAdd";
 import TeamModify from "../TeamModify/TeamModify";
 import Typography from "@mui/material/Typography";
+import { useOutletVariables } from "../../../NavigationBar";
+
+export interface Team {
+    id: string;
+    title: string;
+    members: [
+        {
+            name: string;
+            vacationerId: string;
+        }
+    ];
+    createdAt: Date;
+    updatedAt: Date;
+}
 
 export default function TeamPage() {
     const [teams, setTeams] = useState([]);
-    const [user, setUser, updateUser, setupdateUser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, APIError, setAPIError } = useOutletVariables();
     const [vacationers, setVacationers] = useState([]);
 
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
     const [openTeamModify, setOpenTeamModify] = useState(false);
-    const [selectedTeam, setSelectedTeam] = useState("");
+    const [selectedTeam, setSelectedTeam] = useState<Team | null>();
 
     const [completedAction, setCompletedAction] = useState(false);
 
@@ -26,18 +38,24 @@ export default function TeamPage() {
 
     useEffect(() => {
         let updatedTeams;
-        Promise.all([
-            axios.get(`${process.env.REACT_APP_ADDRESS}/teams`, {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
                 withCredentials: true,
-            }),
-            axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
-                withCredentials: true,
-            }),
-        ])
+            })
             .then((response) => {
-                updatedTeams = response[0].data;
+                console.log(response);
+                updatedTeams = response.data;
                 setTeams(updatedTeams);
-                setVacationers(response[1].data);
+
+                return axios.get(
+                    `${process.env.REACT_APP_ADDRESS}/vacationers/total`,
+                    {
+                        withCredentials: true,
+                    }
+                );
+            })
+            .then((response) => {
+                setVacationers(response.data);
             })
             .catch((error) => {
                 console.error(
@@ -46,7 +64,7 @@ export default function TeamPage() {
                 );
                 openAPIError();
             })
-            .finally(() => {
+            .then(() => {
                 if (selectedTeam) {
                     updatedTeams.forEach((team) => {
                         if (team.id === selectedTeam.id) {
@@ -86,7 +104,7 @@ export default function TeamPage() {
                 setCompletedAction={setCompletedAction}
                 openAPIError={openAPIError}
             />
-            {user.name && (
+            {user && user.name && (
                 <div className={styles.content}>
                     <Button
                         variant="outlined"

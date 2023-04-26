@@ -2,7 +2,14 @@
 import { useBreakpoint } from "styled-breakpoints/react-styled";
 import { down } from "styled-breakpoints";
 
-import { forwardRef, useEffect, useMemo, useState } from "react";
+import {
+    forwardRef,
+    MouseEventHandler,
+    createElement,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
 import { useTable } from "react-table";
 import axios from "axios";
 import {
@@ -18,7 +25,8 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
-import { useOutletContext } from "react-router-dom";
+import { Team } from "../Team/TeamPage/TeamPage";
+import { useOutletVariables } from "../../NavigationBar";
 
 export default function Calendar({
     shortenLongNames,
@@ -26,8 +34,8 @@ export default function Calendar({
     save,
 }) {
     const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
-    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
-        useOutletContext();
+
+    const { user, APIError, setAPIError } = useOutletVariables();
 
     const today = new Date();
     const thisMonthFirst = new Date(
@@ -36,6 +44,7 @@ export default function Calendar({
         1,
         15
     );
+    const disableConditions = APIError || !user;
     thisMonthFirst.setUTCHours(0, 0, 0, 0);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
     const WORKER_TITLE = "Working";
@@ -61,13 +70,22 @@ export default function Calendar({
         thisMonthFirst.getFullYear()
     );
     const [publicHolidaysOfMonth, setPublicHolidaysOfMonth] = useState([]);
-    const [publicHolidays, setPublicHolidays] = useState(
-        thisMonthFirst.getFullYear()
-    );
+    const [publicHolidays, setPublicHolidays] = useState([]);
 
     const hiddenColumns = [];
-    const [teams, setTeams] = useState([]);
-    const [teamToShow, setTeamToShow] = useState("");
+    const [teams, setTeams] = useState<Team[]>([]);
+    const [teamToShow, setTeamToShow] = useState<Team>({
+        id: "",
+        title: "",
+        members: [
+            {
+                name: "",
+                vacationerId: "",
+            },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
     const [selectedVacationers, setSelectedVacationers] = useState([]);
 
     // Fetching Finnish public holidays from Public holiday API (https://date.nager.at/)
@@ -99,14 +117,14 @@ export default function Calendar({
     // TODO: this has too many depending states
     useEffect(() => {
         // Showing all employees of the selected team, not only the ones with holiday
-        if (showAllVacationers && teamToShow) {
+        if (showAllVacationers && teamToShow.id) {
             console.log("showAllVacationers && teamToShow", teamToShow);
             setMonthsHolidays(filterHolidays(), teamToShow.members);
         }
         // Showing all vacationing employees of the selected team
-        else if (teamToShow) {
+        else if (teamToShow.id) {
             console.log("teamToShow:", teamToShow);
-            setMonthsHolidays(filterHolidays());
+            setMonthsHolidays(filterHolidays(), null);
         }
         // Showing all employees, not only the ones with holiday
         else if (showAllVacationers) {
@@ -114,7 +132,7 @@ export default function Calendar({
         }
         // Showing all vacationing employees
         else {
-            setMonthsHolidays(selectedVacationers);
+            setMonthsHolidays(selectedVacationers, null);
         }
     }, [
         showAllVacationers,
@@ -126,7 +144,7 @@ export default function Calendar({
 
     // Setting calendar settings of selected user
     useEffect(() => {
-        if (user.calendarSettings) {
+        if (user && user.calendarSettings) {
             setHolidayColor(user.calendarSettings[0].holidayColor);
             setUnConfirmedHolidayColor(
                 user.calendarSettings[0].unConfirmedHolidayColor
@@ -220,13 +238,13 @@ export default function Calendar({
         // console.log("allEmployees", allEmployees);
         let pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
-            let holidayObject = {};
-
-            holidayObject.name = shortenLongNames(vacationingEmployees[i].name);
-            holidayObject.start = vacationingEmployees[i].vacations.start;
-            holidayObject.end = vacationingEmployees[i].vacations.end;
-            holidayObject.comment = vacationingEmployees[i].vacations.comment;
-            holidayObject.id = vacationingEmployees[i].vacations._id;
+            let holidayObject = {
+                name: shortenLongNames(vacationingEmployees[i].name),
+                start: vacationingEmployees[i].vacations.start,
+                end: vacationingEmployees[i].vacations.end,
+                comment: vacationingEmployees[i].vacations.comment,
+                id: vacationingEmployees[i].vacations._id,
+            };
 
             let repeatingHolidayer;
             repeatingHolidayer = pureVacations.find(
@@ -263,17 +281,16 @@ export default function Calendar({
         }
 
         // If "Show all employees" checkbox is selected, filter the employees without holidays and set only the name for those rows
-        if (allEmployees !== undefined) {
+        if (allEmployees !== null) {
             let employeesWithNoHolidays = allEmployees.filter(
                 (o1) => !vacationingEmployees.some((o2) => o1.name === o2.name)
             );
             console.log("eNoHolidays", employeesWithNoHolidays);
 
             for (let i = 0; i < employeesWithNoHolidays.length; i++) {
-                let holidayObject = {};
-                holidayObject.name = shortenLongNames(
-                    employeesWithNoHolidays[i].name
-                );
+                let holidayObject = {
+                    name: shortenLongNames(employeesWithNoHolidays[i].name),
+                };
 
                 pureVacations.push(holidayObject);
             }
@@ -364,7 +381,7 @@ export default function Calendar({
             }
         }
         // If a team has been selected
-        if (teamToShow) {
+        if (teamToShow.id) {
             return peopleOnHoliday;
         } else {
             return peopleOnHoliday;
@@ -379,8 +396,7 @@ export default function Calendar({
             }
         }
         // If a team has been selected
-        if (teamToShow) {
-            console.log("Total", peopleOnHoliday, teamToShow.members.length);
+        if (teamToShow.id) {
             return teamToShow.members.length - peopleOnHoliday;
         } else {
             return vacationersAmount.length - peopleOnHoliday;
@@ -796,13 +812,13 @@ export default function Calendar({
         // else if (typeof value === "number") {
         //     colorToAdd = "bisque";
         //     if (
-        //         !teamToShow &&
+        //         !teamToShow.id &&
         //         value < PRESENCE_PERCENTAGE * vacationersAmount.length
         //     ) {
         //         colorToAdd = "orange";
         //     }
         //     if (
-        //         teamToShow &&
+        //         teamToShow.id &&
         //         value < PRESENCE_PERCENTAGE * teamToShow.members.length
         //     ) {
         //         colorToAdd = "orange";
@@ -855,15 +871,6 @@ export default function Calendar({
         }
     };
 
-    const MonthInputButton = forwardRef(({ value, onClick }, ref) => (
-        <Button onClick={onClick} ref={ref}>
-            {selectedDate.toLocaleString("en-GB", {
-                month: "long",
-                year: "numeric",
-            })}
-        </Button>
-    ));
-
     /**
      * Counts how many vacationers exist in a given day.
      * As a parameter accepts the number of the day and returns the amount of
@@ -875,7 +882,7 @@ export default function Calendar({
         try {
             selectedVacationers.forEach((vacationer) => {
                 // if the given day is included in the vacationers holiday add to vacationersAmount
-                if (teamToShow) {
+                if (teamToShow.id) {
                     if (
                         dayNumber >=
                             vacationer.vacations.start.substring(8, 10) &&
@@ -907,7 +914,7 @@ export default function Calendar({
         let onHolidayCount = countVacationers(dayNumber);
         let allNames = [];
 
-        if (teamToShow) {
+        if (teamToShow.id) {
             return teamToShow.members.length - onHolidayCount;
         } else {
             teams.forEach((team) => {
@@ -931,7 +938,7 @@ export default function Calendar({
 
         selectedVacationers.forEach((vacationer) => {
             // if the given day is included in the vacationers holiday add to vacationersAmount
-            if (teamToShow) {
+            if (teamToShow.id) {
                 if (
                     dayNumber >= vacationer.vacations.start.substring(8, 10) &&
                     dayNumber <= vacationer.vacations.end.substring(8, 10)
@@ -959,7 +966,7 @@ export default function Calendar({
         let workerNames = [];
         let onHolidayNames = getVacationerNames(dayNumber);
 
-        if (teamToShow) {
+        if (teamToShow.id) {
             teamToShow.members.forEach((member) => {
                 if (onHolidayNames.length > 0) {
                     onHolidayNames.forEach((vacationer) => {
@@ -994,6 +1001,14 @@ export default function Calendar({
         }
     };
 
+    const ButtonCustomInput = ({
+        value,
+        onClick,
+    }: {
+        value: string;
+        onClick: MouseEventHandler<HTMLInputElement>;
+    }) => <Button onClick={onClick}>{value}</Button>;
+
     const getDayFromInt = (day) => {
         switch (day) {
             case 0:
@@ -1027,47 +1042,90 @@ export default function Calendar({
             <div className={styles.wholeCalendar}>
                 <div>
                     <div className={styles.teamChips}>
-                        <Chip
-                            disabled={APIError || !user.name}
-                            className={styles.oneTeamChip}
-                            variant={!teamToShow ? "" : "outlined"}
-                            label="All teams"
-                            color="secondary"
-                            onClick={() => {
-                                setMonthsHolidays(selectedVacationers);
-                                setTeamToShow("");
-                            }}
-                        />
-                        {teams.map((team) => (
+                        {teamToShow.id.length === 0 ? (
                             <Chip
-                                className={styles.oneTeamChip}
-                                key={team.id}
-                                variant={
-                                    teamToShow.title === team.title
-                                        ? ""
-                                        : "outlined"
-                                }
-                                color="primary"
-                                label={team.title}
+                                label="All teams"
+                                color="secondary"
                                 onClick={() => {
-                                    setTeamToShow(team);
-                                    console.log("team", team);
+                                    setMonthsHolidays(
+                                        selectedVacationers,
+                                        null
+                                    );
+                                    setTeamToShow({
+                                        id: "",
+                                        title: "",
+                                        members: [
+                                            {
+                                                name: "",
+                                                vacationerId: "",
+                                            },
+                                        ],
+                                        createdAt: new Date(),
+                                        updatedAt: new Date(),
+                                    });
                                 }}
                             />
-                        ))}
-                        {teamToShow &&
+                        ) : (
+                            <Chip
+                                variant={"outlined"}
+                                label="All teams"
+                                color="secondary"
+                                onClick={() => {
+                                    setMonthsHolidays(
+                                        selectedVacationers,
+                                        null
+                                    );
+                                    setTeamToShow({
+                                        id: "",
+                                        title: "",
+                                        members: [
+                                            {
+                                                name: "",
+                                                vacationerId: "",
+                                            },
+                                        ],
+                                        createdAt: new Date(),
+                                        updatedAt: new Date(),
+                                    });
+                                }}
+                            />
+                        )}
+                        {teams.map((team) =>
+                            teamToShow.id && teamToShow.title === team.title ? (
+                                <Chip
+                                    key={team.id}
+                                    color="primary"
+                                    label={team.title}
+                                    onClick={() => {
+                                        setTeamToShow(team);
+                                        console.log("team", team);
+                                    }}
+                                />
+                            ) : (
+                                <Chip
+                                    key={team.id}
+                                    variant={"outlined"}
+                                    color="primary"
+                                    label={team.title}
+                                    onClick={() => {
+                                        setTeamToShow(team);
+                                        console.log("team", team);
+                                    }}
+                                />
+                            )
+                        )}
+                        {teamToShow.id &&
                             teamToShow.members
                                 // some sorting?
                                 // .sort((v1, v2) => v1.name - v2.name)
                                 .map((member) => (
                                     <Chip
-                                        className={styles.oneTeamChip}
                                         label={member.name}
                                         key={member.vacationerId}
                                     />
                                 ))}
                     </div>
-                    {user.name && (
+                    {user && user.name && (
                         <div className={styles.infoBox}>
                             {holidaySymbols[0]} = confirmed holiday <br />{" "}
                             {holidaySymbols[1]} = un-confirmed holiday
@@ -1083,9 +1141,9 @@ export default function Calendar({
                                     setShowAllVacationers(!showAllVacationers);
                                 }}
                                 control={<Switch color="success" />}
-                                disabled={APIError || !user.name}
+                                disabled={disableConditions}
                                 label={
-                                    teamToShow
+                                    teamToShow.id
                                         ? `Show only people on holiday in team ${teamToShow.title}`
                                         : "Show only people on holiday"
                                 }
@@ -1098,26 +1156,28 @@ export default function Calendar({
                         <Button
                             onClick={() => changeMonth(-1)}
                             startIcon={<ArrowBackIosIcon />}
-                            disabled={APIError || !user.name}
+                            disabled={disableConditions}
                         >
                             Prev
                         </Button>
                         <div className={styles.monthSelection}>
                             <DatePicker
-                                disabled={APIError || !user.name}
+                                disabled={disableConditions}
                                 selected={selectedDate}
                                 onChange={(date) => setSelectedDate(date)}
                                 dateFormat="MM/yyyy"
                                 showMonthYearPicker
                                 showFullMonthYearPicker
                                 showFourColumnMonthYearPicker
-                                customInput={<MonthInputButton />}
+                                customInput={createElement(
+                                    forwardRef(ButtonCustomInput)
+                                )}
                             />
                         </div>
                         <Button
                             onClick={() => changeMonth(1)}
                             endIcon={<ArrowForwardIosIcon />}
-                            disabled={APIError || !user.name}
+                            disabled={disableConditions}
                         >
                             Next
                         </Button>
@@ -1182,27 +1242,6 @@ export default function Calendar({
                                                             // );
                                                             return (
                                                                 <td
-                                                                    {...cell.getCellProps(
-                                                                        {
-                                                                            onClick:
-                                                                                () => {
-                                                                                    console.log(
-                                                                                        "loki1",
-                                                                                        cell.value
-                                                                                    );
-                                                                                    console.log(
-                                                                                        "loki2",
-                                                                                        cell
-                                                                                            .row
-                                                                                            .original
-                                                                                            .name,
-                                                                                        cell
-                                                                                            .column
-                                                                                            .Header
-                                                                                    );
-                                                                                },
-                                                                        }
-                                                                    )}
                                                                     style={{
                                                                         fontWeight:
                                                                             setBold(

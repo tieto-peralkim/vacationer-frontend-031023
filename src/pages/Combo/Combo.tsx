@@ -3,12 +3,13 @@ import Calendar from "../Calendar/Calendar";
 import styles from "./combo.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../NavigationBar";
 
 export default function Combo() {
     const [save, setSave] = useState(false);
-    const [user, setUser, updateUser, setUpdateUser, APIError, setAPIError] =
-        useOutletContext();
+
+    const { user, APIError, setAPIError, newUserState, updateUser } =
+        useOutletVariables();
     const [vacationersAmount, setVacationersAmount] = useState([]);
 
     const shortenLongNames = (longName) => {
@@ -20,9 +21,9 @@ export default function Combo() {
         }
     };
 
-    // When data has changed, update user and simple list of vacationers
+    // When data has changed, update simple list of vacationers & update user
     useEffect(() => {
-        setUpdateUser(!updateUser);
+        updateUser(!newUserState);
         console.log("arvot", APIError, user);
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
@@ -49,13 +50,11 @@ export default function Combo() {
                     vacationersAmount={vacationersAmount}
                     save={save}
                     setSave={setSave}
-                    user={user}
                 />
                 <Calendar
                     shortenLongNames={shortenLongNames}
                     vacationersAmount={vacationersAmount}
                     save={save}
-                    user={user}
                 />
             </div>
         </>

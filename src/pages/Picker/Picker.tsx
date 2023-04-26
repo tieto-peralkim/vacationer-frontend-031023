@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./picker.module.css";
+import { useOutletVariables, Vacationer } from "../../NavigationBar";
 import {
     Accordion,
     AccordionDetails,
@@ -22,8 +23,14 @@ import ClearIcon from "@mui/icons-material/Clear";
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
 import { ExpandCircleDown } from "@mui/icons-material";
-import { useOutletContext } from "react-router-dom";
 
+export interface Holiday {
+    id: string;
+    start: Date;
+    end: Date;
+    comment: string;
+    confirmed: boolean;
+}
 export default function Picker({
     save,
     setSave,
@@ -37,8 +44,7 @@ export default function Picker({
     const today = new Date();
     today.setUTCHours(0, 0, 0);
 
-    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, APIError, setAPIError } = useOutletVariables();
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -56,7 +62,13 @@ export default function Picker({
 
     const [idToEdit, setIdToEdit] = useState();
     const [holidayToEdit, setHolidayToEdit] = useState({});
-    const [holidayToDelete, setHolidayToDelete] = useState({});
+    const [holidayToDelete, setHolidayToDelete] = useState<Holiday>({
+        id: "",
+        start: new Date(),
+        end: new Date(),
+        comment: "",
+        confirmed: false,
+    });
 
     const [editingSpace, setEditingSpace] = useState(false);
     const [changingStartedSpace, setChangingStartedSpace] = useState(false);
@@ -64,7 +76,32 @@ export default function Picker({
     const [holidays, setHolidays] = useState([]);
     const [adminSpace, setAdminSpace] = useState(false);
     const [calendarDaysExcluded, setCalendarDaysExcluded] = useState([]);
-    const [chosenVacationer, setChosenVacationer] = useState("");
+    const [chosenVacationer, setChosenVacationer] = useState<Vacationer>({
+        id: "",
+        name: "",
+        nameId: "",
+        vacations: [
+            {
+                start: "",
+                end: "",
+                comment: "",
+                confirmed: false,
+            },
+        ],
+        admin: false,
+        calendarSettings: [
+            {
+                holidayColor: "",
+                unConfirmedHolidayColor: "",
+                weekendColor: "",
+                weekendHolidayColor: "",
+                holidaySymbol: "",
+                unConfirmedHolidaySymbol: "",
+            },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    });
 
     const handleOpenCalendar = () => {
         setOpenCalendar(true);
@@ -93,10 +130,11 @@ export default function Picker({
 
     useEffect(() => {
         setChosenVacationer(user);
+        console.log("valittuna", user);
     }, []);
 
     useEffect(() => {
-        if (user.name) {
+        if (user && user.name) {
             setExcludedDates(user.vacations);
         }
         resetForm();
@@ -105,7 +143,7 @@ export default function Picker({
     useEffect(() => {
         if (!adminSpace) {
             resetForm();
-            if (user.name) {
+            if (user && user.name) {
                 setExcludedDates(user.vacations);
             }
         }
@@ -167,14 +205,17 @@ export default function Picker({
             .catch((error) => {
                 console.error("There was a delete holiday error!", error);
                 setAPIError(true);
-            })
-            .finally(() => {
-                handleCloseDeletionAlert();
             });
+        handleCloseDeletionAlert();
     };
 
     const editHoliday = (id) => {
-        let editedItem = 0;
+        let editedItem = {
+            start: new Date(),
+            end: new Date(),
+            comment: "",
+            confirmed: false,
+        };
         for (let i = 0; i < holidays.length; i++) {
             if (holidays[i].id === id) {
                 editedItem = holidays[i];
@@ -223,17 +264,17 @@ export default function Picker({
     const setExcludedDates = (vacations) => {
         let pureVacations = [];
         for (let i = 0; i < vacations.length; i++) {
-            let holidayObject = {};
-            holidayObject.start = new Date(vacations[i].start);
-            holidayObject.end = new Date(vacations[i].end);
-            holidayObject.comment = vacations[i].comment;
-            holidayObject.confirmed = vacations[i].confirmed;
-            holidayObject.id = vacations[i]._id;
+            let holidayObject = {
+                start: new Date(vacations[i].start),
+                end: new Date(vacations[i].end),
+                comment: vacations[i].comment,
+                confirmed: vacations[i].confirmed,
+                id: vacations[i]._id,
+                upcoming: false,
+            };
 
             if (holidayObject.start >= today || holidayObject.end >= today) {
                 holidayObject.upcoming = true;
-            } else {
-                holidayObject.upcoming = false;
             }
             pureVacations.push(holidayObject);
         }
@@ -337,7 +378,7 @@ export default function Picker({
                         className={styles.dropdownButton}
                         variant="contained"
                         color="primary"
-                        disabled={!user.name}
+                        disabled={user && !user.name}
                         onClick={(e) => {
                             e.stopPropagation();
                             handleOpenCalendar();
@@ -356,7 +397,7 @@ export default function Picker({
                     <div className={styles.content}>
                         <form className={styles.form}>
                             <div>
-                                {user.admin && (
+                                {user && user.admin && (
                                     <div className={styles.selectSection}>
                                         <FormControl>
                                             <FormControlLabel
@@ -435,7 +476,6 @@ export default function Picker({
                                 confirmed={confirmed}
                                 setConfirmed={setConfirmed}
                                 idToEdit={idToEdit}
-                                setHolidays={setHolidays}
                                 setChangingStartedSpace={
                                     setChangingStartedSpace
                                 }
@@ -503,7 +543,7 @@ export default function Picker({
                                     ))}
                             </Grid>
                         </div>
-                        {user.name && holidays.length === 0 && (
+                        {user && user.name && holidays.length === 0 && (
                             <p>No vacations...</p>
                         )}
                         <AlertDialog

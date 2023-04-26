@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useOutletContext } from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import styles from "./NavigationBar.module.css";
 import {
@@ -19,17 +19,54 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import DangerousIcon from "@mui/icons-material/Dangerous";
 import FiberNewIcon from "@mui/icons-material/FiberNew";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
 import Login from "./pages/Login/Login";
 import CustomAlert from "./components/CustomAlert";
 
+export interface Vacationer {
+    id: string;
+    name: string;
+    nameId: string;
+    vacations: [
+        {
+            start: string;
+            end: string;
+            comment: string;
+            confirmed: boolean;
+        }
+    ];
+    admin: boolean;
+    calendarSettings: [
+        {
+            holidayColor: string;
+            unConfirmedHolidayColor: string;
+            weekendColor: string;
+            weekendHolidayColor: string;
+            holidaySymbol: string;
+            unConfirmedHolidaySymbol: string;
+        }
+    ];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+type ContextType = {
+    user: Vacationer | null;
+    APIError: boolean | null;
+    setAPIError: (APIError: boolean) => void;
+    // Values are used to update the user with updateUser(!newUserState)
+    newUserState: boolean;
+    updateUser: (boolean) => void;
+};
+
 function NavigationBar() {
     const [isOpen, setIsOpen] = useState(false);
-    const [user, setUser] = useState({});
-    const [updateUser, setUpdateUser] = useState(false);
+    const [user, setUser] = useState<Vacationer | null>();
+    // state for updating user
+    const [newUserState, setNewUserState] = useState(false);
     const [deletedWarning, setDeletedWarning] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [APIError, setAPIError] = useState(false);
@@ -48,12 +85,13 @@ function NavigationBar() {
                 setAPIError(true);
                 console.error("API ERROR:", error);
             })
-            .finally(() => {
+            .then(() => {
                 setShowSpinner(false);
             });
     }, []);
 
     useEffect(() => {
+        console.log("Updating user!");
         // Get username from base64 value of the cookie
         if (Cookies.get("payload")) {
             let userJSON = JSON.parse(Cookies.get("payload").substring(2));
@@ -88,13 +126,13 @@ function NavigationBar() {
                     setAPIError(true);
                     console.error("There was a user get error:", error);
                 })
-                .finally(() => {
+                .then(() => {
                     setShowSpinner(false);
                 });
         } else {
             console.log("No cookies!");
         }
-    }, [updateUser]);
+    }, [newUserState]);
 
     return (
         <div>
@@ -105,7 +143,7 @@ function NavigationBar() {
                             <MenuIcon />
                         </IconButton>
 
-                        <Typography className={styles.leftPart} variant="h7">
+                        <Typography className={styles.leftPart} variant="h6">
                             {deletedWarning && (
                                 <>
                                     <DangerousIcon />
@@ -119,12 +157,12 @@ function NavigationBar() {
                                     className={styles.loginTitle}
                                 >
                                     <PersonPin className={styles.userIcon} />
-                                    {user.name}
+                                    {user && user.name}
                                 </Link>
                             )}
                             {newUserWarning && <FiberNewIcon />}
                         </Typography>
-                        <Typography className={styles.rightPart} variant="h7">
+                        <Typography className={styles.rightPart} variant="h6">
                             {!userName || APIError ? (
                                 <a
                                     href={loginAddress}
@@ -200,7 +238,7 @@ function NavigationBar() {
                                     </div>
                                 </ListItem>
                             </Link>
-                            {user.admin && (
+                            {user && user.admin && (
                                 <Link to="/admin">
                                     <ListItem
                                         className={styles.navigation}
@@ -228,14 +266,13 @@ function NavigationBar() {
                     <>
                         {!showSpinner && userName ? (
                             <Outlet
-                                context={[
+                                context={{
                                     user,
-                                    setUser,
-                                    updateUser,
-                                    setUpdateUser,
                                     APIError,
                                     setAPIError,
-                                ]}
+                                    newUserState,
+                                    updateUser: setNewUserState,
+                                }}
                             />
                         ) : (
                             !showSpinner && <Login />
@@ -245,6 +282,10 @@ function NavigationBar() {
             </div>
         </div>
     );
+}
+
+export function useOutletVariables() {
+    return useOutletContext<ContextType>();
 }
 
 export default NavigationBar;

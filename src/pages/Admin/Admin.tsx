@@ -12,19 +12,22 @@ import {
 } from "@mui/material";
 import styles from "./admin.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
-import { Navigate, useOutletContext } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import { useOutletVariables, Vacationer } from "../../NavigationBar";
+import { Team } from "../Team/TeamPage/TeamPage";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
-    const [selectedDeletedUser, setSelectedDeletedUser] = useState("");
-    const [selectedDeletedTeam, setSelectedDeletedTeam] = useState("");
+    const [selectedDeletedUser, setSelectedDeletedUser] =
+        useState<Vacationer | null>(null);
+    const [selectedDeletedTeam, setSelectedDeletedTeam] = useState<Team>(null);
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
     const [openChangeAdminAlert, setOpenChangeAdminAlert] = useState(false);
     const [adminStatus, setAdminStatus] = useState(false);
 
-    const [deletedVacationers, setDeletedVacationers] = useState([]);
-    const [deletedTeams, setDeletedTeams] = useState([]);
-    const [selectedUser, setSelectedUser] = useState("");
+    const [deletedVacationers, setDeletedVacationers] = useState<any>();
+    const [deletedTeams, setDeletedTeams] = useState<any>();
+    const [selectedUser, setSelectedUser] = useState<any>();
     const [userCreated, setUserCreated] = useState(false);
     const [userNameError, setUserNameError] = useState(false);
     const [userCreationMessage, setUserCreationMessage] = useState("");
@@ -33,8 +36,7 @@ export default function Admin() {
     const [newUser, setNewUser] = useState("");
     const nameError = newUser.length < 3;
 
-    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
-        useOutletContext();
+    const { user, APIError, setAPIError } = useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
     const [openFinalDeleteUserAlert, setOpenFinalDeleteUserAlert] =
         useState(false);
@@ -45,8 +47,8 @@ export default function Admin() {
     const CREATE_TITLE = "Create user";
 
     const emptySelections = () => {
-        setSelectedDeletedUser("");
-        setSelectedDeletedTeam("");
+        setSelectedDeletedUser(null);
+        setSelectedDeletedTeam(null);
         setSelectedUser("");
         setAdminStatus(false);
     };
@@ -66,22 +68,21 @@ export default function Admin() {
                 setAPIError(true);
             });
 
-        Promise.all([
-            axios.get(`${process.env.REACT_APP_ADDRESS}/vacationers/deleted`, {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/vacationers/deleted`, {
                 withCredentials: true,
-            }),
-            axios.get(`${process.env.REACT_APP_ADDRESS}/teams/deleted`, {
-                withCredentials: true,
-            }),
-        ])
+            })
             .then((response) => {
-                console.log(
-                    "response.data",
-                    response[0].data,
-                    response[1].data
+                setDeletedVacationers(response.data);
+                return axios.get(
+                    `${process.env.REACT_APP_ADDRESS}/teams/deleted`,
+                    {
+                        withCredentials: true,
+                    }
                 );
-                setDeletedVacationers(response[0].data);
-                setDeletedTeams(response[1].data);
+            })
+            .then((response) => {
+                setDeletedTeams(response.data);
             })
             .catch((error) => {
                 setAPIError(true);
@@ -150,7 +151,7 @@ export default function Admin() {
 
     // For removing a team from the database
     const finalDeleteTeam = () => {
-        console.log("deleting team", selectedDeletedTeam);
+        console.log("deleting team", selectedDeletedTeam.title);
         axios
             .delete(
                 `${process.env.REACT_APP_ADDRESS}/teams/${selectedDeletedTeam.id}`,
@@ -270,7 +271,7 @@ export default function Admin() {
             });
     };
 
-    return user.admin ? (
+    return user && user.admin ? (
         <>
             <div className={styles.content}>
                 <div className={styles.borderedBox}>
@@ -310,6 +311,7 @@ export default function Admin() {
                                 value={selectedUser}
                                 onChange={(e) => {
                                     setSelectedUser(e.target.value);
+                                    console.log("value", e.target.value);
                                 }}
                             >
                                 {vacationers.map((vacationer) => (
@@ -365,8 +367,7 @@ export default function Admin() {
                                 className={styles.nameSelectBox}
                                 displayEmpty={true}
                                 disabled={APIError}
-                                value={selectedDeletedUser}
-                                onChange={(e) => {
+                                onChange={(e: any) => {
                                     setSelectedDeletedUser(e.target.value);
                                 }}
                             >
@@ -413,9 +414,7 @@ export default function Admin() {
                             <Select
                                 disabled={APIError}
                                 className={styles.nameSelectBox}
-                                displayEmpty={true}
-                                value={selectedDeletedTeam}
-                                onChange={(e) => {
+                                onChange={(e: any) => {
                                     setSelectedDeletedTeam(e.target.value);
                                 }}
                             >
@@ -512,23 +511,32 @@ export default function Admin() {
             />
             <AlertDialog
                 openAlert={userCreated}
+                handleAction={() => void 0}
                 handleCloseAlert={() => setUserCreated(false)}
                 dialogTitle={"Create user"}
                 dialogContent={"User created!"}
+                cancel={""}
+                confirm={""}
             />
             <AlertDialog
                 openAlert={userNameError}
+                handleAction={() => void 0}
                 handleCloseAlert={() => setUserNameError(false)}
                 dialogTitle={"ERROR!"}
                 dialogContent={
                     "This username is too short (less than 3 characters)!"
                 }
+                cancel={""}
+                confirm={""}
             />
             <AlertDialog
                 openAlert={userCreationMessage !== ""}
                 handleCloseAlert={() => setUserCreationMessage("")}
+                handleAction={() => void 0}
                 dialogTitle={"API ERROR!"}
                 dialogContent={userCreationMessage}
+                cancel={""}
+                confirm={""}
             />
             <AlertDialog
                 openAlert={openChangeAdminAlert}

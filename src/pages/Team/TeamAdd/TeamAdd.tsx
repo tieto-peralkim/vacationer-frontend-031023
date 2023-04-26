@@ -8,9 +8,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "../team.module.css";
-import { useOutletContext } from "react-router-dom";
+import { useOutletVariables } from "../../../NavigationBar";
 
 export default function TeamAdd({
     open,
@@ -20,9 +20,8 @@ export default function TeamAdd({
     setCompletedAction,
     openAPIError,
 }) {
-    const [user, setUser, updateUser, setUpdateuser, APIError, setAPIError] =
-        useOutletContext();
-    const [newTeam, setNewTeam] = useState([]);
+    const { user, APIError, setAPIError } = useOutletVariables();
+    const [newTeam, setNewTeam] = useState("");
 
     const [teamNameError, setTeamNameError] = useState(false);
     const [alreadyExistsError, setAlreadyExistsError] = useState(false);
@@ -33,12 +32,8 @@ export default function TeamAdd({
         setOpenTeamAdd(false);
         setTeamNameError(false);
         setAlreadyExistsError(false);
-        setNewTeam([]);
+        setNewTeam("");
     };
-
-    useEffect(() => {
-        setUpdateuser(!updateUser);
-    }, [completedAction]);
 
     const createTeam = (newTeam) => {
         if (!nameError) {
@@ -48,21 +43,20 @@ export default function TeamAdd({
                 title: newTeam,
                 members: firstUser,
             };
-
             axios
                 .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
                     withCredentials: true,
                 })
                 .then((response) => {
                     setCompletedAction(!completedAction);
-                    setNewTeam([]);
+                    setNewTeam("");
                 })
                 .catch((error) => {
                     console.log(error.response.status);
                     openAPIError();
                     console.error("There was a post error!", error);
                 })
-                .finally(() => {
+                .then(() => {
                     handleClose();
                 });
         } else {
@@ -107,6 +101,9 @@ export default function TeamAdd({
             <DialogActions></DialogActions>
 
             <AlertDialog
+                handleAction={() => void 0}
+                cancel={""}
+                confirm={""}
                 openAlert={teamNameError}
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
@@ -116,6 +113,9 @@ export default function TeamAdd({
             />
 
             <AlertDialog
+                handleAction={() => void 0}
+                cancel={""}
+                confirm={""}
                 openAlert={alreadyExistsError}
                 handleCloseAlert={() => setAlreadyExistsError(false)}
                 dialogTitle={"ERROR!"}

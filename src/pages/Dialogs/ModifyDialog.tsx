@@ -4,7 +4,6 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Input,
     InputLabel,
     TextField,
 } from "@mui/material";
@@ -19,7 +18,6 @@ export default function ModifyDialog({
     inputContent,
     cancel,
     confirm,
-    textError,
 }) {
     const [newName, setNewName] = useState({ value: "" });
 
@@ -36,11 +34,7 @@ export default function ModifyDialog({
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>
                 <InputLabel>{dialogContent}</InputLabel>
-                <TextField
-                    value={newName.value}
-                    error={textError}
-                    onChange={handleChange}
-                />
+                <TextField value={newName.value} onChange={handleChange} />
             </DialogContent>
             <DialogActions>
                 <Button
