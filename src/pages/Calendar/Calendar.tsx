@@ -4,10 +4,8 @@ import { down } from "styled-breakpoints";
 
 import {
     forwardRef,
-    DetailedHTMLProps,
-    ButtonHTMLAttributes,
     MouseEventHandler,
-    Ref,
+    createElement,
     useEffect,
     useMemo,
     useState,
@@ -1003,6 +1001,14 @@ export default function Calendar({
         }
     };
 
+    const ButtonCustomInput = ({
+        value,
+        onClick,
+    }: {
+        value: string;
+        onClick: MouseEventHandler<HTMLInputElement>;
+    }) => <Button onClick={onClick}>{value}</Button>;
+
     const getDayFromInt = (day) => {
         switch (day) {
             case 0:
@@ -1163,6 +1169,9 @@ export default function Calendar({
                                 showMonthYearPicker
                                 showFullMonthYearPicker
                                 showFourColumnMonthYearPicker
+                                customInput={createElement(
+                                    forwardRef(ButtonCustomInput)
+                                )}
                             />
                         </div>
                         <Button
