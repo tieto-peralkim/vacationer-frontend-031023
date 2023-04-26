@@ -18,14 +18,8 @@ export default function UserForm() {
     const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
         useState("");
 
-    const {
-        user,
-        updateUser,
-        APIError,
-        setAPIError,
-        newUserState,
-        somethingNew,
-    } = useOutletVariables();
+    const { user, APIError, setAPIError, newUserState, updateUser } =
+        useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
 
     const [userCreationMessage, setUserCreationMessage] = useState("");
@@ -58,7 +52,7 @@ export default function UserForm() {
     };
 
     useEffect(() => {
-        somethingNew(!newUserState);
+        updateUser(!newUserState);
         console.log("updating soon", user);
     }, [completedAction]);
 

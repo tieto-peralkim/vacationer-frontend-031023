@@ -8,7 +8,8 @@ import { useOutletVariables } from "../../NavigationBar";
 export default function Combo() {
     const [save, setSave] = useState(false);
 
-    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError, setAPIError, newUserState, updateUser } =
+        useOutletVariables();
     const [vacationersAmount, setVacationersAmount] = useState([]);
 
     const shortenLongNames = (longName) => {
@@ -20,8 +21,9 @@ export default function Combo() {
         }
     };
 
-    // When data has changed, update simple list of vacationers
+    // When data has changed, update simple list of vacationers & update user
     useEffect(() => {
+        updateUser(!newUserState);
         console.log("arvot", APIError, user);
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {

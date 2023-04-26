@@ -50,7 +50,7 @@ export default function PickerModal({
     setSave,
     calculatePerDay,
 }) {
-    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError, setAPIError } = useOutletVariables();
     const [alertingDates, setAlertingDates] = useState([]);
     const [openEditAlert, setOpenEditAlert] = useState(false);
     const [openAddAlert, setOpenAddAlert] = useState(false);

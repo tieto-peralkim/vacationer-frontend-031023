@@ -55,11 +55,11 @@ export interface Vacationer {
 
 type ContextType = {
     user: Vacationer | null;
-    updateUser: (user: Vacationer) => void;
     APIError: boolean | null;
     setAPIError: (APIError: boolean) => void;
+    // Values are used to update the user with updateUser(!newUserState)
     newUserState: boolean;
-    somethingNew: (boolean) => void;
+    updateUser: (boolean) => void;
 };
 
 function NavigationBar() {
@@ -268,11 +268,10 @@ function NavigationBar() {
                             <Outlet
                                 context={{
                                     user,
-                                    updateUser: setUser,
                                     APIError,
                                     setAPIError,
                                     newUserState,
-                                    somethingNew: setNewUserState,
+                                    updateUser: setNewUserState,
                                 }}
                             />
                         ) : (

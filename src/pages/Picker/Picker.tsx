@@ -44,7 +44,7 @@ export default function Picker({
     const today = new Date();
     today.setUTCHours(0, 0, 0);
 
-    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError, setAPIError } = useOutletVariables();
 
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);

@@ -40,7 +40,7 @@ export default function TeamModify({
     setCompletedAction,
     openAPIError,
 }) {
-    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError, setAPIError } = useOutletVariables();
     const [newTeam, setNewTeam] = useState("");
 
     const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);

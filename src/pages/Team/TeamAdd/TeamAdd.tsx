@@ -20,7 +20,7 @@ export default function TeamAdd({
     setCompletedAction,
     openAPIError,
 }) {
-    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError, setAPIError } = useOutletVariables();
     const [newTeam, setNewTeam] = useState("");
 
     const [teamNameError, setTeamNameError] = useState(false);

@@ -35,7 +35,7 @@ export default function Calendar({
 }) {
     const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
 
-    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError, setAPIError } = useOutletVariables();
 
     const today = new Date();
     const thisMonthFirst = new Date(

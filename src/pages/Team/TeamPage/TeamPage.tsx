@@ -23,7 +23,7 @@ export interface Team {
 
 export default function TeamPage() {
     const [teams, setTeams] = useState([]);
-    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError, setAPIError } = useOutletVariables();
     const [vacationers, setVacationers] = useState([]);
 
     const [openTeamAdd, setOpenTeamAdd] = useState(false);

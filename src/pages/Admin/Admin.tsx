@@ -36,7 +36,7 @@ export default function Admin() {
     const [newUser, setNewUser] = useState("");
     const nameError = newUser.length < 3;
 
-    const { user, updateUser, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError, setAPIError } = useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
     const [openFinalDeleteUserAlert, setOpenFinalDeleteUserAlert] =
         useState(false);
