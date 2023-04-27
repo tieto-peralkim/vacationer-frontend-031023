@@ -5,7 +5,6 @@ import { down } from "styled-breakpoints";
 import {
     forwardRef,
     MouseEventHandler,
-    createElement,
     useEffect,
     useMemo,
     useState,
@@ -33,6 +32,10 @@ export default function Calendar({
     vacationersAmount,
     save,
 }) {
+    interface ButtonProps {
+        onClick?: MouseEventHandler<HTMLButtonElement>;
+    }
+
     const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
 
     const { user, APIError, setAPIError } = useOutletVariables();
@@ -1001,13 +1004,19 @@ export default function Calendar({
         }
     };
 
-    const ButtonCustomInput = ({
-        value,
-        onClick,
-    }: {
-        value: string;
-        onClick: MouseEventHandler<HTMLInputElement>;
-    }) => <Button onClick={onClick}>{value}</Button>;
+    const ButtonCustomInput = forwardRef<HTMLInputElement, ButtonProps>(
+        (props, ref) => {
+            const { onClick } = props;
+            return (
+                <Button onClick={onClick} ref={ref}>
+                    {selectedDate.toLocaleString("en-GB", {
+                        month: "long",
+                        year: "numeric",
+                    })}
+                </Button>
+            );
+        }
+    );
 
     const getDayFromInt = (day) => {
         switch (day) {
@@ -1169,9 +1178,7 @@ export default function Calendar({
                                 showMonthYearPicker
                                 showFullMonthYearPicker
                                 showFourColumnMonthYearPicker
-                                customInput={createElement(
-                                    forwardRef(ButtonCustomInput)
-                                )}
+                                customInput={<ButtonCustomInput />}
                             />
                         </div>
                         <Button
@@ -1261,6 +1268,7 @@ export default function Calendar({
                                                                                 index
                                                                             ),
                                                                     }}
+                                                                    key={index}
                                                                 >
                                                                     {cell.render(
                                                                         "Cell"
