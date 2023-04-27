@@ -83,3 +83,14 @@
   position: absolute;
   left: 15%;
 }
+
+.helpIcon {
+  position: absolute;
+  right: 20%;
+  display: flex;
+  align-items: center;
+}
+
+.helpIcon:hover {
+  cursor: pointer;
+}

@@ -7,7 +7,6 @@ import { useOutletVariables } from "../../NavigationBar";
 
 export default function Combo() {
     const [save, setSave] = useState(false);
-
     const { user, APIError, setAPIError, newUserState, updateUser } =
         useOutletVariables();
     const [vacationersAmount, setVacationersAmount] = useState([]);
