@@ -5,6 +5,8 @@ import {
     AppBar,
     Box,
     CircularProgress,
+    Dialog,
+    DialogTitle,
     Drawer,
     IconButton,
     List,
@@ -24,6 +26,8 @@ import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
 import Login from "./pages/Login/Login";
 import CustomAlert from "./components/CustomAlert";
+import HelpIcon from "@mui/icons-material/Help";
+import help from "./images/help.png";
 
 export interface Vacationer {
     id: string;
@@ -72,6 +76,7 @@ function NavigationBar() {
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
     const [userName, setUserName] = useState("");
     const [showSpinner, setShowSpinner] = useState(true);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         axios
@@ -127,6 +132,14 @@ function NavigationBar() {
         }
     }, [newUserState]);
 
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <div>
             <AppBar position="sticky">
@@ -173,6 +186,13 @@ function NavigationBar() {
                             <BeachAccessIcon />
                             Vacationer
                         </Link>
+                        <HelpIcon
+                            className={styles.helpIcon}
+                            //color="primary"
+                            onClick={() => {
+                                handleClickOpen();
+                            }}
+                        />
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -268,6 +288,17 @@ function NavigationBar() {
                     </>
                 )}
             </div>
+            <Dialog
+                open={open}
+                fullWidth={true}
+                maxWidth="md"
+                onClose={handleClose}
+            >
+                <DialogTitle color="primary" align="center">
+                    Help
+                </DialogTitle>
+                <img src={help} />
+            </Dialog>
         </div>
     );
 }

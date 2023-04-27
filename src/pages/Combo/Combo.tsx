@@ -4,10 +4,6 @@ import styles from "./combo.module.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useOutletVariables } from "../../NavigationBar";
-import HelpIcon from '@mui/icons-material/Help';
-import { Dialog, DialogTitle, List, ListItem, ListItemButton, ListItemAvatar, Avatar, ListItemText } from "@mui/material";
-import { blue } from "@mui/material/colors";
-import help from "../../images/help.png";
 
 export default function Combo() {
     const [save, setSave] = useState(false);
@@ -24,14 +20,6 @@ export default function Combo() {
         } else {
             return longName;
         }
-    };
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
     };
 
     // When data has changed, update simple list of vacationers & update user
@@ -64,33 +52,11 @@ export default function Combo() {
                     save={save}
                     setSave={setSave}
                 />
-                <HelpIcon
-                    className={styles.helpIcon}
-                    color="primary"
-                    onClick={() => {
-                        handleClickOpen();
-                    }}
-                />
                 <Calendar
                     shortenLongNames={shortenLongNames}
                     vacationersAmount={vacationersAmount}
                     save={save}
                 />
-
-                <Dialog 
-                    open={open}
-                    fullWidth={true}
-                    maxWidth="xl"
-                    onClose={handleClose}
-                >
-                    <DialogTitle
-                    color="primary"
-                    align="center"
-                    >
-                        Help
-                    </DialogTitle>
-                        <img src={help}/>
-                </Dialog>
             </div>
         </>
     );

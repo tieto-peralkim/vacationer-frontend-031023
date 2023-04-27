@@ -83,3 +83,14 @@
   position: absolute;
   left: 15%;
 }
+
+.helpIcon {
+  width: 35px;
+  height: auto;
+  margin-left: 20px;
+  vertical-align: middle;
+}
+
+.helpIcon:hover {
+  cursor: pointer;
+}
