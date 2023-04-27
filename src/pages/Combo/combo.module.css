@@ -3,3 +3,13 @@
     padding-left: 20px;
     padding-right: 20px;
 }
+
+.helpIcon {
+    width: 35px;
+    height: auto;
+    margin-top: 20px;
+}
+
+.helpIcon:hover {
+    cursor: pointer;
+}
