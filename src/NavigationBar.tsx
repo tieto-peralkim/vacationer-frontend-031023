@@ -132,11 +132,11 @@ function NavigationBar() {
         }
     }, [newUserState]);
 
-    const handleClickOpen = () => {
+    const handleOpenHelp = () => {
         setOpen(true);
     };
 
-    const handleClose = () => {
+    const handleCloseHelp = () => {
         setOpen(false);
     };
 
@@ -150,7 +150,7 @@ function NavigationBar() {
                         </IconButton>
 
                         <Typography className={styles.leftPart} variant="h6">
-                            {APIError ? (
+                            {APIError || !user ? (
                                 <div>No user</div>
                             ) : (
                                 <Link
@@ -164,7 +164,7 @@ function NavigationBar() {
                             {newUserWarning && <FiberNewIcon />}
                         </Typography>
                         <Typography className={styles.rightPart} variant="h6">
-                            {!userName || APIError ? (
+                            {APIError || !user ? (
                                 <a
                                     href={loginAddress}
                                     className={styles.loginTitle}
@@ -186,17 +186,21 @@ function NavigationBar() {
                             <BeachAccessIcon />
                             Vacationer
                         </Link>
-                        <HelpIcon
-                            className={styles.helpIcon}
-                            //color="primary"
-                            onClick={() => {
-                                handleClickOpen();
-                            }}
-                        />
                     </Typography>
+                    {window.location.pathname === "/" && user && (
+                        <div
+                            className={styles.helpIcon}
+                            onClick={() => {
+                                handleOpenHelp();
+                            }}
+                        >
+                            <HelpIcon />
+                            Help
+                        </div>
+                    )}
                 </Toolbar>
             </AppBar>
-            {!APIError && (
+            {!APIError && user && (
                 <Drawer
                     anchor={"left"}
                     open={isOpen}
@@ -292,7 +296,7 @@ function NavigationBar() {
                 open={open}
                 fullWidth={true}
                 maxWidth="md"
-                onClose={handleClose}
+                onClose={handleCloseHelp}
             >
                 <DialogTitle color="primary" align="center">
                     Help

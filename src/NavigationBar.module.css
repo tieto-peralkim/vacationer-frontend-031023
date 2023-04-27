@@ -85,10 +85,10 @@
 }
 
 .helpIcon {
-  width: 35px;
-  height: auto;
-  margin-left: 20px;
-  vertical-align: middle;
+  position: absolute;
+  right: 20%;
+  display: flex;
+  align-items: center;
 }
 
 .helpIcon:hover {
