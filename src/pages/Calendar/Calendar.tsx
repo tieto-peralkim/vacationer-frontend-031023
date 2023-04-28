@@ -1143,7 +1143,7 @@ export default function Calendar({
                 </div>
                 <div className={styles.wholeCalendar}>
                     <FormGroup>
-                        {!isMobile ? (
+                        {/* {!isMobile ? ( */}
                             <FormControlLabel
                                 checked={!showAllVacationers}
                                 onChange={() => {
@@ -1157,9 +1157,9 @@ export default function Calendar({
                                         : "Show only people on holiday"
                                 }
                             />
-                        ) : (
+                        {/* ) : (
                             ""
-                        )}
+                        )} */}
                     </FormGroup>
                     <Box className={styles.buttons}>
                         <Button
@@ -1189,7 +1189,7 @@ export default function Calendar({
                             Next
                         </Button>
                     </Box>
-                    {!isMobile ? (
+                    {/* {!isMobile ? ( */}
                         <div className="full-calendar">
                             {allHolidaysSelectedTime.length > 0 && (
                                 <table
@@ -1284,7 +1284,7 @@ export default function Calendar({
                                 </table>
                             )}
                         </div>
-                    ) : (
+                    {/* ) : (
                         // If the screen width matches mobile
                         <div className={styles.verticalCalendar}>
                             {[
@@ -1351,7 +1351,7 @@ export default function Calendar({
                                 </div>
                             ))}
                         </div>
-                    )}
+                    )} */}
 
                     {showSpinner && <CircularProgress />}
                 </div>
