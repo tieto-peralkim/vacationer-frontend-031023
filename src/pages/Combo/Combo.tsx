@@ -12,9 +12,12 @@ export default function Combo() {
     const [vacationersAmount, setVacationersAmount] = useState([]);
 
     const shortenLongNames = (longName) => {
-        let maxLength = 14;
+        let maxLength = 12;
+        if (longName.split(" ")[0].length > 14) {
+            maxLength = 10;
+        }
         if (longName.length > maxLength) {
-            return longName.slice(0, maxLength) + "...";
+            return longName.slice(0, maxLength) + "..";
         } else {
             return longName;
         }
