@@ -13,7 +13,7 @@ export default function Combo() {
 
     const shortenLongNames = (longName) => {
         let maxLength = 12;
-        if (longName.split(" ")[0].length > 14) {
+        if (longName.split(" ")[0].length > 12) {
             maxLength = 10;
         }
         if (longName.length > maxLength) {
