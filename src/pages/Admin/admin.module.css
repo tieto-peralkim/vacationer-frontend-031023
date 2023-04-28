@@ -3,6 +3,10 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+.slackBox {
+    width: 50%;
+    margin: 2em 1em 2em 4em;
+}
 .borderedBox {
     border: solid 1px blue;
     border-radius: 1em;

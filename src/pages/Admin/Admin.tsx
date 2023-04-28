@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Button,
     Checkbox,
     FormControl,
@@ -20,8 +23,11 @@ import { Team } from "../Team/TeamPage/TeamPage";
 export default function Admin() {
     const [selectedDeletedUser, setSelectedDeletedUser] =
         useState<Vacationer | null>(null);
-    const [selectedDeletedTeam, setSelectedDeletedTeam] = useState<Team>(null);
+    const [selectedDeletedTeam, setSelectedDeletedTeam] = useState<Team | null>(
+        null
+    );
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
+    const [openSendSlackAlert, setOpenSendSlackAlert] = useState(false);
     const [openChangeAdminAlert, setOpenChangeAdminAlert] = useState(false);
     const [adminStatus, setAdminStatus] = useState(false);
 
@@ -175,6 +181,7 @@ export default function Admin() {
             })
             .then((response) => {
                 console.log(response.data);
+                setOpenSendSlackAlert(false);
             })
             .catch((error) => {
                 console.error("There was a sendSlackMessage error!", error);
@@ -309,7 +316,7 @@ export default function Admin() {
                                 className={styles.nameSelectBox}
                                 displayEmpty={true}
                                 value={selectedUser}
-                                onChange={(e) => {
+                                onChange={(e: any) => {
                                     setSelectedUser(e.target.value);
                                     console.log("value", e.target.value);
                                 }}
@@ -450,16 +457,19 @@ export default function Admin() {
                     </div>
                 </div>
             </div>
-            <div className={styles.content}>
-                <div>
-                    <Button
-                        onClick={sendSlackMessage}
-                        variant={"contained"}
-                        disabled={APIError}
-                    >
-                        Send a test message to Slack!
-                    </Button>
-                </div>
+            <div className={styles.slackBox}>
+                <Accordion>
+                    <AccordionSummary>Send Slack message</AccordionSummary>
+                    <AccordionDetails>
+                        <Button
+                            onClick={() => setOpenSendSlackAlert(true)}
+                            variant={"contained"}
+                            disabled={APIError}
+                        >
+                            Send a test message to Slack!
+                        </Button>
+                    </AccordionDetails>
+                </Accordion>
             </div>
             <AlertDialog
                 openAlert={openFinalDeleteUserAlert}
@@ -561,6 +571,15 @@ export default function Admin() {
                 }
                 cancel={"No"}
                 confirm={"Yes delete"}
+            />
+            <AlertDialog
+                openAlert={openSendSlackAlert}
+                handleCloseAlert={() => setOpenSendSlackAlert(false)}
+                handleAction={sendSlackMessage}
+                dialogTitle={"Slack test message"}
+                dialogContent={`Are you sure you want to send a Slack test message?`}
+                cancel={"No"}
+                confirm={"Yes"}
             />
         </>
     ) : (
