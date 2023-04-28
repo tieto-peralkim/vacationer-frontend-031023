@@ -295,12 +295,9 @@ function NavigationBar() {
             <Dialog
                 open={open}
                 fullWidth={true}
-                maxWidth="md"
+                maxWidth="lg"
                 onClose={handleCloseHelp}
             >
-                <DialogTitle color="primary" align="center">
-                    Help
-                </DialogTitle>
                 <img src={help} />
             </Dialog>
         </div>
