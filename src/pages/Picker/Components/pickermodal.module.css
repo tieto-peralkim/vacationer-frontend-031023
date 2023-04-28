@@ -7,7 +7,7 @@
     background-color: blanchedalmond;
 }
 .buttonStyle{
-    margin-top: 1em;
+    margin-top: 0.5em;
     margin-bottom: 1em;
 }
 .alertingDates {
@@ -27,6 +27,7 @@
 @media only screen and (max-width: 900px) {
     .datePicker {
         width: 300px;
+        height: 500px;
         margin: 20px auto 20px auto;
     }
     .box {
@@ -44,6 +45,7 @@
     .datePicker {
         position: center;
         width: max-content;
+        height: 260px;
         margin: 20px auto 20px auto;
     }
     .box {
