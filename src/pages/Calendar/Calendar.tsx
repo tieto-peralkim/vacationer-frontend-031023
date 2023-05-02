@@ -1255,7 +1255,7 @@ export default function Calendar({
                                                                     paddingLeft:
                                                                         "0.2em",
                                                                     height: "2em",
-                                                                    width: "10em",
+                                                                    width: "12em",
                                                                     border: setTodayColumn(
                                                                         cell.column
                                                                     ),

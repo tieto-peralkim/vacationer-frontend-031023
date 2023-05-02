@@ -22,7 +22,7 @@ import { Team } from "../Team/TeamPage/TeamPage";
 // TODO: add employee amount and minimum amount
 export default function Admin() {
     const minNameLength = 3;
-    const maxNameLength = 10;
+    const maxNameLength = 12;
     const [selectedDeletedUser, setSelectedDeletedUser] =
         useState<Vacationer | null>(null);
     const [selectedDeletedTeam, setSelectedDeletedTeam] = useState<Team | null>(

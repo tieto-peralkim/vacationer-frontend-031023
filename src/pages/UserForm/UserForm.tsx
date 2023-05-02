@@ -10,7 +10,7 @@ import { useOutletVariables } from "../../NavigationBar";
 
 export default function UserForm() {
     const minNameLength = 3;
-    const maxNameLength = 10;
+    const maxNameLength = 12;
     const [holidayColor, setHolidayColor] = useState("");
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
     const [weekendColor, setWeekendColor] = useState("");
