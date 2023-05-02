@@ -27,11 +27,6 @@
     flex-direction: column;
 }
 
-.nameSelectBox {
-    width: 30%;
-    display: inline-block;
-}
-
 .verticalCalendar {
     display: flex;
     flex-direction: column;

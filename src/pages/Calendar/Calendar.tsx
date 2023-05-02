@@ -1144,19 +1144,19 @@ export default function Calendar({
                 <div className={styles.wholeCalendar}>
                     <FormGroup>
                         {/* {!isMobile ? ( */}
-                            <FormControlLabel
-                                checked={!showAllVacationers}
-                                onChange={() => {
-                                    setShowAllVacationers(!showAllVacationers);
-                                }}
-                                control={<Switch color="success" />}
-                                disabled={disableConditions}
-                                label={
-                                    teamToShow.id
-                                        ? `Show only people on holiday in team ${teamToShow.title}`
-                                        : "Show only people on holiday"
-                                }
-                            />
+                        <FormControlLabel
+                            checked={!showAllVacationers}
+                            onChange={() => {
+                                setShowAllVacationers(!showAllVacationers);
+                            }}
+                            control={<Switch color="success" />}
+                            disabled={disableConditions}
+                            label={
+                                teamToShow.id
+                                    ? `Show only people on holiday in team ${teamToShow.title}`
+                                    : "Show only people on holiday"
+                            }
+                        />
                         {/* ) : (
                             ""
                         )} */}
@@ -1190,100 +1190,97 @@ export default function Calendar({
                         </Button>
                     </Box>
                     {/* {!isMobile ? ( */}
-                        <div className="full-calendar">
-                            {allHolidaysSelectedTime.length > 0 && (
-                                <table
-                                    {...getTableProps()}
-                                    style={{
-                                        border: "solid 0.1em #73D8FF",
-                                        width: "100%",
-                                    }}
-                                >
-                                    <thead>
-                                        {headerGroups.map((headerGroup) => (
+                    <div className="full-calendar">
+                        {allHolidaysSelectedTime.length > 0 && (
+                            <table
+                                {...getTableProps()}
+                                style={{
+                                    border: "solid 0.1em #73D8FF",
+                                    width: "100%",
+                                }}
+                            >
+                                <thead>
+                                    {headerGroups.map((headerGroup) => (
+                                        <tr
+                                            {...headerGroup.getHeaderGroupProps()}
+                                        >
+                                            {headerGroup.headers.map(
+                                                (column) => (
+                                                    <th
+                                                        {...column.getHeaderProps()}
+                                                        style={{
+                                                            background:
+                                                                setTodayHeader(
+                                                                    column.Header
+                                                                ),
+                                                            color: "black",
+                                                            width: "1em",
+                                                        }}
+                                                    >
+                                                        {column.render(
+                                                            "Header"
+                                                        )}
+                                                    </th>
+                                                )
+                                            )}
+                                        </tr>
+                                    ))}
+                                </thead>
+                                <tbody {...getTableBodyProps()}>
+                                    {rows.map((row) => {
+                                        prepareRow(row);
+                                        return (
                                             <tr
-                                                {...headerGroup.getHeaderGroupProps()}
+                                                {...row.getRowProps()}
+                                                style={{
+                                                    backgroundColor: checkRow(
+                                                        row.cells[0].value
+                                                    ),
+                                                }}
                                             >
-                                                {headerGroup.headers.map(
-                                                    (column) => (
-                                                        <th
-                                                            {...column.getHeaderProps()}
-                                                            style={{
-                                                                background:
-                                                                    setTodayHeader(
-                                                                        column.Header
+                                                {row.cells.map(
+                                                    (cell, index) => {
+                                                        // console.log(
+                                                        //     "info",
+                                                        //     cell.value,
+                                                        //     index
+                                                        // );
+                                                        return (
+                                                            <td
+                                                                style={{
+                                                                    fontWeight:
+                                                                        setBold(
+                                                                            cell.value
+                                                                        ),
+                                                                    paddingLeft:
+                                                                        "0.2em",
+                                                                    height: "2em",
+                                                                    width: "10em",
+                                                                    border: setTodayColumn(
+                                                                        cell.column
                                                                     ),
-                                                                color: "black",
-                                                                width: "1em",
-                                                            }}
-                                                        >
-                                                            {column.render(
-                                                                "Header"
-                                                            )}
-                                                        </th>
-                                                    )
+                                                                    backgroundColor:
+                                                                        isCommonHoliday(
+                                                                            cell.value,
+                                                                            index
+                                                                        ),
+                                                                }}
+                                                                key={index}
+                                                            >
+                                                                {cell.render(
+                                                                    "Cell"
+                                                                )}
+                                                            </td>
+                                                        );
+                                                    }
                                                 )}
                                             </tr>
-                                        ))}
-                                    </thead>
-                                    <tbody {...getTableBodyProps()}>
-                                        {rows.map((row) => {
-                                            prepareRow(row);
-                                            return (
-                                                <tr
-                                                    {...row.getRowProps()}
-                                                    style={{
-                                                        backgroundColor:
-                                                            checkRow(
-                                                                row.cells[0]
-                                                                    .value
-                                                            ),
-                                                    }}
-                                                >
-                                                    {row.cells.map(
-                                                        (cell, index) => {
-                                                            // console.log(
-                                                            //     "info",
-                                                            //     cell.value,
-                                                            //     index
-                                                            // );
-                                                            return (
-                                                                <td
-                                                                    style={{
-                                                                        fontWeight:
-                                                                            setBold(
-                                                                                cell.value
-                                                                            ),
-                                                                        paddingLeft:
-                                                                            "0.5em",
-                                                                        height: "2em",
-                                                                        maxWidth:
-                                                                            "5em",
-                                                                        border: setTodayColumn(
-                                                                            cell.column
-                                                                        ),
-                                                                        backgroundColor:
-                                                                            isCommonHoliday(
-                                                                                cell.value,
-                                                                                index
-                                                                            ),
-                                                                    }}
-                                                                    key={index}
-                                                                >
-                                                                    {cell.render(
-                                                                        "Cell"
-                                                                    )}
-                                                                </td>
-                                                            );
-                                                        }
-                                                    )}
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            )}
-                        </div>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
                     {/* ) : (
                         // If the screen width matches mobile
                         <div className={styles.verticalCalendar}>
