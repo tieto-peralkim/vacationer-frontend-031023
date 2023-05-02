@@ -21,6 +21,8 @@ import { Team } from "../Team/TeamPage/TeamPage";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
+    const minNameLength = 3;
+    const maxNameLength = 12;
     const [selectedDeletedUser, setSelectedDeletedUser] =
         useState<Vacationer | null>(null);
     const [selectedDeletedTeam, setSelectedDeletedTeam] = useState<Team | null>(
@@ -40,7 +42,8 @@ export default function Admin() {
 
     const [vacationers, setVacationers] = useState([]);
     const [newUser, setNewUser] = useState("");
-    const nameError = newUser.length < 3;
+    const nameError =
+        newUser.length < minNameLength || newUser.length > maxNameLength;
 
     const { user, APIError, setAPIError } = useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
@@ -211,9 +214,13 @@ export default function Admin() {
                     setNewUser("");
                 })
                 .catch((error) => {
-                    setAPIError(true);
                     console.error("There was a user creation error!", error);
-                    setUserCreationMessage(error.response.data);
+
+                    if (error.response) {
+                        setUserCreationMessage(error.response.data);
+                    } else {
+                        setAPIError(true);
+                    }
                 });
         } else {
             setUserNameError(true);
@@ -293,7 +300,7 @@ export default function Admin() {
                             value={newUser}
                             helperText={
                                 nameError &&
-                                "Name must be at least 3 characters"
+                                `Name must be ${minNameLength}-${maxNameLength} characters`
                             }
                             onChange={(e) => setNewUser(e.target.value)}
                         />
@@ -533,9 +540,7 @@ export default function Admin() {
                 handleAction={() => void 0}
                 handleCloseAlert={() => setUserNameError(false)}
                 dialogTitle={"ERROR!"}
-                dialogContent={
-                    "This username is too short (less than 3 characters)!"
-                }
+                dialogContent={`This username is not between ${minNameLength}-${maxNameLength} characters`}
                 cancel={""}
                 confirm={""}
             />

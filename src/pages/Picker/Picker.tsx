@@ -31,12 +31,7 @@ export interface Holiday {
     comment: string;
     confirmed: boolean;
 }
-export default function Picker({
-    save,
-    setSave,
-    vacationersAmount,
-    shortenLongNames,
-}) {
+export default function Picker({ save, setSave, vacationersAmount }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
     const NUMBER_OF_SHOWN_DEFAULT = 2;
@@ -385,9 +380,7 @@ export default function Picker({
                         }}
                     >
                         Add new holiday
-                        {adminSpace && (
-                            <> of {shortenLongNames(chosenVacationer.name)} </>
-                        )}
+                        {adminSpace && <> of {chosenVacationer.name} </>}
                     </Button>
                 </div>
             </AccordionSummary>

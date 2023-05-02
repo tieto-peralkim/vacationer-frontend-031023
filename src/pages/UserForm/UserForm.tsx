@@ -9,7 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { useOutletVariables } from "../../NavigationBar";
 
 export default function UserForm() {
-    let navigate = useNavigate();
+    const minNameLength = 3;
+    const maxNameLength = 12;
     const [holidayColor, setHolidayColor] = useState("");
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
     const [weekendColor, setWeekendColor] = useState("");
@@ -86,7 +87,10 @@ export default function UserForm() {
 
     const changeUserName = (newName) => {
         console.log("selectedUser", user, "changeUserName", newName);
-        if (newName.length >= 3) {
+        if (
+            newName.length >= minNameLength &&
+            newName.length <= maxNameLength
+        ) {
             axios
                 .patch(
                     `${process.env.REACT_APP_ADDRESS}/vacationers/${user.id}`,
@@ -335,9 +339,7 @@ export default function UserForm() {
                 handleAction={() => void 0}
                 handleCloseAlert={() => setUserNameError(false)}
                 dialogTitle={"ERROR!"}
-                dialogContent={
-                    "This username is too short (less than 3 characters)!"
-                }
+                dialogContent={`This username is too short or long (should be ${minNameLength}-${maxNameLength} characters)!`}
                 cancel={""}
                 confirm={""}
             />

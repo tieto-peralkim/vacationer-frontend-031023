@@ -11,15 +11,6 @@ export default function Combo() {
         useOutletVariables();
     const [vacationersAmount, setVacationersAmount] = useState([]);
 
-    const shortenLongNames = (longName) => {
-        let maxLength = 14;
-        if (longName.length > maxLength) {
-            return longName.slice(0, maxLength) + "...";
-        } else {
-            return longName;
-        }
-    };
-
     // When data has changed, update simple list of vacationers & update user
     useEffect(() => {
         updateUser(!newUserState);
@@ -45,16 +36,11 @@ export default function Combo() {
         <>
             <div className={styles.content}>
                 <Picker
-                    shortenLongNames={shortenLongNames}
                     vacationersAmount={vacationersAmount}
                     save={save}
                     setSave={setSave}
                 />
-                <Calendar
-                    shortenLongNames={shortenLongNames}
-                    vacationersAmount={vacationersAmount}
-                    save={save}
-                />
+                <Calendar vacationersAmount={vacationersAmount} save={save} />
             </div>
         </>
     );
