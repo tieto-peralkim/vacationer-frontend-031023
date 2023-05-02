@@ -27,11 +27,7 @@ import DatePicker from "react-datepicker";
 import { Team } from "../Team/TeamPage/TeamPage";
 import { useOutletVariables } from "../../NavigationBar";
 
-export default function Calendar({
-    shortenLongNames,
-    vacationersAmount,
-    save,
-}) {
+export default function Calendar({ vacationersAmount, save }) {
     interface ButtonProps {
         onClick?: MouseEventHandler<HTMLButtonElement>;
     }
@@ -242,7 +238,7 @@ export default function Calendar({
         let pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
             let holidayObject = {
-                name: shortenLongNames(vacationingEmployees[i].name),
+                name: vacationingEmployees[i].name,
                 start: vacationingEmployees[i].vacations.start,
                 end: vacationingEmployees[i].vacations.end,
                 comment: vacationingEmployees[i].vacations.comment,
@@ -292,7 +288,7 @@ export default function Calendar({
 
             for (let i = 0; i < employeesWithNoHolidays.length; i++) {
                 let holidayObject = {
-                    name: shortenLongNames(employeesWithNoHolidays[i].name),
+                    name: employeesWithNoHolidays[i].name,
                 };
 
                 pureVacations.push(holidayObject);
