@@ -92,7 +92,7 @@ export default function Calendar({ vacationersAmount, save }) {
         console.log(selectedYear);
         axios
             .get(
-                `http://localhost:3001/public-holidays/${selectedYear}`,
+                `${process.env.REACT_APP_ADDRESS}/public-holidays/${selectedYear}`,
                 {
                     withCredentials: true,
                 }
