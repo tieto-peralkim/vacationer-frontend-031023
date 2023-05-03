@@ -89,24 +89,16 @@ export default function Calendar({ vacationersAmount, save }) {
 
     // Fetching Finnish public holidays from Public holiday API (https://date.nager.at/)
     useEffect(() => {
+        console.log(selectedYear);
         axios
             .get(
-                `https://date.nager.at/api/v3/publicholidays/${selectedYear}/FI`
+                `http://localhost:3001/public-holidays/${selectedYear}`,
+                {
+                    withCredentials: true,
+                }
             )
             .then((response) => {
-                let publicDays = [];
-                for (let i = 0; i < response.data.length; i++) {
-                    let publicDay = {};
-                    publicDay["month"] = parseInt(
-                        response.data[i].date.slice(5, 7)
-                    );
-                    publicDay["day"] = parseInt(
-                        response.data[i].date.slice(8, 10)
-                    );
-                    publicDays.push(publicDay);
-                }
-                setPublicHolidays(publicDays);
-                console.log("publicDays", publicDays);
+                setPublicHolidays(response.data);
             })
             .catch((error) => {
                 console.error("There was a Public holiday API error!", error);
