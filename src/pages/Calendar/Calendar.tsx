@@ -182,6 +182,9 @@ export default function Calendar({ vacationersAmount, save }) {
             }
         }
         setPublicHolidaysOfMonth(publicMonthsHolidays);
+        if (publicMonthsHolidays.length !== 0) {
+            console.log("set publicMonthsHolidays", publicMonthsHolidays);
+        }
     }, [selectedDate, publicHolidays]);
 
     const filterHolidays = () => {
