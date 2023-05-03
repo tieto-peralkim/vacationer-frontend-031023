@@ -23,9 +23,9 @@
     "web-vitals": "^3.3.1"
   },
   "scripts": {
-    "format": "prettier --write \"src/**/*.{js,jsx}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "start": "react-scripts start",
-    "dev": "tsc --watch  --preserveWatchOutput",
+    "ts": "tsc --watch  --preserveWatchOutput",
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject"
