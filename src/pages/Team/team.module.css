@@ -138,6 +138,7 @@ p {
 
 .memberDiv {
     margin-top: 20px;
+    min-height: 3em;
 }
 
 .ultimateWarning > *{
