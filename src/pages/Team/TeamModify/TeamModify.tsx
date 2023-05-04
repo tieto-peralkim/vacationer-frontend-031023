@@ -244,6 +244,14 @@ export default function TeamModify({
                             multiple
                             onChange={handleChange}
                             renderValue={() => "..."}
+                            MenuProps={{
+                                sx: {
+                                    height: 300,
+                                },
+                            }}
+                            sx={{
+                                width: 300,
+                            }}
                         >
                             {vacationers
                                 .filter(
