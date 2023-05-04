@@ -106,11 +106,7 @@ export default function TeamPage() {
             />
             {user && user.name && (
                 <div className={styles.content}>
-                    <Button
-                        variant="outlined"
-                        onClick={handleClickOpenTeamAdd}
-                        className={styles.createTeamButton}
-                    >
+                    <Button variant="outlined" onClick={handleClickOpenTeamAdd}>
                         Create new team
                     </Button>
                     <List

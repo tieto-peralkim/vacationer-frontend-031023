@@ -6,7 +6,7 @@
     min-width: 14em;
     margin-left: auto;
     margin-right: auto;
-    padding: 3em;
+    padding: 2em;
 }
 .borderedBox {
     border: solid 1px blue;
@@ -133,10 +133,6 @@ p {
 
 .ultimateWarning > *{
     color: red;
-}
-
-.createTeamButton {
-    margin-top: 20px;
 }
 
 .modifyDialog {
