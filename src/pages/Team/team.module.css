@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 30px;
     max-width: 100%;
     min-width: 14em;
     margin-left: auto;
