@@ -63,16 +63,12 @@
     cursor: pointer;
 }
 .memberChip {
-    min-width: 10px;
-    max-width: 150px;
     margin-left: 3px;
     margin-right: 3px;
     margin-bottom: 2px;
 }
 
 .memberChipGreyed {
-    min-width: 10px;
-    max-width: 150px;
     margin-left: 3px;
     margin-right: 3px;
     margin-bottom: 2px;
