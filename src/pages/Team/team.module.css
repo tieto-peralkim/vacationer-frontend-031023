@@ -53,14 +53,6 @@
     border-radius: 4px;
 }
 
-.listItemGreyed > .memberChip {
-    width: 150px;
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-bottom: 2px;
-    background-color: white;
-}
-
 /* a{
     text-decoration: none;
 } */
@@ -71,14 +63,16 @@
     cursor: pointer;
 }
 .memberChip {
-    width: 150px;
+    min-width: 50px;
+    max-width: 150px;
     margin-left: 3px;
     margin-right: 3px;
     margin-bottom: 2px;
 }
 
 .memberChipGreyed {
-    width: 150px;
+    min-width: 50px;
+    max-width: 150px;
     margin-left: 3px;
     margin-right: 3px;
     margin-bottom: 2px;
