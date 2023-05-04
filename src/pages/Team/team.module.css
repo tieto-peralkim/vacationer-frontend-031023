@@ -16,12 +16,14 @@
     height: max-content;
     width: 50%;
 }
+
 .nameSelectBox {
     min-width: 15em;
     margin-bottom: 20px;
     margin-top: 0.6em
 
 }
+
 .allButtons {
     display: flex;
     flex-direction: column;
@@ -29,19 +31,32 @@
     gap: 0.7em;
     margin-bottom: 2em;
 }
+
 .topMargin {
-    margin-top: 2em;
+    margin-top: 1em;
 }
 .alertAPI {
     justify-content: center;
     width: 100%;
 }
-.addButton {
-    margin-top: 20px;
-    display: flex;
-    justify-content: space-between;
+.membersToAdd{
+    min-height: 4em;
 }
-
+.addButton {
+    margin-top: 15px;
+    position: absolute;
+    bottom: 1.5em;
+    left: 1.5em;
+}
+.deleteButton {
+    margin-top: 15px;
+    position: absolute;
+    bottom: 1.5em;
+    right: 1.5em;
+}
+.lastRowButtons {
+    margin-top: 3em;
+}
 .listItem {
     border: 1px solid black;
     margin: 0;
@@ -104,11 +119,9 @@ p {
     width: 500px;
 }
 
-
 .teamName {
     text-align: center;
 }
-
 
 .modifyTeamName {
     font-weight: bold;
@@ -124,10 +137,6 @@ p {
 }
 
 .memberDiv {
-    margin-top: 40px;
-}
-
-.divider {
     margin-top: 20px;
 }
 

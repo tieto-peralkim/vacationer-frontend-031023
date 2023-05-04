@@ -284,33 +284,37 @@ export default function TeamModify({
                                 )}
                         </Select>
                     </FormControl>
-                    <div>
+                    <div className={styles.membersToAdd}>
                         <InputLabel>Members to add: </InputLabel>
                         {selectedMembers.length > 0 &&
                             selectedMembers.map((member) => (
                                 <Chip key={member.id} label={member.name} />
                             ))}
                     </div>
-                    <div className={styles.addButton}>
-                        <Button
-                            disabled={selectedMembers.length === 0} // Set button disabled if no member is selected
-                            onClick={() => {
-                                addToTeam(selectedMembers, selectedTeam);
-                            }}
-                            variant={"contained"}
-                        >
-                            Add to team!
-                        </Button>
-                        <Button
-                            disabled={!selectedTeam}
-                            onClick={() => {
-                                setOpenDeleteTeamAlert(true);
-                            }}
-                            variant={"contained"}
-                            color={"error"}
-                        >
-                            Delete team
-                        </Button>
+                    <div className={styles.lastRowButtons}>
+                        <div className={styles.addButton}>
+                            <Button
+                                disabled={selectedMembers.length === 0} // Set button disabled if no member is selected
+                                onClick={() => {
+                                    addToTeam(selectedMembers, selectedTeam);
+                                }}
+                                variant={"contained"}
+                            >
+                                Add to team!
+                            </Button>
+                        </div>
+                        <div className={styles.deleteButton}>
+                            <Button
+                                disabled={!selectedTeam}
+                                onClick={() => {
+                                    setOpenDeleteTeamAlert(true);
+                                }}
+                                variant={"contained"}
+                                color={"error"}
+                            >
+                                Delete team
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </DialogContent>
