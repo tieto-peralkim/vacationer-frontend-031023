@@ -9,12 +9,8 @@ Normal process:
 ```
 npm start
 ```
-2. In other terminal, compile TypeScript to monitor errors with
-```
-npm run ts
-```
-3. Start the backend
-4. Go to http://localhost:3000
+2. Start the backend 
+3. Go to http://localhost:3000
 
 ## Documentation
 https://tietoevry-experience.atlassian.net/wiki/spaces/SUP/pages/3824844801/Vacationer+Lomasovellus
