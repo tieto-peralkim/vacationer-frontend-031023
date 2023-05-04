@@ -54,7 +54,7 @@
 }
 
 .listItemGreyed > .memberChip {
-    width: 100px;
+    width: 150px;
     margin-left: 3px;
     margin-right: 3px;
     margin-bottom: 2px;
@@ -71,14 +71,14 @@
     cursor: pointer;
 }
 .memberChip {
-    width: 100px;
+    width: 150px;
     margin-left: 3px;
     margin-right: 3px;
     margin-bottom: 2px;
 }
 
 .memberChipGreyed {
-    width: 100px;
+    width: 150px;
     margin-left: 3px;
     margin-right: 3px;
     margin-bottom: 2px;
