@@ -3,6 +3,11 @@
     flex-direction: column;
     align-items: center;
     padding-top: 30px;
+    max-width: 100%;
+    min-width: 14em;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 3em;
 }
 .borderedBox {
     border: solid 1px blue;
@@ -38,24 +43,18 @@
     justify-content: space-between;
 }
 
-/* -------------------- REFACTOR ---------------------- */
-
 .listItem {
     border: 1px solid black;
-    margin: 5px;
+    margin: 0;
     border-radius: 4px;
 }
 
 .listItemGreyed {
     background-color: rgb(150, 150, 150);
     border: 1px solid black;
-    margin: 5px;
+    margin: 0;
     border-radius: 4px;
 }
-
-/* a{
-    text-decoration: none;
-} */
 
 .itemCont:hover > .listItem {
     background-color: rgb(186, 205, 255);
@@ -63,17 +62,15 @@
     cursor: pointer;
 }
 .memberChip {
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-bottom: 2px;
+    margin: 8px;
+    width: 12em;
 }
 
 .memberChipGreyed {
-    margin-left: 3px;
-    margin-right: 3px;
-    margin-bottom: 2px;
+    margin: 8px;
     background-color: lightgray !important;
     color: black !important;
+    width: 12em;
 }
 
 p {
@@ -82,6 +79,10 @@ p {
 
 .greyedTitle {
     color: white;
+}
+
+.title {
+    color: black;
 }
 
 .teamAddTextField {
@@ -132,10 +133,14 @@ p {
 }
 
 .createTeamButton {
-    margin-top: 130px;
+    margin-top: 20px;
 }
 
 .modifyDialog {
     width: 350px;
 }
-/* -------------------- /REFACTOR ---------------------- */
+
+.chipCont {
+    text-align: center;
+}
+

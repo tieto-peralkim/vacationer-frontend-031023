@@ -144,20 +144,29 @@ export default function TeamPage() {
                                                     {team.title}
                                                 </Typography>
                                             }
-                                            secondary={team.members.map(
-                                                (member) => (
-                                                    <Chip
-                                                        className={
-                                                            styles.memberChip
-                                                        }
-                                                        key={
-                                                            member.vacationerId
-                                                        }
-                                                        color="primary"
-                                                        label={member.name}
-                                                    />
-                                                )
-                                            )}
+                                            className={styles.title}
+                                            secondary={
+                                                <div
+                                                    className={styles.chipCont}
+                                                >
+                                                    {team.members.map(
+                                                        (member) => (
+                                                            <Chip
+                                                                className={
+                                                                    styles.memberChip
+                                                                }
+                                                                key={
+                                                                    member.vacationerId
+                                                                }
+                                                                color="primary"
+                                                                label={
+                                                                    member.name
+                                                                }
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
+                                            }
                                         />
                                     </ListItem>
                                 </div>
@@ -178,20 +187,28 @@ export default function TeamPage() {
                                                 </Typography>
                                             }
                                             className={styles.greyedTitle}
-                                            secondary={team.members.map(
-                                                (member) => (
-                                                    <Chip
-                                                        className={
-                                                            styles.memberChipGreyed
-                                                        }
-                                                        key={
-                                                            member.vacationerId
-                                                        }
-                                                        color="primary"
-                                                        label={member.name}
-                                                    />
-                                                )
-                                            )}
+                                            secondary={
+                                                <div
+                                                    className={styles.chipCont}
+                                                >
+                                                    {team.members.map(
+                                                        (member) => (
+                                                            <Chip
+                                                                className={
+                                                                    styles.memberChipGreyed
+                                                                }
+                                                                key={
+                                                                    member.vacationerId
+                                                                }
+                                                                color="primary"
+                                                                label={
+                                                                    member.name
+                                                                }
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
+                                            }
                                         />
                                     </ListItem>
                                 </div>
