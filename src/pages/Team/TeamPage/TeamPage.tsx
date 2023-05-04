@@ -106,11 +106,7 @@ export default function TeamPage() {
             />
             {user && user.name && (
                 <div className={styles.content}>
-                    <Button
-                        variant="outlined"
-                        onClick={handleClickOpenTeamAdd}
-                        className={styles.createTeamButton}
-                    >
+                    <Button variant="outlined" onClick={handleClickOpenTeamAdd}>
                         Create new team
                     </Button>
                     <List
@@ -144,25 +140,34 @@ export default function TeamPage() {
                                                     {team.title}
                                                 </Typography>
                                             }
-                                            secondary={team.members.map(
-                                                (member) => (
-                                                    <Chip
-                                                        className={
-                                                            styles.memberChip
-                                                        }
-                                                        key={
-                                                            member.vacationerId
-                                                        }
-                                                        color="primary"
-                                                        label={member.name}
-                                                    />
-                                                )
-                                            )}
+                                            className={styles.title}
+                                            secondary={
+                                                <div
+                                                    className={styles.chipCont}
+                                                >
+                                                    {team.members.map(
+                                                        (member) => (
+                                                            <Chip
+                                                                className={
+                                                                    styles.memberChip
+                                                                }
+                                                                key={
+                                                                    member.vacationerId
+                                                                }
+                                                                color="primary"
+                                                                label={
+                                                                    member.name
+                                                                }
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
+                                            }
                                         />
                                     </ListItem>
                                 </div>
                             ) : (
-                                <div key={team.id}>
+                                <div className={styles.itemCont} key={team.id}>
                                     <ListItem
                                         className={styles.listItemGreyed}
                                         key={team.id}
@@ -178,20 +183,28 @@ export default function TeamPage() {
                                                 </Typography>
                                             }
                                             className={styles.greyedTitle}
-                                            secondary={team.members.map(
-                                                (member) => (
-                                                    <Chip
-                                                        className={
-                                                            styles.memberChipGreyed
-                                                        }
-                                                        key={
-                                                            member.vacationerId
-                                                        }
-                                                        color="primary"
-                                                        label={member.name}
-                                                    />
-                                                )
-                                            )}
+                                            secondary={
+                                                <div
+                                                    className={styles.chipCont}
+                                                >
+                                                    {team.members.map(
+                                                        (member) => (
+                                                            <Chip
+                                                                className={
+                                                                    styles.memberChipGreyed
+                                                                }
+                                                                key={
+                                                                    member.vacationerId
+                                                                }
+                                                                color="primary"
+                                                                label={
+                                                                    member.name
+                                                                }
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
+                                            }
                                         />
                                     </ListItem>
                                 </div>
