@@ -25,7 +25,6 @@
   "scripts": {
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "start": "react-scripts start",
-    "ts": "tsc --watch  --preserveWatchOutput",
     "build": "react-scripts build",
     "test": "jest",
     "eject": "react-scripts eject"
