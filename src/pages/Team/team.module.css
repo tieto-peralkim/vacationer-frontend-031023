@@ -55,6 +55,10 @@
     border-radius: 4px;
 }
 
+.itemCont {
+    margin-top: 10px;
+}
+
 .itemCont:hover > .listItem {
     background-color: rgb(186, 205, 255);
     transition: 0.5s;

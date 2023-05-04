@@ -171,7 +171,7 @@ export default function TeamPage() {
                                     </ListItem>
                                 </div>
                             ) : (
-                                <div key={team.id}>
+                                <div className={styles.itemCont} key={team.id}>
                                     <ListItem
                                         className={styles.listItemGreyed}
                                         key={team.id}
