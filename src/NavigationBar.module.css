@@ -83,7 +83,9 @@
   position: absolute;
   left: 15%;
 }
-
+.newOrDeletedIcon {
+  margin-left: 0.2em;
+}
 .helpIcon {
   position: absolute;
   right: 20%;

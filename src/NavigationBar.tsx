@@ -6,7 +6,6 @@ import {
     Box,
     CircularProgress,
     Dialog,
-    DialogTitle,
     Drawer,
     IconButton,
     List,
@@ -16,9 +15,10 @@ import {
 import PersonIcon from "@mui/icons-material/Person";
 import MenuIcon from "@mui/icons-material/Menu";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
+import FiberNewIcon from "@mui/icons-material/FiberNew";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import SettingsIcon from "@mui/icons-material/Settings";
 import GroupsIcon from "@mui/icons-material/Groups";
-import FiberNewIcon from "@mui/icons-material/FiberNew";
 import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
@@ -28,6 +28,7 @@ import Login from "./pages/Login/Login";
 import CustomAlert from "./components/CustomAlert";
 import HelpIcon from "@mui/icons-material/Help";
 import help from "./images/help.png";
+import { Buffer } from "buffer";
 
 export interface Vacationer {
     id: string;
@@ -70,13 +71,14 @@ function NavigationBar() {
     const [user, setUser] = useState<Vacationer | null>();
     // state for updating user
     const [newUserState, setNewUserState] = useState(false);
-    const [newUserWarning, setNewUserWarning] = useState(false);
     const [APIError, setAPIError] = useState(false);
     const loginAddress = `${process.env.REACT_APP_ADDRESS}/login`;
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
     const [userName, setUserName] = useState("");
     const [showSpinner, setShowSpinner] = useState(true);
     const [open, setOpen] = useState(false);
+    const [newUserWarning, setNewUserWarning] = useState(false);
+    const [deletedUserWarning, setDeletedUserWarning] = useState(false);
 
     useEffect(() => {
         axios
@@ -98,7 +100,9 @@ function NavigationBar() {
         // Get username from base64 value of the cookie
         if (Cookies.get("payload")) {
             let userJSON = JSON.parse(Cookies.get("payload").substring(2));
-            let userToSearch = JSON.parse(atob(userJSON.payload)).username;
+            let userToSearch = JSON.parse(
+                Buffer.from(userJSON.payload, "base64").toString()
+            ).username;
             setUserName(userToSearch);
 
             axios
@@ -111,11 +115,23 @@ function NavigationBar() {
                 .then((response) => {
                     setAPIError(false);
                     if (response.data) {
-                        if (response.status === 201) {
-                            console.log("luotu!");
+                        let fetchedUser = response.data[0];
+                        setUser(fetchedUser);
+                        let creationTime = new Date(fetchedUser.createdAt);
+
+                        let yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+
+                        if (creationTime > yesterday) {
                             setNewUserWarning(true);
+                        } else {
+                            setNewUserWarning(false);
                         }
-                        setUser(response.data[0]);
+                        if (fetchedUser.deletedAt) {
+                            setDeletedUserWarning(true);
+                        } else {
+                            setDeletedUserWarning(false);
+                        }
                     } else {
                         console.log("No user received");
                     }
@@ -159,9 +175,18 @@ function NavigationBar() {
                                 >
                                     <PersonPin className={styles.userIcon} />
                                     {user && user.name}
+                                    {newUserWarning && (
+                                        <FiberNewIcon
+                                            className={styles.newOrDeletedIcon}
+                                        />
+                                    )}
+                                    {deletedUserWarning && (
+                                        <DeleteForeverIcon
+                                            className={styles.newOrDeletedIcon}
+                                        />
+                                    )}
                                 </Link>
                             )}
-                            {newUserWarning && <FiberNewIcon />}
                         </Typography>
                         <Typography className={styles.rightPart} variant="h6">
                             {APIError || !user ? (
@@ -187,17 +212,20 @@ function NavigationBar() {
                             Vacationer
                         </Link>
                     </Typography>
-                    {window.location.pathname === "/" && user && (
-                        <div
-                            className={styles.helpIcon}
-                            onClick={() => {
-                                handleOpenHelp();
-                            }}
-                        >
-                            <HelpIcon />
-                            Help
-                        </div>
-                    )}
+                    {window.location.pathname === "/" &&
+                        user &&
+                        !APIError &&
+                        !deletedUserWarning && (
+                            <div
+                                className={styles.helpIcon}
+                                onClick={() => {
+                                    handleOpenHelp();
+                                }}
+                            >
+                                <HelpIcon />
+                                Help
+                            </div>
+                        )}
                 </Toolbar>
             </AppBar>
             {!APIError && user && (
@@ -272,22 +300,30 @@ function NavigationBar() {
             )}
             <div className={styles.outlet}>
                 {showSpinner && <CircularProgress />}
-                {APIError ? (
-                    <CustomAlert text={"No connection to API"} />
+                {deletedUserWarning && !user.admin ? (
+                    <CustomAlert
+                        text={"Your user has been deleted, contact admin"}
+                    />
                 ) : (
                     <>
-                        {!showSpinner && userName ? (
-                            <Outlet
-                                context={{
-                                    user,
-                                    APIError,
-                                    setAPIError,
-                                    newUserState,
-                                    updateUser: setNewUserState,
-                                }}
-                            />
+                        {APIError ? (
+                            <CustomAlert text={"No connection to API"} />
                         ) : (
-                            !showSpinner && <Login />
+                            <>
+                                {!showSpinner && userName ? (
+                                    <Outlet
+                                        context={{
+                                            user,
+                                            APIError,
+                                            setAPIError,
+                                            newUserState,
+                                            updateUser: setNewUserState,
+                                        }}
+                                    />
+                                ) : (
+                                    !showSpinner && <Login />
+                                )}
+                            </>
                         )}
                     </>
                 )}
