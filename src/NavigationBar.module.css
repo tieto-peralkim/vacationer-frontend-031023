@@ -37,6 +37,11 @@
   }
 }
 
+.wholePage{
+  min-height: 100%;
+  margin-bottom: 3em;
+}
+
 .outlet {
   margin-top: 0.5em;
 }
@@ -62,9 +67,12 @@
   color: #3383e7;
 }
 
-.title {
+.vacationerTitle {
   text-decoration: none;
   color: white;
+  position: fixed;
+  left: 45%;
+  top: 0.8em;
 }
 .loginTitle{
   text-decoration: none;
@@ -86,13 +94,42 @@
 .newOrDeletedIcon {
   margin-left: 0.2em;
 }
-.helpIcon {
-  position: absolute;
-  right: 20%;
-  display: flex;
-  align-items: center;
-}
 
 .helpIcon:hover {
   cursor: pointer;
+}
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: rgb(56, 116, 203);
+  color: white;
+  height: 3em;
+}
+.footerLeft{
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+}
+.footerMiddleLeft {
+  position: fixed;
+  left: 35%;
+  display: flex;
+  align-items: center;
+  bottom: 0.9em;
+}
+.footerMiddleRight {
+  position: fixed;
+  right: 28%;
+  bottom: 1em;
+}
+.footerRight {
+  position: fixed;
+  right: 1em;
+  bottom: 1em;
+}
+.bugLink {
+  text-decoration: none;
+  color: white;
 }
