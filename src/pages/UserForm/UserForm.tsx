@@ -65,7 +65,6 @@ export default function UserForm() {
                 date.toLocaleDateString("fi-FI") +
                 " " +
                 date.toLocaleTimeString("fi-FI");
-            console.log("updateDate", updateDate);
 
             setUserUpdatedAt(updateDate);
             console.log("Calendar set", user.calendarSettings[0]);

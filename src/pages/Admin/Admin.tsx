@@ -149,7 +149,7 @@ export default function Admin() {
             )
             .then((response) => {
                 setOpenFinalDeleteUserAlert(false);
-                console.log(response);
+                console.log("Deleted", response.data);
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
