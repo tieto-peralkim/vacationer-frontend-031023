@@ -39,7 +39,6 @@
     background-color: lightblue;
     width: 100%;
     min-height: 150px;
-    max-height: 400px;
     margin-top: 20px;
     margin-left: 150px;
     margin-right: 150px;
@@ -63,7 +62,7 @@
     display: flex;
     flex-direction: column;
     width: 90%;
-    height: auto;
+    height: 100%;
     background-color: lightblue;
     justify-content: center;
     align-items: center;
@@ -75,11 +74,11 @@
     justify-content: center;
     height: 80%;
     width: 100%;
+    min-height: 14em;
 }
 
 .onHolidayContent {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     width: 50%;
@@ -88,27 +87,32 @@
 }
 
 .onHolidayContent > p {
-    text-align: center;
+    text-align: left;
     margin: 0;
-    width: 50%;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 20px;
 }
 
 .workingContent {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     width: 50%;
     height: 100%;
-    padding-left: 19px;
     border-left: 2px solid black;
     flex-direction: column;
+    min-height: 14em;
 }
 
 .workingContent > p{
-    text-align: center;
+    text-align: left;
     margin: 0;
-    width: 50%;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 20px;
 }
 
 .headerCont {
@@ -124,7 +128,8 @@
     justify-content: center;
     width: 50%;
     background-color: lightgreen;
-    /* border-right: 1px solid black; */
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .working {
@@ -133,7 +138,8 @@
     justify-content: center;
     width: 50%;
     background-color: lightyellow;
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     border-left: 2px solid black;
 }
 
