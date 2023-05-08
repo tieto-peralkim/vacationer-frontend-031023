@@ -348,9 +348,11 @@ function NavigationBar() {
                             Help
                         </div>
                     )}
-                <div className={styles.footerMiddleRight}>Version number:</div>
+                <div className={styles.footerMiddleRight}>
+                    Version number: {process.env.REACT_APP_VERSION}
+                </div>
 
-                <div className={styles.footerRight}>Copyright: ?</div>
+                <div className={styles.footerRight}>Copyright: LOGO</div>
             </footer>
         </div>
     );
