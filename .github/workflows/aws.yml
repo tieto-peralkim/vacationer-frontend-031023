@@ -40,7 +40,7 @@ jobs:
 
     - name: Get SHA value
       id: sha
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $SHA_OUTPUT
+      run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
@@ -53,11 +53,10 @@ jobs:
       run: |
         touch .env
         echo "REACT_APP_ADDRESS=$BACK_ADDRESS" >> .env
-        echo "SHA: $SHA_NUMBER"
         echo "REACT_APP_VERSION=$SHA_NUMBER" >> .env
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+        echo "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
     - name: Public IP of Github Actions
       id: ip
       uses: haythem/public-ip@v1.2
