@@ -46,35 +46,35 @@
   margin-top: 0.5em;
 }
 
-.headline {
-  position: absolute;
-  left: 47%;
-}
-
 .appName {
   color: #3383e7;
 }
 .navigation {
-  border-style: solid;
-  border-color: #00B7FF;
-  border-top: 0;
-  border-width: 1px;
+  text-decoration: none;
 }
 
 .navigationText {
-  text-decoration: none;
   padding: 2em;
   color: #3383e7;
 }
-
+.profileTitle{
+  position: absolute;
+  left: 15%;
+}
 .vacationerTitle {
   text-decoration: none;
   color: white;
+  display: flex;
+  align-items: center;
   position: fixed;
   left: 45%;
-  top: 0.8em;
+  top: 0.6em;
 }
-.loginTitle{
+.signInTitle{
+  position: absolute;
+  right: 5%;
+}
+.linkTitle{
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -83,18 +83,9 @@
 .userIcon {
   margin-right: 0.3em;
 }
-.rightPart {
-  position: absolute;
-  right: 5%;
-}
-.leftPart {
-  position: absolute;
-  left: 15%;
-}
 .newOrDeletedIcon {
   margin-left: 0.2em;
 }
-
 .helpIcon:hover {
   cursor: pointer;
 }
@@ -107,27 +98,18 @@
   color: white;
   height: 3em;
 }
-.footerLeft{
-  position: fixed;
-  left: 1em;
-  bottom: 1em;
+.footerElements {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5em;
 }
-.footerMiddleLeft {
-  position: fixed;
-  left: 35%;
+.footerHelp {
   display: flex;
   align-items: center;
-  bottom: 0.9em;
-}
-.footerMiddleRight {
-  position: fixed;
-  right: 28%;
-  bottom: 1em;
 }
 .footerRight {
-  position: fixed;
-  right: 1em;
-  bottom: 1em;
+  font-size: small;
 }
 .bugLink {
   text-decoration: none;
