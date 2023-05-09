@@ -11,7 +11,6 @@ on:
 
 env:
   AWS_REGION: eu-west-1
-  ECR_REPOSITORY: ecr-vacationer-frontend
 
 permissions:
   contents: read
@@ -42,16 +41,19 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
+        ECR_REPOSITORY: ecr-vacationer-frontend
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: latest
-        REACT_APP_ADDRESS: ${{ secrets.BACK_ADDRESS }}
+        BACK_ADDRESS: ${{ secrets.BACK_ADDRESS }}
+        SHA_NUMBER: $(git rev-parse --short "$GITHUB_SHA")
       run: |
         touch .env
-        echo "REACT_APP_ADDRESS=$REACT_APP_ADDRESS" >> .env
+        echo "REACT_APP_ADDRESS=$BACK_ADDRESS" >> .env
+        echo "SHA: $SHA_NUMBER"
+        echo "REACT_APP_VERSION=$SHA_NUMBER" >> .env
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
     - name: Public IP of Github Actions
       id: ip
       uses: haythem/public-ip@v1.2

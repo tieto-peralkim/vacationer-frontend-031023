@@ -349,7 +349,7 @@ function NavigationBar() {
                         </div>
                     )}
                 <div className={styles.footerMiddleRight}>
-                    Version number: {process.env.REACT_APP_VERSION}
+                    Version: {process.env.REACT_APP_VERSION}
                 </div>
 
                 <div className={styles.footerRight}>Copyright: LOGO</div>
