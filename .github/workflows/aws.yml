@@ -45,7 +45,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: latest
         BACK_ADDRESS: ${{ secrets.BACK_ADDRESS }}
-        SHA_NUMBER: $(git rev-parse --short "$GITHUB_SHA")
+        SHA_NUMBER: $(git rev-parse --short ${GITHUB_SHA})
       run: |
         touch .env
         echo "REACT_APP_ADDRESS=$BACK_ADDRESS" >> .env
