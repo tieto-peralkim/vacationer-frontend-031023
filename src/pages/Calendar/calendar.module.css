@@ -89,10 +89,9 @@
 .onHolidayContent > p {
     text-align: left;
     margin: 0;
-    width: 100%;
+    width: 80%;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-left: 20px;
 }
 
 .workingContent {
@@ -109,10 +108,9 @@
 .workingContent > p{
     text-align: left;
     margin: 0;
-    width: 100%;
+    width: 80%;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-left: 20px;
 }
 
 .headerCont {
