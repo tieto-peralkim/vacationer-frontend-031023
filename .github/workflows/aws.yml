@@ -38,6 +38,10 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Get SHA value
+      id: sha
+      run: echo "sha_short=$(git rev-parse --short HEAD)"
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
@@ -45,7 +49,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: latest
         BACK_ADDRESS: ${{ secrets.BACK_ADDRESS }}
-        SHA_NUMBER: $(git rev-parse --short ${GITHUB_SHA})
+        SHA_NUMBER: ${{ steps.sha.outputs.sha_short }}
       run: |
         touch .env
         echo "REACT_APP_ADDRESS=$BACK_ADDRESS" >> .env
