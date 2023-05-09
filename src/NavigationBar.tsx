@@ -160,18 +160,20 @@ function NavigationBar() {
         <div className={styles.wholePage}>
             <AppBar position="sticky">
                 <Toolbar>
+                    <IconButton onClick={() => setIsOpen(!isOpen)}>
+                        <MenuIcon />
+                    </IconButton>
                     <>
-                        <IconButton onClick={() => setIsOpen(!isOpen)}>
-                            <MenuIcon />
-                        </IconButton>
-
-                        <Typography className={styles.leftPart} variant="h6">
+                        <Typography
+                            variant="h6"
+                            className={styles.profileTitle}
+                        >
                             {APIError || !user ? (
                                 <div>No user</div>
                             ) : (
                                 <Link
                                     to="/profile"
-                                    className={styles.loginTitle}
+                                    className={styles.linkTitle}
                                 >
                                     <PersonPin className={styles.userIcon} />
                                     {user && user.name}
@@ -188,25 +190,25 @@ function NavigationBar() {
                                 </Link>
                             )}
                         </Typography>
-                        <Typography className={styles.rightPart} variant="h6">
+                        <Typography variant="h6" className={styles.signInTitle}>
                             {APIError || !user ? (
                                 <a
                                     href={loginAddress}
-                                    className={styles.loginTitle}
+                                    className={styles.linkTitle}
                                 >
                                     Login
                                 </a>
                             ) : (
                                 <a
                                     href={logoutAddress}
-                                    className={styles.loginTitle}
+                                    className={styles.linkTitle}
                                 >
                                     Logout
                                 </a>
                             )}
                         </Typography>
                     </>
-                    <Typography className={styles.headline} variant="h5">
+                    <Typography variant="h5">
                         <Link to="/" className={styles.vacationerTitle}>
                             <BeachAccessIcon />
                             Vacationer
@@ -222,9 +224,8 @@ function NavigationBar() {
                 >
                     <Box>
                         <List>
-                            <Link to="/">
+                            <Link to="/" className={styles.navigation}>
                                 <ListItem
-                                    className={styles.navigation}
                                     button
                                     onClick={() => setIsOpen(!isOpen)}
                                 >
@@ -236,9 +237,8 @@ function NavigationBar() {
                                     </div>
                                 </ListItem>
                             </Link>
-                            <Link to="/profile">
+                            <Link to="/profile" className={styles.navigation}>
                                 <ListItem
-                                    className={styles.navigation}
                                     button
                                     onClick={() => setIsOpen(!isOpen)}
                                 >
@@ -250,9 +250,8 @@ function NavigationBar() {
                                     </div>
                                 </ListItem>
                             </Link>
-                            <Link to="/teams">
+                            <Link to="/teams" className={styles.navigation}>
                                 <ListItem
-                                    className={styles.navigation}
                                     button
                                     onClick={() => setIsOpen(!isOpen)}
                                 >
@@ -265,9 +264,8 @@ function NavigationBar() {
                                 </ListItem>
                             </Link>
                             {user && user.admin && (
-                                <Link to="/admin">
+                                <Link to="/admin" className={styles.navigation}>
                                     <ListItem
-                                        className={styles.navigation}
                                         button
                                         onClick={() => setIsOpen(!isOpen)}
                                     >
@@ -323,36 +321,38 @@ function NavigationBar() {
                 <img src={help} />
             </Dialog>
             <footer className={styles.footer}>
-                <div className={styles.footerLeft}>
-                    <a
-                        className={styles.bugLink}
-                        href={
-                            "https://github.com/orgs/tieto-cem/projects/2/views/1"
-                        }
-                        target={"_blank"}
-                    >
-                        Report bugs / ideas
-                    </a>
-                </div>
-                {window.location.pathname === "/" &&
-                    user &&
-                    !APIError &&
-                    !deletedUserWarning && (
-                        <div
-                            className={styles.footerMiddleLeft}
-                            onClick={() => {
-                                handleOpenHelp();
-                            }}
+                <div className={styles.footerElements}>
+                    <div>
+                        <a
+                            className={styles.bugLink}
+                            href={
+                                "https://github.com/orgs/tieto-cem/projects/2/views/1"
+                            }
+                            target={"_blank"}
                         >
-                            <HelpIcon />
-                            Help
-                        </div>
-                    )}
-                <div className={styles.footerMiddleRight}>
-                    Version: {process.env.REACT_APP_VERSION}
-                </div>
+                            Report bugs / ideas
+                        </a>
+                    </div>
+                    {window.location.pathname === "/" &&
+                        user &&
+                        !APIError &&
+                        !deletedUserWarning && (
+                            <div
+                                className={styles.footerHelp}
+                                onClick={() => {
+                                    handleOpenHelp();
+                                }}
+                            >
+                                <HelpIcon />
+                                Help
+                            </div>
+                        )}
+                    <div>Version: {process.env.REACT_APP_VERSION}</div>
 
-                <div className={styles.footerRight}>Copyright: LOGO</div>
+                    <div className={styles.footerRight}>
+                        Built by Tietoevry Cloud Digital Operations
+                    </div>
+                </div>
             </footer>
         </div>
     );
