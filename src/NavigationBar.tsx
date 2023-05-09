@@ -157,7 +157,7 @@ function NavigationBar() {
     };
 
     return (
-        <div>
+        <div className={styles.wholePage}>
             <AppBar position="sticky">
                 <Toolbar>
                     <>
@@ -207,25 +207,11 @@ function NavigationBar() {
                         </Typography>
                     </>
                     <Typography className={styles.headline} variant="h5">
-                        <Link to="/" className={styles.title}>
+                        <Link to="/" className={styles.vacationerTitle}>
                             <BeachAccessIcon />
                             Vacationer
                         </Link>
                     </Typography>
-                    {window.location.pathname === "/" &&
-                        user &&
-                        !APIError &&
-                        !deletedUserWarning && (
-                            <div
-                                className={styles.helpIcon}
-                                onClick={() => {
-                                    handleOpenHelp();
-                                }}
-                            >
-                                <HelpIcon />
-                                Help
-                            </div>
-                        )}
                 </Toolbar>
             </AppBar>
             {!APIError && user && (
@@ -336,6 +322,38 @@ function NavigationBar() {
             >
                 <img src={help} />
             </Dialog>
+            <footer className={styles.footer}>
+                <div className={styles.footerLeft}>
+                    <a
+                        className={styles.bugLink}
+                        href={
+                            "https://github.com/orgs/tieto-cem/projects/2/views/1"
+                        }
+                        target={"_blank"}
+                    >
+                        Report bugs / ideas
+                    </a>
+                </div>
+                {window.location.pathname === "/" &&
+                    user &&
+                    !APIError &&
+                    !deletedUserWarning && (
+                        <div
+                            className={styles.footerMiddleLeft}
+                            onClick={() => {
+                                handleOpenHelp();
+                            }}
+                        >
+                            <HelpIcon />
+                            Help
+                        </div>
+                    )}
+                <div className={styles.footerMiddleRight}>
+                    Version: {process.env.REACT_APP_VERSION}
+                </div>
+
+                <div className={styles.footerRight}>Copyright: LOGO</div>
+            </footer>
         </div>
     );
 }
