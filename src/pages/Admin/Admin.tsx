@@ -33,6 +33,7 @@ export default function Admin() {
     const [openChangeAdminAlert, setOpenChangeAdminAlert] = useState(false);
     const [adminStatus, setAdminStatus] = useState(false);
 
+    const isProdVersion = process.env.REACT_APP_ENVIRONMENT === "PROD";
     const [deletedVacationers, setDeletedVacationers] = useState<any>();
     const [deletedTeams, setDeletedTeams] = useState<any>();
     const [selectedUser, setSelectedUser] = useState<any>();
@@ -294,9 +295,8 @@ export default function Admin() {
                         <TextField
                             required
                             label="Username"
-                            disabled={APIError}
+                            disabled={APIError || isProdVersion}
                             variant="outlined"
-                            error={nameError}
                             value={newUser}
                             helperText={
                                 nameError &&
@@ -308,7 +308,7 @@ export default function Admin() {
                             <Button
                                 onClick={createUser}
                                 variant="contained"
-                                disabled={APIError}
+                                disabled={APIError || isProdVersion}
                             >
                                 {CREATE_TITLE}
                             </Button>
