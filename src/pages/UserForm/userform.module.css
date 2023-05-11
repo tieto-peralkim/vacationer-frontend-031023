@@ -1,42 +1,40 @@
 .content {
     display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 .borderedBox {
     border: solid 1px blue;
     border-radius: 1em;
-    padding: 1.3em;
-    margin: 0.3em;
-    height: max-content;
+    padding: 1em;
+    margin: 1em;
+}
+.holidaySymbolBox{
+    max-width: 7em;
 }
 .nameSelectBox {
     min-width: 15em;
     margin-bottom: 2em;
 }
-.allButtons {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.7em;
-    margin-bottom: 2em;
+.changeNameButton {
+    margin-top: 2em;
+}
+.emojiHint {
+    font-size: small;
 }
 .colorPickers {
-    margin-top: 2em;
     display: flex;
     flex-direction: column;
     width: auto;
 }
 .rowFlex {
-    margin-top: 0.5em;
+    margin-top: 1em;
+    gap: 2em;
     display: flex;
-    flex-direction: row;
 }
 .columnFlex {
-    margin-top: 0.2em;
     display: flex;
     flex-direction: column;
     margin-right: 1em;
+    margin-left: 1em;
 }
 .belowButton {
     margin-top: 1em;

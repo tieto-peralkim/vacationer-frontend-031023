@@ -1,14 +1,19 @@
-.buttons {
-    padding: 10px;
+.monthSelectionbuttons {
+    padding: 8px;
     align-items: center;
-    justify-content: center;
     display: flex;
+}
+.sizeRadioButtons {
+    font-size: small;
 }
 .teamChips {
     padding-top: 20px;
     float: left;
 }
-
+.rowOnCalendar {
+    display: flex;
+    justify-content: space-between;
+}
 .monthSelection {
     margin-right: 1em;
     margin-left: 1em;
