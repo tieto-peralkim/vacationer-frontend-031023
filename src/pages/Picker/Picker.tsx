@@ -392,21 +392,27 @@ export default function Picker({ save, setSave, vacationersAmount }) {
                             <div>
                                 {user && user.admin && (
                                     <div className={styles.selectSection}>
-                                        <FormControl>
-                                            <FormControlLabel
-                                                control={
-                                                    <Checkbox
-                                                        checked={adminSpace}
-                                                        onChange={() => {
-                                                            setAdminSpace(
-                                                                !adminSpace
-                                                            );
-                                                        }}
-                                                    />
-                                                }
-                                                label={"ADMIN: Select user"}
-                                            />
-                                        </FormControl>
+                                        {(process.env.REACT_APP_ENVIRONMENT ===
+                                            "LOCAL" ||
+                                            process.env
+                                                .REACT_APP_ENVIRONMENT ===
+                                                "QA") && (
+                                            <FormControl>
+                                                <FormControlLabel
+                                                    control={
+                                                        <Checkbox
+                                                            checked={adminSpace}
+                                                            onChange={() => {
+                                                                setAdminSpace(
+                                                                    !adminSpace
+                                                                );
+                                                            }}
+                                                        />
+                                                    }
+                                                    label={"ADMIN: Select user"}
+                                                />
+                                            </FormControl>
+                                        )}
                                         {adminSpace && (
                                             <FormControl>
                                                 <Select
