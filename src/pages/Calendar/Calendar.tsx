@@ -16,8 +16,12 @@ import {
     Button,
     Chip,
     CircularProgress,
+    FormControl,
     FormControlLabel,
     FormGroup,
+    FormLabel,
+    Radio,
+    RadioGroup,
     Switch,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -26,6 +30,7 @@ import styles from "./calendar.module.css";
 import DatePicker from "react-datepicker";
 import { Team } from "../Team/TeamPage/TeamPage";
 import { useOutletVariables } from "../../NavigationBar";
+import Typography from "@mui/material/Typography";
 
 export default function Calendar({ vacationersAmount, save }) {
     interface ButtonProps {
@@ -55,7 +60,6 @@ export default function Calendar({ vacationersAmount, save }) {
 
     // HolidaySymbol can not be a number!
     const [holidaySymbols, setHolidaySymbols] = useState([]);
-
     const [holidayColor, setHolidayColor] = useState("");
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
     const [weekendColor, setWeekendColor] = useState("");
@@ -64,6 +68,7 @@ export default function Calendar({ vacationersAmount, save }) {
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
 
+    const [rowHeight, setRowHeight] = useState(1.5);
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst);
     const [selectedYear, setSelectedYear] = useState(
         thisMonthFirst.getFullYear()
@@ -186,6 +191,10 @@ export default function Calendar({ vacationersAmount, save }) {
             console.log("set publicMonthsHolidays", publicMonthsHolidays);
         }
     }, [selectedDate, publicHolidays]);
+
+    const changeCalendarSize = (e: any) => {
+        setRowHeight(e.target.value);
+    };
 
     const filterHolidays = () => {
         let filteredVacations = [];
@@ -1133,53 +1142,99 @@ export default function Calendar({ vacationersAmount, save }) {
                     )}
                 </div>
                 <div className={styles.wholeCalendar}>
-                    <FormGroup>
-                        {/* {!isMobile ? ( */}
-                        <FormControlLabel
-                            checked={!showAllVacationers}
-                            onChange={() => {
-                                setShowAllVacationers(!showAllVacationers);
-                            }}
-                            control={<Switch color="success" />}
-                            disabled={disableConditions}
-                            label={
-                                teamToShow.id
-                                    ? `Show only people on holiday in team ${teamToShow.title}`
-                                    : "Show only people on holiday"
-                            }
-                        />
-                        {/* ) : (
+                    <div className={styles.rowOnCalendar}>
+                        <FormGroup>
+                            {/* {!isMobile ? ( */}
+                            <FormControlLabel
+                                checked={!showAllVacationers}
+                                onChange={() => {
+                                    setShowAllVacationers(!showAllVacationers);
+                                }}
+                                control={<Switch color="success" />}
+                                disabled={disableConditions}
+                                label={
+                                    teamToShow.id
+                                        ? `Show only people on holiday in team ${teamToShow.title}`
+                                        : "Show only people on holiday"
+                                }
+                            />
+                            {/* ) : (
                             ""
                         )} */}
-                    </FormGroup>
-                    <Box className={styles.buttons}>
-                        <Button
-                            onClick={() => changeMonth(-1)}
-                            startIcon={<ArrowBackIosIcon />}
-                            disabled={disableConditions}
-                        >
-                            Prev
-                        </Button>
-                        <div className={styles.monthSelection}>
-                            <DatePicker
+                        </FormGroup>
+                        <Box className={styles.monthSelectionbuttons}>
+                            <Button
+                                onClick={() => changeMonth(-1)}
+                                startIcon={<ArrowBackIosIcon />}
                                 disabled={disableConditions}
-                                selected={selectedDate}
-                                onChange={(date) => setSelectedDate(date)}
-                                dateFormat="MM/yyyy"
-                                showMonthYearPicker
-                                showFullMonthYearPicker
-                                showFourColumnMonthYearPicker
-                                customInput={<ButtonCustomInput />}
-                            />
-                        </div>
-                        <Button
-                            onClick={() => changeMonth(1)}
-                            endIcon={<ArrowForwardIosIcon />}
-                            disabled={disableConditions}
-                        >
-                            Next
-                        </Button>
-                    </Box>
+                            >
+                                Prev
+                            </Button>
+                            <div className={styles.monthSelection}>
+                                <DatePicker
+                                    disabled={disableConditions}
+                                    selected={selectedDate}
+                                    onChange={(date) => setSelectedDate(date)}
+                                    dateFormat="MM/yyyy"
+                                    showMonthYearPicker
+                                    showFullMonthYearPicker
+                                    showFourColumnMonthYearPicker
+                                    customInput={<ButtonCustomInput />}
+                                />
+                            </div>
+                            <Button
+                                onClick={() => changeMonth(1)}
+                                endIcon={<ArrowForwardIosIcon />}
+                                disabled={disableConditions}
+                            >
+                                Next
+                            </Button>
+                        </Box>
+                        <FormControl>
+                            <FormLabel className={styles.sizeRadioButtons}>
+                                Calendar height
+                            </FormLabel>
+                            <RadioGroup
+                                row
+                                defaultValue={rowHeight}
+                                onChange={changeCalendarSize}
+                            >
+                                <FormControlLabel
+                                    value="1"
+                                    control={<Radio />}
+                                    label={
+                                        <Typography
+                                            className={styles.sizeRadioButtons}
+                                        >
+                                            Low
+                                        </Typography>
+                                    }
+                                />
+                                <FormControlLabel
+                                    value="1.5"
+                                    control={<Radio />}
+                                    label={
+                                        <Typography
+                                            className={styles.sizeRadioButtons}
+                                        >
+                                            Normal
+                                        </Typography>
+                                    }
+                                />
+                                <FormControlLabel
+                                    value="2"
+                                    control={<Radio />}
+                                    label={
+                                        <Typography
+                                            className={styles.sizeRadioButtons}
+                                        >
+                                            High
+                                        </Typography>
+                                    }
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                    </div>
                     {/* {!isMobile ? ( */}
                     <div className="full-calendar">
                         {allHolidaysSelectedTime.length > 0 && (
@@ -1245,8 +1300,11 @@ export default function Calendar({ vacationersAmount, save }) {
                                                                         ),
                                                                     paddingLeft:
                                                                         "0.2em",
-                                                                    height: "2em",
-                                                                    width: "12em",
+                                                                    height: `${rowHeight}em`,
+                                                                    lineHeight:
+                                                                        "1em",
+                                                                    maxWidth:
+                                                                        "12em",
                                                                     border: setTodayColumn(
                                                                         cell.column
                                                                     ),

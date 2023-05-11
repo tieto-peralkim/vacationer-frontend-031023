@@ -1,11 +1,14 @@
-import { Button, TextField } from "@mui/material";
+import { Button, List, ListItem, ListItemIcon, TextField } from "@mui/material";
 import styles from "./userform.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import ModifyDialog from "../Dialogs/ModifyDialog";
+import BadgeIcon from "@mui/icons-material/Badge";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import SecurityIcon from "@mui/icons-material/Security";
+import UpdateIcon from "@mui/icons-material/Update";
 import { CompactPicker } from "react-color";
-import { useNavigate } from "react-router-dom";
 import { useOutletVariables } from "../../NavigationBar";
 
 export default function UserForm() {
@@ -22,6 +25,7 @@ export default function UserForm() {
     const { user, APIError, setAPIError, newUserState, updateUser } =
         useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
+    const [openSettingsSave, setOpenSettingsSave] = useState(false);
 
     const [userCreationMessage, setUserCreationMessage] = useState("");
 
@@ -178,6 +182,7 @@ export default function UserForm() {
                 .then((response) => {
                     console.log("updating calendar settings");
                     setCompletedAction(!completedAction);
+                    setOpenSettingsSave(true);
                 })
                 .catch((error) => {
                     setAPIError(true);
@@ -195,122 +200,159 @@ export default function UserForm() {
         <>
             <div className={styles.content}>
                 {user && user.name && (
-                    <div className={styles.borderedBox}>
-                        <div className={styles.allButtons}>
-                            <Button
-                                onClick={() => {
-                                    setOpenModifyUserAlert(true);
-                                }}
-                                variant={"contained"}
-                            >
-                                {user.name}
-                            </Button>
-                        </div>
-                        <div>
-                            nameId: <i>{user.nameId}</i>
-                        </div>
-                        <div>
-                            admin: <i>{user.admin ? "yes" : "no"}</i>
-                        </div>
-                        <div>
-                            user updated: <i>{userUpdatedAt}</i>
-                        </div>
-                        <a
-                            href={`${process.env.REACT_APP_ADDRESS}/checkAuthorization`}
-                            target={"_blank"}
-                        >
-                            Check Github permissions of the app
-                        </a>
-                        <div className={styles.colorPickers}>
-                            <div className={styles.rowFlex}>
-                                <TextField
-                                    label="Holiday symbol"
-                                    variant="outlined"
-                                    disabled={APIError}
-                                    error={symbolNumberError}
-                                    value={holidaySymbol}
-                                    onChange={(e) => {
-                                        setHolidaySymbol(e.target.value);
+                    <>
+                        <div className={styles.borderedBox}>
+                            <h3>Profile</h3>
+                            <List>
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <BadgeIcon />
+                                    </ListItemIcon>
+                                    name: {user.name}
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <GitHubIcon />
+                                    </ListItemIcon>
+                                    nameId: {user.nameId}
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <SecurityIcon />
+                                    </ListItemIcon>
+                                    admin: {user.admin ? "yes" : "no"}
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <UpdateIcon />
+                                    </ListItemIcon>
+                                    user updated: {userUpdatedAt}
+                                </ListItem>
+                            </List>
+                            <div className={styles.changeNameButton}>
+                                <Button
+                                    onClick={() => {
+                                        setOpenModifyUserAlert(true);
                                     }}
-                                    inputProps={{ maxLength: 2 }}
-                                />
-                                <TextField
-                                    label="Un-confirmed holiday symbol"
-                                    error={unconfirmedSymbolError}
-                                    variant="outlined"
-                                    disabled={APIError}
-                                    value={unconfirmedHolidaySymbol}
-                                    onChange={(e) => {
-                                        setUnconfirmedHolidaySymbol(
-                                            e.target.value
-                                        );
-                                    }}
-                                    inputProps={{ maxLength: 2 }}
-                                />
+                                    variant={"contained"}
+                                >
+                                    Change name
+                                </Button>
                             </div>
-                            <div className={styles.rowFlex}>
-                                <div className={styles.columnFlex}>
-                                    <h5>Holiday color</h5>
-                                    <div>
+                            {/*For revoking Github permissions*/}
+                            {/*<a*/}
+                            {/*    href={`${process.env.REACT_APP_ADDRESS}/checkAuthorization`}*/}
+                            {/*    target={"_blank"}*/}
+                            {/*>*/}
+                            {/*    Github permissions of the app*/}
+                            {/*</a>*/}
+                        </div>
+                        <div className={styles.borderedBox}>
+                            <h3>Calendar settings</h3>
+                            <div className={styles.colorPickers}>
+                                <div>
+                                    Holiday symbols
+                                    <div className={styles.emojiHint}>
+                                        Max length 2 char.
+                                    </div>
+                                    <div className={styles.emojiHint}>
+                                        You can also copy-paste a short emoji
+                                    </div>
+                                    <div className={styles.rowFlex}>
+                                        <TextField
+                                            className={styles.holidaySymbolBox}
+                                            label="Confirmed"
+                                            variant="outlined"
+                                            disabled={APIError}
+                                            error={symbolNumberError}
+                                            value={holidaySymbol}
+                                            onChange={(e) => {
+                                                setHolidaySymbol(
+                                                    e.target.value
+                                                );
+                                            }}
+                                            inputProps={{ maxLength: 2 }}
+                                        />
+                                        <TextField
+                                            className={styles.holidaySymbolBox}
+                                            label="Un-confirmed"
+                                            error={unconfirmedSymbolError}
+                                            variant="outlined"
+                                            disabled={APIError}
+                                            value={unconfirmedHolidaySymbol}
+                                            onChange={(e) => {
+                                                setUnconfirmedHolidaySymbol(
+                                                    e.target.value
+                                                );
+                                            }}
+                                            inputProps={{ maxLength: 2 }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={styles.rowFlex}>
+                                    <div className={styles.columnFlex}>
+                                        <b>Holiday color</b>
+                                        <div>
+                                            <CompactPicker
+                                                color={holidayColor}
+                                                onChangeComplete={
+                                                    handleHolidayColorChange
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className={styles.columnFlex}>
+                                        <b>Unconfirmed holiday color</b>
                                         <CompactPicker
-                                            color={holidayColor}
+                                            color={unConfirmedHolidayColor}
                                             onChangeComplete={
-                                                handleHolidayColorChange
+                                                handleUnconfirmedHolidayColorChange
                                             }
                                         />
                                     </div>
                                 </div>
-                                <div className={styles.columnFlex}>
-                                    <h5>Unconfirmed holiday color</h5>
-                                    <CompactPicker
-                                        color={unConfirmedHolidayColor}
-                                        onChangeComplete={
-                                            handleUnconfirmedHolidayColorChange
-                                        }
-                                    />
+                                <div className={styles.rowFlex}>
+                                    <div className={styles.columnFlex}>
+                                        <b>Weekend color</b>
+                                        <CompactPicker
+                                            color={weekendColor}
+                                            onChangeComplete={
+                                                handleWeekendColorChange
+                                            }
+                                        />
+                                    </div>
+                                    <div className={styles.columnFlex}>
+                                        <b>Weekend holiday color</b>
+                                        <CompactPicker
+                                            color={weekendHolidayColor}
+                                            onChangeComplete={
+                                                handleWeekendHolidayColorChange
+                                            }
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                            <div className={styles.rowFlex}>
-                                <div className={styles.columnFlex}>
-                                    <h5>Weekend color</h5>
-                                    <CompactPicker
-                                        color={weekendColor}
-                                        onChangeComplete={
-                                            handleWeekendColorChange
-                                        }
-                                    />
-                                </div>
-                                <div className={styles.columnFlex}>
-                                    <h5>Weekend holiday color</h5>
-                                    <CompactPicker
-                                        color={weekendHolidayColor}
-                                        onChangeComplete={
-                                            handleWeekendHolidayColorChange
-                                        }
-                                    />
-                                </div>
+                            <div className={styles.belowButton}>
+                                <Button
+                                    disabled={!user}
+                                    onClick={resetColors}
+                                    variant="outlined"
+                                    color={"secondary"}
+                                >
+                                    Reset Calendar colors
+                                </Button>
+                            </div>
+                            <div className={styles.belowButton}>
+                                <Button
+                                    disabled={!user}
+                                    onClick={updateCalendarSettings}
+                                    variant="contained"
+                                >
+                                    Save Calendar settings
+                                </Button>
                             </div>
                         </div>
-                        <div className={styles.belowButton}>
-                            <Button
-                                disabled={!user}
-                                onClick={resetColors}
-                                variant="outlined"
-                                color={"secondary"}
-                            >
-                                Reset Calendar colors
-                            </Button>
-                        </div>
-                        <div className={styles.belowButton}>
-                            <Button
-                                disabled={!user}
-                                onClick={updateCalendarSettings}
-                                variant="contained"
-                            >
-                                Save Calendar settings
-                            </Button>
-                        </div>
-                    </div>
+                    </>
                 )}
             </div>
             <ModifyDialog
@@ -322,6 +364,15 @@ export default function UserForm() {
                 handleAction={(name) => changeUserName(name)}
                 cancel={"No"}
                 confirm={"Yes change name"}
+            />
+            <AlertDialog
+                openAlert={openSettingsSave}
+                handleAction={() => void 0}
+                handleCloseAlert={() => setOpenSettingsSave(false)}
+                dialogTitle={"Settings"}
+                dialogContent={"Calendar settings saved"}
+                cancel={""}
+                confirm={""}
             />
 
             <AlertDialog
