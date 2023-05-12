@@ -1,19 +1,33 @@
-.monthSelectionbuttons {
-    padding: 8px;
+@media only screen and (max-width: 768px) {
+    .rowOnCalendar {
+        display: flex;
+        justify-content: center;
+    }
+}
+@media only screen and (min-width: 768px) {
+    .rowOnCalendar {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5em;
+    }
+}
+.heightSettings{
+    min-height: max-content;
+}
+.heightTitle {
+}
+.monthSelectionButtons {
     align-items: center;
+    justify-content: center;
     display: flex;
 }
 .sizeRadioButtons {
-    font-size: small;
 }
 .teamChips {
     padding-top: 20px;
     float: left;
 }
-.rowOnCalendar {
-    display: flex;
-    justify-content: space-between;
-}
+
 .monthSelection {
     margin-right: 1em;
     margin-left: 1em;
@@ -24,7 +38,7 @@
     border: 0.1em solid #2A55E7;
     border-radius: 12px;
     padding: 0.5em;
-    margin-top: 1em;
+    margin-top: 0.5em;
     margin-right: 1em;
 }
 .wholeCalendar {
@@ -57,7 +71,7 @@
     flex-direction: column;
     width: 10%;
     height: auto;
-    background-color: lightcoral;
+    background-color: lightyellow;
     justify-content: center;
     align-items: center;
     border-right: 2px solid black;
@@ -68,7 +82,7 @@
     flex-direction: column;
     width: 90%;
     height: 100%;
-    background-color: lightblue;
+    background-color: azure;
     justify-content: center;
     align-items: center;
 }
@@ -133,7 +147,6 @@
     background-color: lightgreen;
     padding-top: 10px;
     padding-bottom: 10px;
-    /* border-right: 1px solid black; */
 }
 
 .working {
@@ -141,7 +154,7 @@
     align-items: center;
     justify-content: center;
     width: 50%;
-    background-color: lightyellow;
+    background-color: lightblue;
     padding-top: 10px;
     padding-bottom: 10px;
     border-left: 2px solid black;

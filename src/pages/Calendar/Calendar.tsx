@@ -37,7 +37,7 @@ export default function Calendar({ vacationersAmount, save }) {
         onClick?: MouseEventHandler<HTMLButtonElement>;
     }
 
-    const isMobile = useBreakpoint(down("md")); // sm breakpoint activates when screen width <= 576px
+    // const isMobile = useBreakpoint(down("md")); // md breakpoint activates when screen width <= 768px https://www.npmjs.com/package/styled-breakpoints
 
     const { user, APIError, setAPIError } = useOutletVariables();
 
@@ -68,7 +68,7 @@ export default function Calendar({ vacationersAmount, save }) {
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
 
-    const [rowHeight, setRowHeight] = useState(1.5);
+    const [rowHeight, setRowHeight] = useState(1);
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst);
     const [selectedYear, setSelectedYear] = useState(
         thisMonthFirst.getFullYear()
@@ -193,7 +193,7 @@ export default function Calendar({ vacationersAmount, save }) {
         }
     }, [selectedDate, publicHolidays]);
 
-    const changeCalendarSize = (e: any) => {
+    const changeCalendarHeight = (e: any) => {
         setRowHeight(e.target.value);
     };
 
@@ -1136,6 +1136,7 @@ export default function Calendar({ vacationersAmount, save }) {
                                 ))}
                     </div>
                     {user && user.name && (
+                        // !isMobile &&
                         <div className={styles.infoBox}>
                             {holidaySymbols[0]} = confirmed holiday <br />{" "}
                             {holidaySymbols[1]} = un-confirmed holiday
@@ -1143,9 +1144,9 @@ export default function Calendar({ vacationersAmount, save }) {
                     )}
                 </div>
                 <div className={styles.wholeCalendar}>
+                    {/*{!isMobile && (*/}
                     <div className={styles.rowOnCalendar}>
                         <FormGroup>
-                            {/* {!isMobile ? ( */}
                             <FormControlLabel
                                 checked={!showAllVacationers}
                                 onChange={() => {
@@ -1159,46 +1160,15 @@ export default function Calendar({ vacationersAmount, save }) {
                                         : "Show only people on holiday"
                                 }
                             />
-                            {/* ) : (
-                            ""
-                        )} */}
                         </FormGroup>
-                        <Box className={styles.monthSelectionbuttons}>
-                            <Button
-                                onClick={() => changeMonth(-1)}
-                                startIcon={<ArrowBackIosIcon />}
-                                disabled={disableConditions}
-                            >
-                                Prev
-                            </Button>
-                            <div className={styles.monthSelection}>
-                                <DatePicker
-                                    disabled={disableConditions}
-                                    selected={selectedDate}
-                                    onChange={(date) => setSelectedDate(date)}
-                                    dateFormat="MM/yyyy"
-                                    showMonthYearPicker
-                                    showFullMonthYearPicker
-                                    showFourColumnMonthYearPicker
-                                    customInput={<ButtonCustomInput />}
-                                />
-                            </div>
-                            <Button
-                                onClick={() => changeMonth(1)}
-                                endIcon={<ArrowForwardIosIcon />}
-                                disabled={disableConditions}
-                            >
-                                Next
-                            </Button>
-                        </Box>
-                        <FormControl>
-                            <FormLabel className={styles.sizeRadioButtons}>
+                        <FormControl className={styles.heightSettings}>
+                            <FormLabel className={styles.heightTitle}>
                                 Calendar height
                             </FormLabel>
                             <RadioGroup
                                 row
-                                defaultValue={rowHeight}
-                                onChange={changeCalendarSize}
+                                value={rowHeight}
+                                onChange={changeCalendarHeight}
                             >
                                 <FormControlLabel
                                     value="1"
@@ -1236,172 +1206,187 @@ export default function Calendar({ vacationersAmount, save }) {
                             </RadioGroup>
                         </FormControl>
                     </div>
-                    {!isMobile ? (
-                        <div className="full-calendar">
-                            {allHolidaysSelectedTime.length > 0 && (
-                                <table
-                                    {...getTableProps()}
-                                    style={{
-                                        border: "solid 0.1em #73D8FF",
-                                        width: "100%",
-                                    }}
-                                >
-                                    <thead>
-                                        {headerGroups.map((headerGroup) => (
+                    {/*)}*/}
+                    <Box className={styles.monthSelectionButtons}>
+                        <Button
+                            onClick={() => changeMonth(-1)}
+                            startIcon={<ArrowBackIosIcon />}
+                            disabled={disableConditions}
+                        >
+                            Prev
+                        </Button>
+                        <div className={styles.monthSelection}>
+                            <DatePicker
+                                disabled={disableConditions}
+                                selected={selectedDate}
+                                onChange={(date) => setSelectedDate(date)}
+                                dateFormat="MM/yyyy"
+                                showMonthYearPicker
+                                showFullMonthYearPicker
+                                showFourColumnMonthYearPicker
+                                customInput={<ButtonCustomInput />}
+                            />
+                        </div>
+                        <Button
+                            onClick={() => changeMonth(1)}
+                            endIcon={<ArrowForwardIosIcon />}
+                            disabled={disableConditions}
+                        >
+                            Next
+                        </Button>
+                    </Box>
+                    {/*{!isMobile ? (*/}
+                    <div className="full-calendar">
+                        {allHolidaysSelectedTime.length > 0 && (
+                            <table
+                                {...getTableProps()}
+                                style={{
+                                    border: "solid 0.1em #73D8FF",
+                                    width: "100%",
+                                }}
+                            >
+                                <thead>
+                                    {headerGroups.map((headerGroup) => (
+                                        <tr
+                                            {...headerGroup.getHeaderGroupProps()}
+                                        >
+                                            {headerGroup.headers.map(
+                                                (column) => (
+                                                    <th
+                                                        {...column.getHeaderProps()}
+                                                        style={{
+                                                            background:
+                                                                setTodayHeader(
+                                                                    column.Header
+                                                                ),
+                                                            color: "black",
+                                                            width: "1em",
+                                                        }}
+                                                    >
+                                                        {column.render(
+                                                            "Header"
+                                                        )}
+                                                    </th>
+                                                )
+                                            )}
+                                        </tr>
+                                    ))}
+                                </thead>
+                                <tbody {...getTableBodyProps()}>
+                                    {rows.map((row) => {
+                                        prepareRow(row);
+                                        return (
                                             <tr
-                                                {...headerGroup.getHeaderGroupProps()}
+                                                {...row.getRowProps()}
+                                                style={{
+                                                    backgroundColor: checkRow(
+                                                        row.cells[0].value
+                                                    ),
+                                                }}
                                             >
-                                                {headerGroup.headers.map(
-                                                    (column) => (
-                                                        <th
-                                                            {...column.getHeaderProps()}
-                                                            style={{
-                                                                background:
-                                                                    setTodayHeader(
-                                                                        column.Header
+                                                {row.cells.map(
+                                                    (cell, index) => {
+                                                        // console.log(
+                                                        //     "info",
+                                                        //     cell.value,
+                                                        //     index
+                                                        // );
+                                                        return (
+                                                            <td
+                                                                style={{
+                                                                    fontWeight:
+                                                                        setBold(
+                                                                            cell.value
+                                                                        ),
+                                                                    paddingLeft:
+                                                                        "0.2em",
+                                                                    height: `${rowHeight}em`,
+                                                                    lineHeight:
+                                                                        "1em",
+                                                                    maxWidth:
+                                                                        "12em",
+                                                                    border: setTodayColumn(
+                                                                        cell.column
                                                                     ),
-                                                                color: "black",
-                                                                width: "1em",
-                                                            }}
-                                                        >
-                                                            {column.render(
-                                                                "Header"
-                                                            )}
-                                                        </th>
-                                                    )
+                                                                    backgroundColor:
+                                                                        isCommonHoliday(
+                                                                            cell.value,
+                                                                            index
+                                                                        ),
+                                                                }}
+                                                                key={index}
+                                                            >
+                                                                {cell.render(
+                                                                    "Cell"
+                                                                )}
+                                                            </td>
+                                                        );
+                                                    }
                                                 )}
                                             </tr>
-                                        ))}
-                                    </thead>
-                                    <tbody {...getTableBodyProps()}>
-                                        {rows.map((row) => {
-                                            prepareRow(row);
-                                            return (
-                                                <tr
-                                                    {...row.getRowProps()}
-                                                    style={{
-                                                        backgroundColor:
-                                                            checkRow(
-                                                                row.cells[0]
-                                                                    .value
-                                                            ),
-                                                    }}
-                                                >
-                                                    {row.cells.map(
-                                                        (cell, index) => {
-                                                            // console.log(
-                                                            //     "info",
-                                                            //     cell.value,
-                                                            //     index
-                                                            // );
-                                                            return (
-                                                                <td
-                                                                    style={{
-                                                                        fontWeight:
-                                                                            setBold(
-                                                                                cell.value
-                                                                            ),
-                                                                        paddingLeft:
-                                                                            "0.2em",
-                                                                        height: `${rowHeight}em`,
-                                                                        lineHeight:
-                                                                            "1em",
-                                                                        maxWidth:
-                                                                            "12em",
-                                                                        border: setTodayColumn(
-                                                                            cell.column
-                                                                        ),
-                                                                        backgroundColor:
-                                                                            isCommonHoliday(
-                                                                                cell.value,
-                                                                                index
-                                                                            ),
-                                                                    }}
-                                                                    key={index}
-                                                                >
-                                                                    {cell.render(
-                                                                        "Cell"
-                                                                    )}
-                                                                </td>
-                                                            );
-                                                        }
-                                                    )}
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            )}
-                        </div>
-                    ) : (
-                        // If the screen width matches mobile
-                        <div className={styles.verticalCalendar}>
-                            {[
-                                ...Array(
-                                    new Date(
-                                        selectedDate.getFullYear(),
-                                        selectedDate.getMonth() + 1,
-                                        0
-                                    ).getDate()
-                                ),
-                            ].map((e, i) => (
-                                <div className={styles.dayDiv} key={i}>
-                                    <div className={styles.dayNumber}>
-                                        <p>{i + 1}</p>
-                                        <p>
-                                            {getDayFromInt(
-                                                new Date(
-                                                    selectedDate.getFullYear(),
-                                                    selectedDate.getMonth(),
-                                                    i
-                                                ).getDay()
-                                            )}
-                                        </p>
-                                    </div>
-                                    <div className={styles.dayContent}>
-                                        <div className={styles.content}>
-                                            <div
-                                                className={
-                                                    styles.onHolidayContent
-                                                }
-                                            >
-                                                {getVacationerNames(i + 1).map(
-                                                    (name, index) => (
-                                                        <p key={index}>
-                                                            {name}
-                                                        </p>
-                                                    )
-                                                )}
-                                            </div>
-                                            <div
-                                                className={
-                                                    styles.workingContent
-                                                }
-                                            >
-                                                {getWorkerNames(i + 1).map(
-                                                    (name, index) => (
-                                                        <p key={index}>
-                                                            {name}
-                                                        </p>
-                                                    )
-                                                )}
-                                            </div>
-                                        </div>
-                                        <div className={styles.headerCont}>
-                                            <div className={styles.onHoliday}>
-                                                On Holiday:{" "}
-                                                {countVacationers(i + 1)}
-                                            </div>
-                                            <div className={styles.working}>
-                                                Working: {countWorkers(i + 1)}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                    {/*) : ( // If the screen width matches mobile*/}
+                    {/*<div className={styles.verticalCalendar}>*/}
+                    {/*    {[*/}
+                    {/*        ...Array(*/}
+                    {/*            new Date(*/}
+                    {/*                selectedDate.getFullYear(),*/}
+                    {/*                selectedDate.getMonth() + 1,*/}
+                    {/*                0*/}
+                    {/*            ).getDate()*/}
+                    {/*        ),*/}
+                    {/*    ].map((e, i) => (*/}
+                    {/*        <div className={styles.dayDiv} key={i}>*/}
+                    {/*            <div className={styles.dayNumber}>*/}
+                    {/*                <p>{i + 1}</p>*/}
+                    {/*                <p>*/}
+                    {/*                    {getDayFromInt(*/}
+                    {/*                        new Date(*/}
+                    {/*                            selectedDate.getFullYear(),*/}
+                    {/*                            selectedDate.getMonth(),*/}
+                    {/*                            i*/}
+                    {/*                        ).getDay()*/}
+                    {/*                    )}*/}
+                    {/*                </p>*/}
+                    {/*            </div>*/}
+                    {/*            <div className={styles.dayContent}>*/}
+                    {/*                <div className={styles.content}>*/}
+                    {/*                    <div*/}
+                    {/*                        className={styles.onHolidayContent}*/}
+                    {/*                    >*/}
+                    {/*                        {getVacationerNames(i + 1).map(*/}
+                    {/*                            (name, index) => (*/}
+                    {/*                                <p key={index}>{name}</p>*/}
+                    {/*                            )*/}
+                    {/*                        )}*/}
+                    {/*                    </div>*/}
+                    {/*                    <div className={styles.workingContent}>*/}
+                    {/*                        {getWorkerNames(i + 1).map(*/}
+                    {/*                            (name, index) => (*/}
+                    {/*                                <p key={index}>{name}</p>*/}
+                    {/*                            )*/}
+                    {/*                        )}*/}
+                    {/*                    </div>*/}
+                    {/*                </div>*/}
+                    {/*                <div className={styles.headerCont}>*/}
+                    {/*                    <div className={styles.onHoliday}>*/}
+                    {/*                        On Holiday:{" "}*/}
+                    {/*                        {countVacationers(i + 1)}*/}
+                    {/*                    </div>*/}
+                    {/*                    <div className={styles.working}>*/}
+                    {/*                        Working: {countWorkers(i + 1)}*/}
+                    {/*                    </div>*/}
+                    {/*                </div>*/}
+                    {/*            </div>*/}
+                    {/*        </div>*/}
+                    {/*    ))}*/}
+                    {/*</div>*/}
+                    {/*)}*/}
                     {showSpinner && <CircularProgress />}
                 </div>
             </div>
