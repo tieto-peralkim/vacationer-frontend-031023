@@ -117,6 +117,7 @@ export default function Calendar({ vacationersAmount, save }) {
             });
     }, [selectedYear]);
 
+    // TODO: reduce re-renders!
     useEffect(() => {
         // Showing all employees of the selected team, not only the ones with holiday
         if (showAllVacationers && teamToShow.id) {
@@ -134,7 +135,7 @@ export default function Calendar({ vacationersAmount, save }) {
         else {
             setMonthsHolidays(selectedVacationers, null);
         }
-    }, [showAllVacationers, teamToShow, selectedVacationers, user]);
+    }, [showAllVacationers, teamToShow, selectedVacationers, holidaySymbols]);
 
     // Setting calendar settings of selected user
     useEffect(() => {
@@ -283,39 +284,7 @@ export default function Calendar({ vacationersAmount, save }) {
                 pureVacations.push(holidayObject);
             }
         }
-        // addSummaryRows(pureVacations);
-        console.log("pure", pureVacations);
         setAllHolidaysSelectedTime(pureVacations);
-    };
-
-    const getOnHolidayAmount = (data, key) => {
-        let peopleOnHoliday = 0;
-        for (let i = 0; i < data.length; i++) {
-            if (holidaySymbols.includes(data[i][key])) {
-                peopleOnHoliday++;
-            }
-        }
-        // If a team has been selected
-        if (teamToShow.id) {
-            return peopleOnHoliday;
-        } else {
-            return peopleOnHoliday;
-        }
-    };
-
-    const getWorkerAmount = (data, key) => {
-        let peopleOnHoliday = 0;
-        for (let i = 0; i < data.length; i++) {
-            if (holidaySymbols.includes(data[i][key])) {
-                peopleOnHoliday++;
-            }
-        }
-        // If a team has been selected
-        if (teamToShow.id) {
-            return teamToShow.members.length - peopleOnHoliday;
-        } else {
-            return vacationersAmount.length - peopleOnHoliday;
-        }
     };
 
     // Sets the start and end date of holidays for shown calendar month
@@ -707,7 +676,7 @@ export default function Calendar({ vacationersAmount, save }) {
                 Footer: (info) => calculateOnHoliday(info, "thirtyone"),
             },
         ],
-        []
+        [holidaySymbols]
     );
 
     const {
