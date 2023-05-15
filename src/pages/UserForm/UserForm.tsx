@@ -58,21 +58,17 @@ export default function UserForm() {
 
     useEffect(() => {
         updateUser(!newUserState);
-        console.log("updating soon", user);
     }, [completedAction]);
 
     useEffect(() => {
         if (user && user.calendarSettings && user.updatedAt) {
             let date = new Date(user.updatedAt);
-            console.log("date", date);
             let updateDate =
                 date.toLocaleDateString("fi-FI") +
                 " " +
                 date.toLocaleTimeString("fi-FI");
 
             setUserUpdatedAt(updateDate);
-            console.log("Calendar set", user.calendarSettings[0]);
-
             setHolidayColor(user.calendarSettings[0].holidayColor);
             setUnConfirmedHolidayColor(
                 user.calendarSettings[0].unConfirmedHolidayColor
@@ -89,7 +85,6 @@ export default function UserForm() {
     }, [user]);
 
     const changeUserName = (newName) => {
-        console.log("selectedUser", user, "changeUserName", newName);
         if (
             newName.length >= minNameLength &&
             newName.length <= maxNameLength
@@ -100,9 +95,8 @@ export default function UserForm() {
                     { newName: newName },
                     { withCredentials: true }
                 )
-                .then((response) => {
+                .then(() => {
                     changeUserNameinTeams(user.id, newName);
-                    console.log(response);
                     setOpenModifyUserAlert(false);
                 })
                 .catch((error) => {
@@ -122,7 +116,6 @@ export default function UserForm() {
     };
 
     const changeUserNameinTeams = (memberId, newName) => {
-        console.log("changeUserNameinTeams", memberId, newName);
         axios
             .put(
                 `${process.env.REACT_APP_ADDRESS}/teams/membername/${memberId}`,
@@ -180,7 +173,6 @@ export default function UserForm() {
                 //     { withCredentials: true }
                 // )
                 .then((response) => {
-                    console.log("updating calendar settings");
                     setCompletedAction(!completedAction);
                     setOpenSettingsSave(true);
                 })

@@ -52,7 +52,6 @@ export default function TeamAdd({
                     setNewTeam("");
                 })
                 .catch((error) => {
-                    console.log(error.response.status);
                     openAPIError();
                     console.error("There was a post error!", error);
                 })

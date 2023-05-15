@@ -149,15 +149,13 @@ export default function PickerModal({
                 comment: comment,
                 confirmed: confirmed,
             };
-            console.log("newHoliday", newHoliday);
             axios
                 .post(
                     `${process.env.REACT_APP_ADDRESS}/vacationers/${chosenUser.id}`,
                     newHoliday,
                     { withCredentials: true }
                 )
-                .then((response) => {
-                    console.log(response);
+                .then(() => {
                     resetDates();
                     handleCloseAddAlert();
                     handleCloseCalendar();
@@ -187,7 +185,6 @@ export default function PickerModal({
         setOverlapErrorMessage(false);
         const [start, end] = dates;
 
-        console.log("start1", start, end);
         if (start) {
             // Sethours needed for the DatePicker. If omitted, DatePicker shows wrong startdate
             start.setHours(12);
@@ -202,7 +199,6 @@ export default function PickerModal({
             end.setUTCHours(12);
             setEndDate(end);
         }
-        console.log("start12", start, end);
         if (start !== null && end !== null) {
             calculatePerDay(start, end);
         }
@@ -223,7 +219,6 @@ export default function PickerModal({
                 { withCredentials: true }
             )
             .then((response) => {
-                console.log(response);
                 resetDates();
                 handleCloseEditAlert();
                 handleCloseCalendar();

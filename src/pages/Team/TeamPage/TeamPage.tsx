@@ -43,7 +43,6 @@ export default function TeamPage() {
                 withCredentials: true,
             })
             .then((response) => {
-                console.log(response);
                 updatedTeams = response.data;
                 setTeams(updatedTeams);
 

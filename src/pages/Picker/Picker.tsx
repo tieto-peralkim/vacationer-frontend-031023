@@ -125,7 +125,6 @@ export default function Picker({ save, setSave, vacationersAmount }) {
 
     useEffect(() => {
         setChosenVacationer(user);
-        console.log("valittuna", user);
     }, []);
 
     useEffect(() => {
@@ -175,7 +174,6 @@ export default function Picker({ save, setSave, vacationersAmount }) {
     };
 
     const confirmDeletion = (holiday) => {
-        console.log("confirmDeletion: id", holiday);
         setHolidayToDelete(holiday);
         handleOpenDeletionAlert();
     };
@@ -217,9 +215,6 @@ export default function Picker({ save, setSave, vacationersAmount }) {
             }
         }
         setHolidayToEdit(editedItem);
-
-        console.log("editHoliday", holidays, calendarDaysExcluded);
-
         updateExcludedDates(id);
         setComment(editedItem.comment);
         setConfirmed(editedItem.confirmed);
@@ -298,7 +293,6 @@ export default function Picker({ save, setSave, vacationersAmount }) {
             for (let i = 0; i < vacationersAmount.length; i++) {
                 if (vacationersAmount[i].name === name) {
                     vacationerFound = vacationersAmount[i];
-                    console.log("vacationerFound", vacationerFound);
                     break;
                 }
             }
@@ -311,7 +305,6 @@ export default function Picker({ save, setSave, vacationersAmount }) {
                 )
                 .then((response) => {
                     setChosenVacationer(response.data);
-                    console.log("response on", response.data);
                     setExcludedDates(response.data.vacations);
                 })
                 .catch((error) => {
@@ -338,7 +331,6 @@ export default function Picker({ save, setSave, vacationersAmount }) {
                 { withCredentials: true }
             )
             .then((response) => {
-                console.log("setDailyVacationers", response.data);
                 setDailyVacationers(response.data);
             })
             .catch((error) => {

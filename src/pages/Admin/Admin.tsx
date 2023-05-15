@@ -71,7 +71,6 @@ export default function Admin() {
             })
             .then((response) => {
                 setVacationers(response.data);
-                console.log("vacationers", response.data);
             })
             .catch((error) => {
                 console.error("There was a vacationers get error!", error);
@@ -113,7 +112,6 @@ export default function Admin() {
             )
             .then((response) => {
                 setOpenReturnUserAlert(false);
-                console.log(response);
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
@@ -130,9 +128,8 @@ export default function Admin() {
                 {},
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setOpenReturnTeamAlert(false);
-                console.log(response);
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
@@ -148,9 +145,8 @@ export default function Admin() {
                 `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedDeletedUser.id}`,
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setOpenFinalDeleteUserAlert(false);
-                console.log("Deleted", response.data);
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
@@ -161,7 +157,6 @@ export default function Admin() {
 
     // For removing a team from the database
     const finalDeleteTeam = () => {
-        console.log("deleting team", selectedDeletedTeam.title);
         axios
             .delete(
                 `${process.env.REACT_APP_ADDRESS}/teams/${selectedDeletedTeam.id}`,
@@ -169,7 +164,6 @@ export default function Admin() {
             )
             .then((response) => {
                 setOpenFinalDeleteTeamAlert(false);
-                console.log(response);
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
@@ -183,8 +177,7 @@ export default function Admin() {
             .get(`${process.env.REACT_APP_ADDRESS}/slackMessageSender`, {
                 withCredentials: true,
             })
-            .then((response) => {
-                console.log(response.data);
+            .then(() => {
                 setOpenSendSlackAlert(false);
             })
             .catch((error) => {
@@ -200,7 +193,6 @@ export default function Admin() {
                 name: newUser,
                 nameId: newUser,
             };
-            console.log("newVacationer", newVacationer);
 
             axios
                 .post(
@@ -209,7 +201,6 @@ export default function Admin() {
                     { withCredentials: true }
                 )
                 .then((response) => {
-                    console.log(response);
                     setUserCreated(true);
                     setCompletedAction(!completedAction);
                     setNewUser("");
@@ -230,7 +221,6 @@ export default function Admin() {
 
     // For adding the user to the deleted list
     const deleteUser = () => {
-        console.log("selected", selectedUser);
         axios
             .put(
                 `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedUser.id}/delete`,
@@ -239,7 +229,6 @@ export default function Admin() {
             )
             .then((response) => {
                 setOpenDeleteUserAlert(false);
-                console.log(response);
                 removeUserFromTeams(selectedUser);
             })
             .catch((error) => {
@@ -249,16 +238,14 @@ export default function Admin() {
     };
 
     const setAdminBoolean = () => {
-        console.log("adminStatus", adminStatus);
         axios
             .patch(
                 `${process.env.REACT_APP_ADDRESS}/vacationers/${selectedUser.id}/admin`,
                 { adminRole: adminStatus },
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setOpenChangeAdminAlert(false);
-                console.log(response);
                 setCompletedAction(!completedAction);
             })
             .catch((error) => {
@@ -325,7 +312,6 @@ export default function Admin() {
                                 value={selectedUser}
                                 onChange={(e: any) => {
                                     setSelectedUser(e.target.value);
-                                    console.log("value", e.target.value);
                                 }}
                             >
                                 {vacationers.map((vacationer) => (

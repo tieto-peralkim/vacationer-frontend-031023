@@ -32,7 +32,8 @@
     margin-right: 1em;
     margin-left: 1em;
 }
-
+.footerSection {
+}
 .infoBox {
     float: right;
     border: 0.1em solid #2A55E7;
@@ -45,7 +46,10 @@
     display: flex;
     flex-direction: column;
 }
-
+.arrowSymbols {
+    font-size: small;
+    margin: 0;
+}
 .verticalCalendar {
     display: flex;
     flex-direction: column;
@@ -113,6 +117,27 @@
     text-overflow: ellipsis;
 }
 
+.onHoliday {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    background-color: lightgreen;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.working {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    background-color: lightblue;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-left: 2px solid black;
+}
+
 .workingContent {
     display: flex;
     align-items: center;
@@ -138,26 +163,33 @@
     width: 100%;
     border-top: 2px solid black;
 }
-
-.onHoliday {
+.headerNumberAndArrow {
     display: flex;
-    align-items: center;
     justify-content: center;
-    width: 50%;
-    background-color: lightgreen;
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
-
-.working {
+.onHolidayTitle {
+    padding-left: 0.2em;
+    background-color: lightgreen;
     display: flex;
-    align-items: center;
+}
+.onHolidayNumber {
+    background-color: lightgreen;
+    display: flex;
     justify-content: center;
-    width: 50%;
+}
+.workingTitle {
+    padding-left: 0.2em;
     background-color: lightblue;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-left: 2px solid black;
+    display: flex;
+}
+.workingNumber {
+    background-color: lightblue;
+    display: flex;
+    justify-content: center;
+}
+.dateColumn{
+    display: flex;
+    justify-content: flex-end;
 }
 
 .dayDiv > * > p {

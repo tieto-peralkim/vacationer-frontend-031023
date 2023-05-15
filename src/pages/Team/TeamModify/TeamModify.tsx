@@ -78,7 +78,6 @@ export default function TeamModify({
         setSelectedMembers(
             typeof value === "string" ? value.split(",") : value
         );
-        console.log("selectedMembers", selectedMembers);
     };
 
     function addToTeam(newMembers, team) {
@@ -91,8 +90,7 @@ export default function TeamModify({
                     withCredentials: true,
                 }
             )
-            .then((response) => {
-                console.log("Added members? ", response.data.message);
+            .then(() => {
                 setOpenBackdrop(false);
                 setCompletedAction(!completedAction);
             })
@@ -153,7 +151,6 @@ export default function TeamModify({
     };
 
     const deleteTeam = () => {
-        console.log("deleting team", selectedTeam);
         axios
             .put(
                 `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}/delete`,
@@ -217,7 +214,6 @@ export default function TeamModify({
                                     onDelete={() => {
                                         setOpenDeleteMemberAlert(true);
                                         setDeletableMember(member);
-                                        console.log("hän", member);
                                     }}
                                     deleteIcon={<DeleteIcon />}
                                 />

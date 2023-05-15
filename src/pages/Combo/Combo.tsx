@@ -14,14 +14,12 @@ export default function Combo() {
     // When data has changed, update simple list of vacationers & update user
     useEffect(() => {
         updateUser(!newUserState);
-        console.log("arvot", APIError, user);
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/vacationers/total`, {
                 withCredentials: true,
             })
             .then((response) => {
                 setVacationersAmount(response.data);
-                console.log("Saved, setVacationersAmount:", response.data);
             })
             .catch((error) => {
                 setAPIError(true);

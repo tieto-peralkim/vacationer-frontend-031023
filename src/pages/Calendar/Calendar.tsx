@@ -9,7 +9,7 @@ import {
     useMemo,
     useState,
 } from "react";
-import { useTable } from "react-table";
+import { useTable, useSortBy } from "react-table";
 import axios from "axios";
 import {
     Box,
@@ -31,6 +31,7 @@ import DatePicker from "react-datepicker";
 import { Team } from "../Team/TeamPage/TeamPage";
 import { useOutletVariables } from "../../NavigationBar";
 import Typography from "@mui/material/Typography";
+import { ScreenRotationAlt } from "@mui/icons-material";
 
 export default function Calendar({ vacationersAmount, save }) {
     interface ButtonProps {
@@ -51,12 +52,18 @@ export default function Calendar({ vacationersAmount, save }) {
     const disableConditions = APIError || !user;
     thisMonthFirst.setUTCHours(0, 0, 0, 0);
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
-    const WORKER_TITLE = "Working";
-    const ON_HOLIDAY_TITLE = "On holiday";
-    const WORKER_COLOR = "lightblue";
-    const ON_HOLIDAY_COLOR = "lightgreen";
-    const PRESENCE_PERCENTAGE = 0.5;
-    const TODAY_COLOR = "#e30f2d";
+    const workerTitle = "Working";
+    const onHolidayTitle = "On holiday";
+    const workerColor = "lightblue";
+    const onHolidayColor = "lightgreen";
+    const presencePercentage = 0.5;
+    const todayColor = "#e30f2d";
+    const calendarBorderStyle = "solid 0.1em #73D8FF";
+    const columnMaxWidth = "12em";
+    const columnPaddingWidth = "0.2em";
+    const headerColor = "black";
+    const headerBackgroundColor = "lightgrey";
+    const columnLineHeight = "1em";
 
     // HolidaySymbol can not be a number!
     const [holidaySymbols, setHolidaySymbols] = useState([]);
@@ -68,7 +75,7 @@ export default function Calendar({ vacationersAmount, save }) {
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
 
-    const [rowHeight, setRowHeight] = useState(1);
+    const [columnHeight, setColumnHeight] = useState(1);
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst);
     const [selectedYear, setSelectedYear] = useState(
         thisMonthFirst.getFullYear()
@@ -93,9 +100,8 @@ export default function Calendar({ vacationersAmount, save }) {
     const [selectedVacationers, setSelectedVacationers] = useState([]);
     const [vacationersCount, setVacationersCount] = useState(0);
 
-    // Fetching Finnish public holidays from Public holiday API (https://date.nager.at/)
+    // Fetching public holidays from API
     useEffect(() => {
-        console.log(selectedYear);
         axios
             .get(
                 `${process.env.REACT_APP_ADDRESS}/public-holidays/${selectedYear}`,
@@ -107,20 +113,17 @@ export default function Calendar({ vacationersAmount, save }) {
                 setPublicHolidays(response.data);
             })
             .catch((error) => {
-                console.error("There was a Public holiday API error!", error);
+                console.error("There was a get Public holiday error!", error);
             });
     }, [selectedYear]);
 
-    // TODO: this has too many depending states
     useEffect(() => {
         // Showing all employees of the selected team, not only the ones with holiday
         if (showAllVacationers && teamToShow.id) {
-            console.log("showAllVacationers && teamToShow", teamToShow);
             setMonthsHolidays(filterHolidays(), teamToShow.members);
         }
         // Showing all vacationing employees of the selected team
         else if (teamToShow.id) {
-            console.log("teamToShow:", teamToShow);
             setMonthsHolidays(filterHolidays(), null);
         }
         // Showing all employees, not only the ones with holiday
@@ -131,13 +134,7 @@ export default function Calendar({ vacationersAmount, save }) {
         else {
             setMonthsHolidays(selectedVacationers, null);
         }
-    }, [
-        showAllVacationers,
-        teamToShow,
-        selectedVacationers,
-        vacationersAmount,
-        holidaySymbols,
-    ]);
+    }, [showAllVacationers, teamToShow, selectedVacationers, user]);
 
     // Setting calendar settings of selected user
     useEffect(() => {
@@ -167,7 +164,6 @@ export default function Calendar({ vacationersAmount, save }) {
             })
             .then((response) => {
                 setTeams(response.data);
-                console.log("TEAMS", response.data);
             })
             .catch((error) => {
                 setAPIError(true);
@@ -188,13 +184,10 @@ export default function Calendar({ vacationersAmount, save }) {
             }
         }
         setPublicHolidaysOfMonth(publicMonthsHolidays);
-        if (publicMonthsHolidays.length !== 0) {
-            console.log("set publicMonthsHolidays", publicMonthsHolidays);
-        }
     }, [selectedDate, publicHolidays]);
 
     const changeCalendarHeight = (e: any) => {
-        setRowHeight(e.target.value);
+        setColumnHeight(e.target.value);
     };
 
     const filterHolidays = () => {
@@ -210,7 +203,6 @@ export default function Calendar({ vacationersAmount, save }) {
         }
         // An array of arrays to an array
         filteredVacations = filteredVacations.flat();
-        console.log("filteredVacations", filteredVacations);
         return filteredVacations;
     };
 
@@ -225,7 +217,6 @@ export default function Calendar({ vacationersAmount, save }) {
             )
             .then((response) => {
                 setSelectedVacationers(response.data);
-                console.log("getHolidaysOfMonth", response.data);
                 setShowSpinner(false);
             })
             .catch((error) => {
@@ -236,10 +227,8 @@ export default function Calendar({ vacationersAmount, save }) {
     };
 
     // Creates the employee rows, vacationingEmployees is the list of employees with holidays,
-    // allEmployees is the list of employees with and without holidays
+    // allEmployees is the list of all employees in db
     const setMonthsHolidays = (vacationingEmployees, allEmployees) => {
-        // console.log("vacationingEmployees", vacationingEmployees);
-        // console.log("allEmployees", allEmployees);
         let pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
             let holidayObject = {
@@ -253,10 +242,6 @@ export default function Calendar({ vacationersAmount, save }) {
             let repeatingHolidayer;
             repeatingHolidayer = pureVacations.find(
                 (holiday) => holiday.name === holidayObject.name
-            );
-            console.log(
-                "vacationingEmployees[i].vacations",
-                vacationingEmployees[i].vacations
             );
 
             // If there are multiple separate holidays for same vacationingEmployee during the month
@@ -284,12 +269,11 @@ export default function Calendar({ vacationersAmount, save }) {
             }
         }
 
-        // If "Show all employees" checkbox is selected, filter the employees without holidays and set only the name for those rows
+        // If showing all vacationers, filter the employees without holidays and set only the name for those rows
         if (allEmployees !== null) {
             let employeesWithNoHolidays = allEmployees.filter(
                 (o1) => !vacationingEmployees.some((o2) => o1.name === o2.name)
             );
-            console.log("eNoHolidays", employeesWithNoHolidays);
 
             for (let i = 0; i < employeesWithNoHolidays.length; i++) {
                 let holidayObject = {
@@ -299,82 +283,9 @@ export default function Calendar({ vacationersAmount, save }) {
                 pureVacations.push(holidayObject);
             }
         }
-        addSummaryRows(pureVacations);
-    };
-
-    // Two last rows of the table
-    const addSummaryRows = (data) => {
-        // Second last row of the table: amount of employees on holiday
-        data.push({
-            name: ON_HOLIDAY_TITLE,
-            one: getOnHolidayAmount(data, "one"),
-            two: getOnHolidayAmount(data, "two"),
-            three: getOnHolidayAmount(data, "three"),
-            four: getOnHolidayAmount(data, "four"),
-            five: getOnHolidayAmount(data, "five"),
-            six: getOnHolidayAmount(data, "six"),
-            seven: getOnHolidayAmount(data, "seven"),
-            eight: getOnHolidayAmount(data, "eight"),
-            nine: getOnHolidayAmount(data, "nine"),
-            ten: getOnHolidayAmount(data, "ten"),
-            eleven: getOnHolidayAmount(data, "eleven"),
-            twelve: getOnHolidayAmount(data, "twelve"),
-            thirteen: getOnHolidayAmount(data, "thirteen"),
-            fourteen: getOnHolidayAmount(data, "fourteen"),
-            fifteen: getOnHolidayAmount(data, "fifteen"),
-            sixteen: getOnHolidayAmount(data, "sixteen"),
-            seventeen: getOnHolidayAmount(data, "seventeen"),
-            eighteen: getOnHolidayAmount(data, "eighteen"),
-            nineteen: getOnHolidayAmount(data, "nineteen"),
-            twenty: getOnHolidayAmount(data, "twenty"),
-            twentyone: getOnHolidayAmount(data, "twentyone"),
-            twentytwo: getOnHolidayAmount(data, "twentytwo"),
-            twentythree: getOnHolidayAmount(data, "twentythree"),
-            twentyfour: getOnHolidayAmount(data, "twentyfour"),
-            twentyfive: getOnHolidayAmount(data, "twentyfive"),
-            twentysix: getOnHolidayAmount(data, "twentysix"),
-            twentyseven: getOnHolidayAmount(data, "twentyseven"),
-            twentyeight: getOnHolidayAmount(data, "twentyeight"),
-            twentynine: getOnHolidayAmount(data, "twentynine"),
-            thirty: getOnHolidayAmount(data, "thirty"),
-            thirtyone: getOnHolidayAmount(data, "thirtyone"),
-        });
-        // Last row of the table: amount of working employee
-        data.push({
-            name: WORKER_TITLE,
-            one: getWorkerAmount(data, "one"),
-            two: getWorkerAmount(data, "two"),
-            three: getWorkerAmount(data, "three"),
-            four: getWorkerAmount(data, "four"),
-            five: getWorkerAmount(data, "five"),
-            six: getWorkerAmount(data, "six"),
-            seven: getWorkerAmount(data, "seven"),
-            eight: getWorkerAmount(data, "eight"),
-            nine: getWorkerAmount(data, "nine"),
-            ten: getWorkerAmount(data, "ten"),
-            eleven: getWorkerAmount(data, "eleven"),
-            twelve: getWorkerAmount(data, "twelve"),
-            thirteen: getWorkerAmount(data, "thirteen"),
-            fourteen: getWorkerAmount(data, "fourteen"),
-            fifteen: getWorkerAmount(data, "fifteen"),
-            sixteen: getWorkerAmount(data, "sixteen"),
-            seventeen: getWorkerAmount(data, "seventeen"),
-            eighteen: getWorkerAmount(data, "eighteen"),
-            nineteen: getWorkerAmount(data, "nineteen"),
-            twenty: getWorkerAmount(data, "twenty"),
-            twentyone: getWorkerAmount(data, "twentyone"),
-            twentytwo: getWorkerAmount(data, "twentytwo"),
-            twentythree: getWorkerAmount(data, "twentythree"),
-            twentyfour: getWorkerAmount(data, "twentyfour"),
-            twentyfive: getWorkerAmount(data, "twentyfive"),
-            twentysix: getWorkerAmount(data, "twentysix"),
-            twentyseven: getWorkerAmount(data, "twentyseven"),
-            twentyeight: getWorkerAmount(data, "twentyeight"),
-            twentynine: getWorkerAmount(data, "twentynine"),
-            thirty: getWorkerAmount(data, "thirty"),
-            thirtyone: getWorkerAmount(data, "thirtyone"),
-        });
-        setAllHolidaysSelectedTime(data);
+        // addSummaryRows(pureVacations);
+        console.log("pure", pureVacations);
+        setAllHolidaysSelectedTime(pureVacations);
     };
 
     const getOnHolidayAmount = (data, key) => {
@@ -409,8 +320,6 @@ export default function Calendar({ vacationersAmount, save }) {
 
     // Sets the start and end date of holidays for shown calendar month
     const setNumbers = (holidayObject, start, end, confirmedHoliday) => {
-        console.log("setNumbers", holidayObject, start, end, confirmedHoliday);
-
         let symbolToUse;
         let startingNumber = 0;
         let endingNumber = 0;
@@ -589,157 +498,213 @@ export default function Calendar({ vacationersAmount, save }) {
         getHolidaysOfMonth(nextMonth);
     }, [selectedDate, save]);
 
-    // const EditableCell = ({
-    //     value: initialValue,
-    //     row: { index },
-    //     column: { id },
-    // }) => {
-    //     const [value, setValue] = useState(initialValue)
+    // POSSIBLE NEXT VERSION, EXAMPLE CODE for editable Cell values
+    // const EditableCell = ({ value: XX, row: { index }, column: { id } }) => {
+    //     const initialValue = "XX";
+    //     const [value, setValue] = useState(initialValue);
     //
     //     const onClick = () => {
-    //         setValue(true)
-    //         console.log("onClick")
-    //     }
-    //     useEffect(() =>{
-    //         setValue(initialValue)
-    //     }, [initialValue])
+    //         setValue("YY");
+    //     };
+    //     useEffect(() => {
+    //         setValue(initialValue);
+    //     }, [initialValue]);
     //
-    //     return <button value={value} onClick={onClick}/>
-    // }
+    //     return <button onClick={onClick}>{value} </button>;
+    // };
     //
     // const defaultColumn = {
     //     Cell: EditableCell,
-    // }
+    // };
+
+    const calculateOnHoliday = (info, selectedColumn) => {
+        var peopleOnHoliday = 0;
+        for (let i = 0; i < info.rows.length; i++) {
+            if (
+                info.rows[i].values[selectedColumn] === holidaySymbols[0] ||
+                info.rows[i].values[selectedColumn] === holidaySymbols[1]
+            ) {
+                peopleOnHoliday += 1;
+            }
+        }
+        return (
+            <div>
+                <b className={styles.onHolidayNumber}>{peopleOnHoliday}</b>
+                <b className={styles.workingNumber}>
+                    {info.rows.length - peopleOnHoliday}
+                </b>
+            </div>
+        );
+    };
 
     const columns = useMemo(
         () => [
             {
                 Header: "Name",
                 accessor: "name",
+                Footer: (
+                    <div>
+                        <b className={styles.onHolidayTitle}>
+                            {onHolidayTitle}
+                        </b>
+                        <b className={styles.workingTitle}>{workerTitle}</b>
+                    </div>
+                ),
             },
             {
-                Header: "01",
+                Header: <div>01</div>,
                 accessor: "one",
+                Footer: (info) => calculateOnHoliday(info, "one"),
             },
             {
-                Header: "02",
+                Header: <div>02</div>,
                 accessor: "two",
+                Footer: (info) => calculateOnHoliday(info, "two"),
             },
             {
-                Header: "03",
+                Header: <div>03</div>,
                 accessor: "three",
+                Footer: (info) => calculateOnHoliday(info, "three"),
             },
             {
-                Header: "04",
+                Header: <div>04</div>,
                 accessor: "four",
+                Footer: (info) => calculateOnHoliday(info, "four"),
             },
             {
-                Header: "05",
+                Header: <div>05</div>,
                 accessor: "five",
+                Footer: (info) => calculateOnHoliday(info, "five"),
             },
             {
-                Header: "06",
+                Header: <div>06</div>,
                 accessor: "six",
+                Footer: (info) => calculateOnHoliday(info, "six"),
             },
             {
-                Header: "07",
+                Header: <div>07</div>,
                 accessor: "seven",
+                Footer: (info) => calculateOnHoliday(info, "seven"),
             },
             {
-                Header: "08",
+                Header: <div>08</div>,
                 accessor: "eight",
+                Footer: (info) => calculateOnHoliday(info, "eight"),
             },
             {
-                Header: "09",
+                Header: <div>09</div>,
                 accessor: "nine",
+                Footer: (info) => calculateOnHoliday(info, "nine"),
             },
             {
-                Header: "10",
+                Header: <div>10</div>,
                 accessor: "ten",
+                Footer: (info) => calculateOnHoliday(info, "ten"),
             },
             {
-                Header: "11",
+                Header: <div>11</div>,
                 accessor: "eleven",
+                Footer: (info) => calculateOnHoliday(info, "eleven"),
             },
             {
-                Header: "12",
+                Header: <div>12</div>,
                 accessor: "twelve",
+                Footer: (info) => calculateOnHoliday(info, "twelve"),
             },
             {
-                Header: "13",
+                Header: <div>13</div>,
                 accessor: "thirteen",
+                Footer: (info) => calculateOnHoliday(info, "thirteen"),
             },
             {
-                Header: "14",
+                Header: <div>14</div>,
                 accessor: "fourteen",
+                Footer: (info) => calculateOnHoliday(info, "fourteen"),
             },
             {
-                Header: "15",
+                Header: <div>15</div>,
                 accessor: "fifteen",
+                Footer: (info) => calculateOnHoliday(info, "fifteen"),
             },
             {
-                Header: "16",
+                Header: <div>16</div>,
                 accessor: "sixteen",
+                Footer: (info) => calculateOnHoliday(info, "sixteen"),
             },
             {
-                Header: "17",
+                Header: <div>17</div>,
                 accessor: "seventeen",
+                Footer: (info) => calculateOnHoliday(info, "seventeen"),
             },
             {
-                Header: "18",
+                Header: <div>18</div>,
                 accessor: "eighteen",
+                Footer: (info) => calculateOnHoliday(info, "eighteen"),
             },
             {
-                Header: "19",
+                Header: <div>19</div>,
                 accessor: "nineteen",
+                Footer: (info) => calculateOnHoliday(info, "nineteen"),
             },
             {
-                Header: "20",
+                Header: <div>20</div>,
                 accessor: "twenty",
+                Footer: (info) => calculateOnHoliday(info, "twenty"),
             },
             {
-                Header: "21",
+                Header: <div>21</div>,
                 accessor: "twentyone",
+                Footer: (info) => calculateOnHoliday(info, "twentyone"),
             },
             {
-                Header: "22",
+                Header: <div>22</div>,
                 accessor: "twentytwo",
+                Footer: (info) => calculateOnHoliday(info, "twentytwo"),
             },
             {
-                Header: "23",
+                Header: <div>23</div>,
                 accessor: "twentythree",
+                Footer: (info) => calculateOnHoliday(info, "twentythree"),
             },
             {
-                Header: "24",
+                Header: <div>24</div>,
                 accessor: "twentyfour",
+                Footer: (info) => calculateOnHoliday(info, "twentyfour"),
             },
             {
-                Header: "25",
+                Header: <div>25</div>,
                 accessor: "twentyfive",
+                Footer: (info) => calculateOnHoliday(info, "twentyfive"),
             },
             {
-                Header: "26",
+                Header: <div>26</div>,
                 accessor: "twentysix",
+                Footer: (info) => calculateOnHoliday(info, "twentysix"),
             },
             {
-                Header: "27",
+                Header: <div>27</div>,
                 accessor: "twentyseven",
+                Footer: (info) => calculateOnHoliday(info, "twentyseven"),
             },
             {
-                Header: "28",
+                Header: <div>28</div>,
                 accessor: "twentyeight",
+                Footer: (info) => calculateOnHoliday(info, "twentyeight"),
             },
             {
-                Header: "29",
+                Header: <div>29</div>,
                 accessor: "twentynine",
+                Footer: (info) => calculateOnHoliday(info, "twentynine"),
             },
             {
-                Header: "30",
+                Header: <div>30</div>,
                 accessor: "thirty",
+                Footer: (info) => calculateOnHoliday(info, "thirty"),
             },
             {
-                Header: "31",
+                Header: <div>31</div>,
                 accessor: "thirtyone",
+                Footer: (info) => calculateOnHoliday(info, "thirtyone"),
             },
         ],
         []
@@ -749,17 +714,21 @@ export default function Calendar({ vacationersAmount, save }) {
         getTableProps,
         getTableBodyProps,
         headerGroups,
+        footerGroups,
         rows,
         prepareRow,
         setHiddenColumns,
-    } = useTable({
-        columns,
-        data: allHolidaysSelectedTime,
-        // defaultColumn,
-        initialState: {
-            hiddenColumns: hiddenColumns,
+    } = useTable(
+        {
+            columns,
+            data: allHolidaysSelectedTime,
+            // defaultColumn,
+            initialState: {
+                hiddenColumns: hiddenColumns,
+            },
         },
-    });
+        useSortBy
+    );
 
     const changeMonth = (amount) => {
         let newMonth;
@@ -771,15 +740,12 @@ export default function Calendar({ vacationersAmount, save }) {
 
         let newDate = new Date(selectedDate.getFullYear(), newMonth, 1, 15);
         newDate.setUTCHours(0, 0, 0, 0);
-        console.log("newDate", newDate);
-
         setSelectedDate(newDate);
     };
 
     // This part could be refactored
     const isCommonHoliday = (value, index) => {
         let colorToAdd = null;
-        // console.log("value, index", value, index);
 
         if (index !== 0 && typeof value !== "number") {
             if (value === holidaySymbols[0]) {
@@ -817,13 +783,13 @@ export default function Calendar({ vacationersAmount, save }) {
         //     colorToAdd = "bisque";
         //     if (
         //         !teamToShow.id &&
-        //         value < PRESENCE_PERCENTAGE * vacationersAmount.length
+        //         value < presencePercentage * vacationersAmount.length
         //     ) {
         //         colorToAdd = "orange";
         //     }
         //     if (
         //         teamToShow.id &&
-        //         value < PRESENCE_PERCENTAGE * teamToShow.members.length
+        //         value < presencePercentage * teamToShow.members.length
         //     ) {
         //         colorToAdd = "orange";
         //     }
@@ -834,8 +800,8 @@ export default function Calendar({ vacationersAmount, save }) {
     const setBold = (value) => {
         if (
             typeof value === "number" ||
-            value === WORKER_TITLE ||
-            value === ON_HOLIDAY_TITLE
+            value === workerTitle ||
+            value === onHolidayTitle
         ) {
             return "bold";
         }
@@ -844,10 +810,10 @@ export default function Calendar({ vacationersAmount, save }) {
 
     // Setting the background colors of "On holiday" and "Working" rows
     const checkRow = (rowValue) => {
-        if (rowValue === ON_HOLIDAY_TITLE) {
-            return ON_HOLIDAY_COLOR;
-        } else if (rowValue === WORKER_TITLE) {
-            return WORKER_COLOR;
+        if (rowValue === onHolidayTitle) {
+            return onHolidayColor;
+        } else if (rowValue === workerTitle) {
+            return workerColor;
         }
     };
 
@@ -855,11 +821,11 @@ export default function Calendar({ vacationersAmount, save }) {
         if (
             today.getFullYear() === selectedDate.getFullYear() &&
             today.getMonth() === selectedDate.getMonth() &&
-            header === today.getDate()
+            parseInt(header) === today.getDate()
         ) {
-            return TODAY_COLOR;
+            return todayColor;
         } else {
-            return "aliceblue";
+            return headerBackgroundColor;
         }
     };
 
@@ -869,7 +835,7 @@ export default function Calendar({ vacationersAmount, save }) {
             today.getMonth() === selectedDate.getMonth() &&
             parseInt(value.Header) === today.getDate()
         ) {
-            return `solid 2px ${TODAY_COLOR}`;
+            return `solid 1px ${todayColor}`;
         } else {
             return "solid 1px black";
         }
@@ -1108,7 +1074,6 @@ export default function Calendar({ vacationersAmount, save }) {
                                     label={team.title}
                                     onClick={() => {
                                         setTeamToShow(team);
-                                        console.log("team", team);
                                     }}
                                 />
                             ) : (
@@ -1119,7 +1084,6 @@ export default function Calendar({ vacationersAmount, save }) {
                                     label={team.title}
                                     onClick={() => {
                                         setTeamToShow(team);
-                                        console.log("team", team);
                                     }}
                                 />
                             )
@@ -1167,7 +1131,7 @@ export default function Calendar({ vacationersAmount, save }) {
                             </FormLabel>
                             <RadioGroup
                                 row
-                                value={rowHeight}
+                                value={columnHeight}
                                 onChange={changeCalendarHeight}
                             >
                                 <FormControlLabel
@@ -1241,7 +1205,7 @@ export default function Calendar({ vacationersAmount, save }) {
                             <table
                                 {...getTableProps()}
                                 style={{
-                                    border: "solid 0.1em #73D8FF",
+                                    border: calendarBorderStyle,
                                     width: "100%",
                                 }}
                             >
@@ -1251,21 +1215,40 @@ export default function Calendar({ vacationersAmount, save }) {
                                             {...headerGroup.getHeaderGroupProps()}
                                         >
                                             {headerGroup.headers.map(
-                                                (column) => (
+                                                (column: any) => (
                                                     <th
-                                                        {...column.getHeaderProps()}
+                                                        {...column.getHeaderProps(
+                                                            column.getSortByToggleProps()
+                                                        )}
                                                         style={{
+                                                            textAlign: "left",
                                                             background:
                                                                 setTodayHeader(
                                                                     column.Header
                                                                 ),
-                                                            color: "black",
-                                                            width: "1em",
+                                                            color: `${headerColor}`,
                                                         }}
                                                     >
-                                                        {column.render(
-                                                            "Header"
-                                                        )}
+                                                        <div
+                                                            className={
+                                                                styles.headerNumberAndArrow
+                                                            }
+                                                        >
+                                                            {column.render(
+                                                                "Header"
+                                                            )}
+                                                            <span
+                                                                className={
+                                                                    styles.arrowSymbols
+                                                                }
+                                                            >
+                                                                {column.isSorted
+                                                                    ? column.isSortedDesc
+                                                                        ? "⬇️"
+                                                                        : "⬆️"
+                                                                    : ""}
+                                                            </span>
+                                                        </div>
                                                     </th>
                                                 )
                                             )}
@@ -1286,25 +1269,18 @@ export default function Calendar({ vacationersAmount, save }) {
                                             >
                                                 {row.cells.map(
                                                     (cell, index) => {
-                                                        // console.log(
-                                                        //     "info",
-                                                        //     cell.value,
-                                                        //     index
-                                                        // );
                                                         return (
                                                             <td
+                                                                // COLUMN STYLE
                                                                 style={{
                                                                     fontWeight:
                                                                         setBold(
                                                                             cell.value
                                                                         ),
-                                                                    paddingLeft:
-                                                                        "0.2em",
-                                                                    height: `${rowHeight}em`,
-                                                                    lineHeight:
-                                                                        "1em",
-                                                                    maxWidth:
-                                                                        "12em",
+                                                                    paddingLeft: `${columnPaddingWidth}`,
+                                                                    height: `${columnHeight}em`,
+                                                                    lineHeight: `${columnLineHeight}`,
+                                                                    maxWidth: `${columnMaxWidth}`,
                                                                     border: setTodayColumn(
                                                                         cell.column
                                                                     ),
@@ -1327,6 +1303,19 @@ export default function Calendar({ vacationersAmount, save }) {
                                         );
                                     })}
                                 </tbody>
+                                <tfoot className={styles.footerSection}>
+                                    {footerGroups.map((group) => (
+                                        <tr {...group.getFooterGroupProps()}>
+                                            {group.headers.map((column) => (
+                                                <td
+                                                    {...column.getFooterProps()}
+                                                >
+                                                    {column.render("Footer")}
+                                                </td>
+                                            ))}
+                                        </tr>
+                                    ))}
+                                </tfoot>
                             </table>
                         )}
                     </div>
