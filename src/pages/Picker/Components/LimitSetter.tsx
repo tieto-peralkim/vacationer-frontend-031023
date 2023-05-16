@@ -30,7 +30,6 @@ export default function LimitSetter({
             }
         }
         setAlertingDates(tooManyVacationers);
-        console.log("tooManyVacationers", tooManyVacationers);
     }, [dailyVacationers, workerLimit]);
 
     return (

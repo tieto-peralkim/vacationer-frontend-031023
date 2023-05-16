@@ -83,9 +83,6 @@ function NavigationBar() {
     useEffect(() => {
         axios
             .get(`${process.env.REACT_APP_ADDRESS}/checkStatus`)
-            .then(() => {
-                console.log("API OK");
-            })
             .catch((error) => {
                 setAPIError(true);
                 console.error("API ERROR:", error);
@@ -96,7 +93,6 @@ function NavigationBar() {
     }, []);
 
     useEffect(() => {
-        console.log("Updating user!");
         // Get username from base64 value of the cookie
         if (Cookies.get("payload")) {
             let userJSON = JSON.parse(Cookies.get("payload").substring(2));
@@ -132,8 +128,6 @@ function NavigationBar() {
                         } else {
                             setDeletedUserWarning(false);
                         }
-                    } else {
-                        console.log("No user received");
                     }
                 })
                 .catch((error) => {
@@ -143,8 +137,6 @@ function NavigationBar() {
                 .then(() => {
                     setShowSpinner(false);
                 });
-        } else {
-            console.log("No cookies!");
         }
     }, [newUserState]);
 

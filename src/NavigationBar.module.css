@@ -110,6 +110,8 @@
 }
 .footerRight {
   font-size: small;
+  text-decoration: none;
+  color: white;
 }
 .bugLink {
   text-decoration: none;
