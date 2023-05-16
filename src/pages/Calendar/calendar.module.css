@@ -1,18 +1,11 @@
-@media only screen and (max-width: 768px) {
-    .rowOnCalendar {
-        display: flex;
-        justify-content: center;
-    }
-}
-@media only screen and (min-width: 768px) {
-    .rowOnCalendar {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 0.5em;
-    }
+.rowOnCalendar {
+    display: flex;
+    justify-content: space-between;
 }
 .heightSettings{
     min-height: max-content;
+}
+.heightRadioButtons {
 }
 .heightTitle {
 }
@@ -21,8 +14,9 @@
     justify-content: center;
     display: flex;
 }
-.sizeRadioButtons {
+.showAllRadioButton {
 }
+
 .teamChips {
     padding-top: 20px;
     float: left;
@@ -45,10 +39,6 @@
 .wholeCalendar {
     display: flex;
     flex-direction: column;
-}
-.arrowSymbols {
-    font-size: small;
-    margin: 0;
 }
 .verticalCalendar {
     display: flex;
@@ -90,7 +80,10 @@
     justify-content: center;
     align-items: center;
 }
-
+.fullCalendar {
+    border: solid 0.1em #73D8FF;
+    width: 100%;
+}
 .content {
     display: flex;
     align-items: center;
@@ -157,36 +150,112 @@
     text-overflow: ellipsis;
 }
 
+
 .headerCont {
     display: flex;
     height: 20%;
     width: 100%;
     border-top: 2px solid black;
 }
-.headerNumberAndArrow {
-    display: flex;
-    justify-content: center;
+
+.headerNameTitle {
+    margin-left: 0;
 }
-.onHolidayTitle {
-    padding-left: 0.2em;
-    background-color: lightgreen;
+
+.nameColumn {
     display: flex;
+    justify-content: left;
 }
-.onHolidayNumber {
-    background-color: lightgreen;
-    display: flex;
-    justify-content: center;
+@media only screen and (min-width: 900px) {
+    .columnStyle {
+        text-align: center;
+        max-width: 12em; /*this value should be minimum 12em so the Name value can fit to the 1st column*/
+        padding-left: 0.2em;
+    }
+    .headerNumberAndArrow {
+        display: flex;
+        justify-content: left;
+    }
+    .headerArrowSymbols {
+        font-size: small;
+        margin: 0;
+    }
+    .onHolidayTitle {
+        padding-left: 0.2em;
+        background-color: lightgreen;
+        display: flex;
+    }
+    .onHolidayNumber {
+        background-color: lightgreen;
+        display: flex;
+        justify-content: center;
+    }
+    .workingTitle {
+        padding-left: 0.2em;
+        background-color: lightblue;
+        display: flex;
+    }
+    .workingNumber {
+        background-color: lightblue;
+        display: flex;
+        justify-content: center;
+    }
+    .workingNumberWarning {
+        background-color: lightblue;
+        display: flex;
+        justify-content: center;
+        color: red;
+    }
 }
-.workingTitle {
-    padding-left: 0.2em;
-    background-color: lightblue;
-    display: flex;
+@media only screen and (max-width: 900px) {
+    .columnStyle {
+        text-align: center;
+        max-width: 8em; /*this value should be minimum 12em so the Name value can fit to the 1st column*/
+        padding-left: 0.2em;
+        font-size: xx-small;
+    }
+    .headerNumberAndArrow {
+        display: flex;
+        justify-content: left;
+        font-size: xx-small;
+    }
+    .headerArrowSymbols {
+        font-size: xx-small;
+        margin: 0;
+    }
+    .onHolidayTitle {
+        padding-left: 0.2em;
+        background-color: lightgreen;
+        display: flex;
+        font-size: xx-small;
+    }
+    .onHolidayNumber {
+        background-color: lightgreen;
+        display: flex;
+        justify-content: center;
+        font-size: xx-small;
+    }
+    .workingTitle {
+        padding-left: 0.2em;
+        background-color: lightblue;
+        display: flex;
+        font-size: xx-small;
+    }
+    .workingNumber {
+        background-color: lightblue;
+        display: flex;
+        justify-content: center;
+        font-size: xx-small;
+    }
+    .workingNumberWarning {
+        background-color: lightblue;
+        display: flex;
+        justify-content: center;
+        color: red;
+        font-size: xx-small;
+    }
 }
-.workingNumber {
-    background-color: lightblue;
-    display: flex;
-    justify-content: center;
-}
+
 .dateColumn{
     display: flex;
     justify-content: flex-end;
