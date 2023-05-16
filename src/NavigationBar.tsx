@@ -341,15 +341,9 @@ function NavigationBar() {
                         )}
                     <div>Version: {process.env.REACT_APP_VERSION}</div>
 
-                    <a
-                        className={styles.footerRight}
-                        href={
-                            "https://tietoevry-experience.atlassian.net/wiki/spaces/SUP/pages/3824844801/Vacationer+Lomasovellus"
-                        }
-                        target={"_blank"}
-                    >
+                    <div className={styles.footerRight}>
                         Built by Tietoevry Cloud Digital Operations
-                    </a>
+                    </div>
                 </div>
             </footer>
         </div>
