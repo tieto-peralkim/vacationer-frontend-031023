@@ -32,7 +32,7 @@ import { Team } from "../Team/TeamPage/TeamPage";
 import { useOutletVariables } from "../../NavigationBar";
 import Typography from "@mui/material/Typography";
 
-export default function Calendar({ vacationersAmount, save }) {
+export default function Calendar({ allVacationers, save }) {
     interface ButtonProps {
         onClick?: MouseEventHandler<HTMLButtonElement>;
     }
@@ -54,7 +54,7 @@ export default function Calendar({ vacationersAmount, save }) {
     const workerTitle = "Working";
     const onHolidayTitle = "On holiday";
     const presencePercentage = 0.5;
-    const todayColor = "#e30f2d";
+    const todayColor = "orange";
     const headerColor = "black";
     const headerBackgroundColor = "lightgrey";
     const columnLineHeight = "1em";
@@ -91,7 +91,7 @@ export default function Calendar({ vacationersAmount, save }) {
         createdAt: new Date(),
         updatedAt: new Date(),
     });
-    const [selectedVacationers, setSelectedVacationers] = useState([]);
+    const [vacationersOfMonth, setVacationersOfMonth] = useState([]);
 
     // Fetching public holidays from API
     useEffect(() => {
@@ -112,6 +112,7 @@ export default function Calendar({ vacationersAmount, save }) {
 
     // TODO: reduce re-renders!
     useEffect(() => {
+        console.log("ne", vacationersOfMonth, allVacationers);
         // Showing all employees of the selected team, not only the ones with holiday
         if (showAllVacationers && teamToShow.id) {
             setMonthsHolidays(filterHolidays(), teamToShow.members);
@@ -122,13 +123,13 @@ export default function Calendar({ vacationersAmount, save }) {
         }
         // Showing all employees, not only the ones with holiday
         else if (showAllVacationers) {
-            setMonthsHolidays(selectedVacationers, vacationersAmount);
+            setMonthsHolidays(vacationersOfMonth, allVacationers);
         }
         // Showing only vacationing employees
         else {
-            setMonthsHolidays(selectedVacationers, null);
+            setMonthsHolidays(vacationersOfMonth, null);
         }
-    }, [showAllVacationers, teamToShow, selectedVacationers, holidaySymbols]);
+    }, [showAllVacationers, teamToShow, vacationersOfMonth, holidaySymbols]);
 
     // Setting calendar settings of selected user
     useEffect(() => {
@@ -188,7 +189,7 @@ export default function Calendar({ vacationersAmount, save }) {
         let filteredVacations = [];
         for (let i = 0; i < teamToShow.members.length; i++) {
             // Filter the team's holidays from all the holidays of the month
-            const filteredVacation = selectedVacationers.filter(
+            const filteredVacation = vacationersOfMonth.filter(
                 (vacationer) => vacationer.name === teamToShow.members[i].name
             );
             if (filteredVacation.length !== 0) {
@@ -210,7 +211,7 @@ export default function Calendar({ vacationersAmount, save }) {
                 { withCredentials: true }
             )
             .then((response) => {
-                setSelectedVacationers(response.data);
+                setVacationersOfMonth(response.data);
                 setShowSpinner(false);
             })
             .catch((error) => {
@@ -480,7 +481,7 @@ export default function Calendar({ vacationersAmount, save }) {
     // };
 
     const calculateFootersValues = (info, selectedColumn) => {
-        var peopleOnHoliday = 0;
+        let peopleOnHoliday = 0;
         for (let i = 0; i < info.rows.length; i++) {
             if (
                 info.rows[i].values[selectedColumn] === holidaySymbols[0] ||
@@ -489,16 +490,16 @@ export default function Calendar({ vacationersAmount, save }) {
                 peopleOnHoliday += 1;
             }
         }
-        var peopleWorking = info.rows.length - peopleOnHoliday;
+        let peopleWorking = info.rows.length - peopleOnHoliday;
 
         return (
             <div>
                 <b className={styles.onHolidayNumber}>{peopleOnHoliday}</b>
                 <b
                     className={
-                        peopleWorking !== 0
-                            ? styles.workingNumber
-                            : styles.workingNumberWarning
+                        peopleWorking === 0 && peopleOnHoliday !== 0
+                            ? styles.workingNumberWarning
+                            : styles.workingNumber
                     }
                 >
                     {peopleWorking}
@@ -681,7 +682,7 @@ export default function Calendar({ vacationersAmount, save }) {
                 Footer: (info) => calculateFootersValues(info, "thirtyone"),
             },
         ],
-        [holidaySymbols]
+        [holidaySymbols, showAllVacationers]
     );
 
     const {
@@ -757,7 +758,7 @@ export default function Calendar({ vacationersAmount, save }) {
         //     colorToAdd = "bisque";
         //     if (
         //         !teamToShow.id &&
-        //         value < presencePercentage * vacationersAmount.length
+        //         value < presencePercentage * allVacationers.length
         //     ) {
         //         colorToAdd = "orange";
         //     }
@@ -815,9 +816,9 @@ export default function Calendar({ vacationersAmount, save }) {
         let year = selectedDate.getFullYear();
         let month = selectedDate.getMonth();
         let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
-        let vacationersAmount1 = 0;
+        let vacationersAmount = 0;
 
-        selectedVacationers.forEach((vacationer) => {
+        vacationersOfMonth.forEach((vacationer) => {
             if (teamToShow.id) {
                 if (
                     date.toISOString() >= vacationer.vacations.start &&
@@ -825,7 +826,7 @@ export default function Calendar({ vacationersAmount, save }) {
                 ) {
                     teamToShow.members.forEach((member) => {
                         if (member.name === vacationer.name) {
-                            vacationersAmount1++;
+                            vacationersAmount++;
                         }
                     });
                 }
@@ -834,12 +835,12 @@ export default function Calendar({ vacationersAmount, save }) {
                     date.toISOString() >= vacationer.vacations.start &&
                     date.toISOString() <= vacationer.vacations.end
                 ) {
-                    vacationersAmount1++;
+                    vacationersAmount++;
                 }
             }
         });
 
-        return vacationersAmount1;
+        return vacationersAmount;
     };
 
     const countWorkers = (dayNumber) => {
@@ -856,7 +857,7 @@ export default function Calendar({ vacationersAmount, save }) {
                     }
                 });
             });
-            vacationersAmount.forEach((vacationer) => {
+            allVacationers.forEach((vacationer) => {
                 if (!allNames.includes(vacationer.name)) {
                     allNames.push(vacationer.name);
                 }
@@ -871,8 +872,8 @@ export default function Calendar({ vacationersAmount, save }) {
         let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
         let vacationerNames = [];
 
-        selectedVacationers.forEach((vacationer) => {
-            // if the given day is included in the vacationers holiday add to vacationersAmount
+        vacationersOfMonth.forEach((vacationer) => {
+            // if the given day is included in the vacationers holiday add to allVacationers
             if (teamToShow.id) {
                 if (
                     date.toISOString() >= vacationer.vacations.start &&
@@ -925,7 +926,7 @@ export default function Calendar({ vacationersAmount, save }) {
                     }
                 });
             });
-            vacationersAmount.forEach((vacationer) => {
+            allVacationers.forEach((vacationer) => {
                 if (!onHolidayNames.includes(vacationer.name)) {
                     if (!workerNames.includes(vacationer.name)) {
                         workerNames.push(vacationer.name);
@@ -988,10 +989,7 @@ export default function Calendar({ vacationersAmount, save }) {
                                 label="All teams"
                                 color="secondary"
                                 onClick={() => {
-                                    setMonthsHolidays(
-                                        selectedVacationers,
-                                        null
-                                    );
+                                    setMonthsHolidays(vacationersOfMonth, null);
                                     setTeamToShow({
                                         id: "",
                                         title: "",
@@ -1012,10 +1010,7 @@ export default function Calendar({ vacationersAmount, save }) {
                                 label="All teams"
                                 color="secondary"
                                 onClick={() => {
-                                    setMonthsHolidays(
-                                        selectedVacationers,
-                                        null
-                                    );
+                                    setMonthsHolidays(vacationersOfMonth, null);
                                     setTeamToShow({
                                         id: "",
                                         title: "",

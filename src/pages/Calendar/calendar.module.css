@@ -201,10 +201,10 @@
         justify-content: center;
     }
     .workingNumberWarning {
-        background-color: lightblue;
+        background-color: red;
         display: flex;
         justify-content: center;
-        color: red;
+        color: white;
     }
 }
 @media only screen and (max-width: 900px) {
@@ -248,10 +248,10 @@
         font-size: xx-small;
     }
     .workingNumberWarning {
-        background-color: lightblue;
+        background-color: red;
         display: flex;
         justify-content: center;
-        color: red;
+        color: white;
         font-size: xx-small;
     }
 }
