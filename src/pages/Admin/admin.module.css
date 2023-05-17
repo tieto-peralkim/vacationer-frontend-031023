@@ -16,11 +16,10 @@ ul li {
     margin: 2em 1em 2em 4em;
 }
 .instructionBox {
-    border: solid 1px blue;
-    border-radius: 1em;
-    padding: 1.3em;
-    margin: 0.3em;
-    max-width: 500px;
+    margin: 2em;
+}
+.instructionBoxSummary {
+    background-color: gainsboro;
 }
 .borderedBox {
     border: solid 1px blue;

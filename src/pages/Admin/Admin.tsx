@@ -18,6 +18,7 @@ import AlertDialog from "../Dialogs/AlertDialog";
 import { Navigate } from "react-router-dom";
 import { useOutletVariables, Vacationer } from "../../NavigationBar";
 import { Team } from "../Team/TeamPage/TeamPage";
+import { ExpandCircleDown } from "@mui/icons-material";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
@@ -275,36 +276,44 @@ export default function Admin() {
 
     return user && user.admin ? (
         <div className={styles.content}>
-            <div className={styles.instructionBox}>
-                <h3>Welcome to the admin page.</h3>
-                <p>
-                    Once user or team is deleted, they are moved to "deleted
-                    lists". Deleted lists can be seen on this page in User and
-                    Team box. One month from deletion they are removed
-                    automatically from the database.
-                </p>
-                <p>On this page you can:</p>
-                <ul>
-                    <li>Add users (only on QA and local)</li>
-                    <li>Delete users = add user to "deleted list".</li>
-                    <li>Add and remove users admin rights</li>
-                    <li>Return users and teams from "deleted lists"</li>
-                    <li>
-                        Remove users and teams from database = removing from
-                        "deleted lists"
-                    </li>
-                    <li>Send Slack test messages on QA and local.</li>
-                </ul>
-                <p>Admins can also:</p>
-                <ul>
-                    <li>
-                        On main page: Add, edit and remove vacations of all the
-                        users (on QA and local). Go to your holidays and select
-                        checkbox on Admin button. Then you can select user.
-                    </li>
-                    <li>On team page: Edit and delete all teams</li>
-                </ul>
-            </div>
+            <Accordion disableGutters className={styles.instructionBox}>
+                <AccordionSummary
+                    className={styles.instructionBoxSummary}
+                    expandIcon={<ExpandCircleDown />}
+                >
+                    <h3>Welcome to Admin page</h3>
+                </AccordionSummary>
+                <AccordionDetails>
+                    <p>
+                        Once user or team is deleted, they are moved to "deleted
+                        lists". Deleted lists can be seen on this page in User
+                        and Team box. One month from deletion they are removed
+                        automatically from the database.
+                    </p>
+                    <p>On this page you can:</p>
+                    <ul>
+                        <li>Add users (only on QA and local)</li>
+                        <li>Delete users = add user to "deleted list".</li>
+                        <li>Add and remove users admin rights</li>
+                        <li>Return users and teams from "deleted lists"</li>
+                        <li>
+                            Remove users and teams from database = removing from
+                            "deleted lists"
+                        </li>
+                        <li>Send Slack test messages on QA and local.</li>
+                    </ul>
+                    <p>Admins can also:</p>
+                    <ul>
+                        <li>
+                            On main page: Add, edit and remove vacations of all
+                            the users (on QA and local). Go to your holidays and
+                            select checkbox on Admin button. Then you can select
+                            user.
+                        </li>
+                        <li>On team page: Edit and delete all teams</li>
+                    </ul>
+                </AccordionDetails>
+            </Accordion>
             <div className={styles.borderedBoxes}>
                 <div className={styles.borderedBox}>
                     <InputLabel>{createTitle}</InputLabel>
