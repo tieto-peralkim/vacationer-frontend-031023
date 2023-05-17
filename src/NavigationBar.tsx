@@ -265,7 +265,7 @@ function NavigationBar() {
                                             <SettingsIcon />
                                         </ListItemIcon>
                                         <div className={styles.navigationText}>
-                                            Admin settings
+                                            Admin
                                         </div>
                                     </ListItem>
                                 </Link>

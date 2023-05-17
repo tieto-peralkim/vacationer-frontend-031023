@@ -8,9 +8,18 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+ul li {
+    list-style-type: circle;
+}
 .slackBox {
     width: max-content;
     margin: 2em 1em 2em 4em;
+}
+.instructionBox {
+    border: solid 1px blue;
+    border-radius: 1em;
+    padding: 1.3em;
+    margin: 0.3em;
 }
 .borderedBox {
     border: solid 1px blue;

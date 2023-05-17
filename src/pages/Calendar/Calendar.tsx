@@ -112,7 +112,6 @@ export default function Calendar({ allVacationers, save }) {
 
     // TODO: reduce re-renders!
     useEffect(() => {
-        console.log("ne", vacationersOfMonth, allVacationers);
         // Showing all employees of the selected team, not only the ones with holiday
         if (showAllVacationers && teamToShow.id) {
             setMonthsHolidays(filterHolidays(), teamToShow.members);

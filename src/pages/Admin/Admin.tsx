@@ -54,7 +54,7 @@ export default function Admin() {
         useState(false);
     const [openReturnUserAlert, setOpenReturnUserAlert] = useState(false);
     const [openReturnTeamAlert, setOpenReturnTeamAlert] = useState(false);
-    const CREATE_TITLE = "Create user";
+    const createTitle = "Create user";
 
     const emptySelections = () => {
         setSelectedDeletedUser(null);
@@ -275,9 +275,33 @@ export default function Admin() {
 
     return user && user.admin ? (
         <div className={styles.content}>
+            <div className={styles.instructionBox}>
+                <h3>Welcome to the admin page.</h3>
+                <p>
+                    Once user or team is deleted, they are moved to "deleted
+                    lists".
+                    <br />
+                    Deleted lists can be seen on this page in User and Team box.
+                    <br />
+                    One month from deletion they are removed automatically from
+                    the database.
+                </p>
+                <p>On this page you can:</p>
+                <ul>
+                    <li>Add users (only on QA and local)</li>
+                    <li>Delete users = add user to "deleted list".</li>
+                    <li>Add and remove users admin rights</li>
+                    <li>Return users and teams from "deleted lists"</li>
+                    <li>
+                        Remove users and teams from database = removing from
+                        "deleted lists"
+                    </li>
+                    <li>Send Slack test messages on QA and local.</li>
+                </ul>
+            </div>
             <div className={styles.borderedBoxes}>
                 <div className={styles.borderedBox}>
-                    <InputLabel>{CREATE_TITLE}</InputLabel>
+                    <InputLabel>{createTitle}</InputLabel>
                     <div>
                         <TextField
                             required
@@ -297,7 +321,7 @@ export default function Admin() {
                                 variant="contained"
                                 disabled={APIError || isProdVersion}
                             >
-                                {CREATE_TITLE}
+                                {createTitle}
                             </Button>
                         </div>
                     </div>
@@ -359,7 +383,7 @@ export default function Admin() {
                 </div>
                 <div className={styles.borderedBox}>
                     <h3>User</h3>
-                    <InputLabel>Deleted users list</InputLabel>
+                    <InputLabel>Deleted list</InputLabel>
                     <div className={styles.topMargin}>
                         <FormControl>
                             <InputLabel>Choose user</InputLabel>
@@ -407,7 +431,7 @@ export default function Admin() {
                 </div>
                 <div className={styles.borderedBox}>
                     <h3>Team</h3>
-                    <InputLabel>Deleted teams list</InputLabel>
+                    <InputLabel>Deleted list</InputLabel>
                     <div className={styles.topMargin}>
                         <FormControl>
                             <InputLabel>Choose team</InputLabel>
@@ -457,7 +481,7 @@ export default function Admin() {
                         <p>
                             Sends a test message to Slack channel 'vacationer'.
                         </p>
-                        <p>Enabled on QA and local. DON'T SPAM!</p>
+                        <p>DON'T SPAM!</p>
                         <Button
                             onClick={() => setOpenSendSlackAlert(true)}
                             variant={"contained"}
