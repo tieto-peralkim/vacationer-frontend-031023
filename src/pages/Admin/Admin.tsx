@@ -278,7 +278,9 @@ export default function Admin() {
         <div className={styles.content}>
             <Accordion disableGutters className={styles.instructionBox}>
                 <AccordionSummary
-                    className={styles.instructionBoxSummary}
+                    sx={{
+                        bgcolor: "gainsboro",
+                    }}
                     expandIcon={<ExpandCircleDown />}
                 >
                     <h3>Welcome to Admin page</h3>
@@ -491,12 +493,18 @@ export default function Admin() {
             </div>
             <div className={styles.slackBox}>
                 <Accordion>
-                    <AccordionSummary>Slack test message</AccordionSummary>
+                    <AccordionSummary
+                        sx={{
+                            bgcolor: "gainsboro",
+                        }}
+                    >
+                        Slack test message
+                    </AccordionSummary>
                     <AccordionDetails>
                         <p>
                             Sends a test message to Slack channel 'vacationer'.
                         </p>
-                        <p>DON'T SPAM!</p>
+                        <p>Use only if needed, DON'T spam!</p>
                         <Button
                             onClick={() => setOpenSendSlackAlert(true)}
                             variant={"contained"}
