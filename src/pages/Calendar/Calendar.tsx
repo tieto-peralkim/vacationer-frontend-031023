@@ -486,7 +486,7 @@ export default function Calendar({ allVacationers, save }) {
     //     Cell: EditableCell,
     // };
 
-    const calculateFootersValues = (info, selectedColumn, zeroAlarm) => {
+    function CalculateFootersValues({ info, selectedColumn, zeroAlarm }) {
         let peopleOnHoliday = 0;
         for (let i = 0; i < info.rows.length; i++) {
             if (
@@ -516,7 +516,7 @@ export default function Calendar({ allVacationers, save }) {
                 </b>
             </div>
         );
-    };
+    }
 
     const sortItems = (prev, curr, columnId) => {
         if (
@@ -558,256 +558,343 @@ export default function Calendar({ allVacationers, save }) {
             {
                 Header: "01",
                 accessor: "one",
-                Footer: (info) =>
-                    calculateFootersValues(info, "one", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"one"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "02",
                 accessor: "two",
-                Footer: (info) =>
-                    calculateFootersValues(info, "two", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"two"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "03",
                 accessor: "three",
-                Footer: (info) =>
-                    calculateFootersValues(info, "three", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"three"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "04",
                 accessor: "four",
-                Footer: (info) =>
-                    calculateFootersValues(info, "four", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"four"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "05",
                 accessor: "five",
-                Footer: (info) =>
-                    calculateFootersValues(info, "five", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"five"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "06",
                 accessor: "six",
-                Footer: (info) =>
-                    calculateFootersValues(info, "six", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"six"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "07",
                 accessor: "seven",
-                Footer: (info) =>
-                    calculateFootersValues(info, "seven", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"seven"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "08",
                 accessor: "eight",
-                Footer: (info) =>
-                    calculateFootersValues(info, "eight", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"eight"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "09",
                 accessor: "nine",
-                Footer: (info) =>
-                    calculateFootersValues(info, "nine", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"nine"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "10",
                 accessor: "ten",
-                Footer: (info) =>
-                    calculateFootersValues(info, "ten", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"ten"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "11",
                 accessor: "eleven",
-                Footer: (info) =>
-                    calculateFootersValues(info, "eleven", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"eleven"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "12",
                 accessor: "twelve",
-                Footer: (info) =>
-                    calculateFootersValues(info, "twelve", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twelve"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "13",
                 accessor: "thirteen",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "thirteen",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"thirteen"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "14",
                 accessor: "fourteen",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "fourteen",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"fourteen"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "15",
                 accessor: "fifteen",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "fifteen",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"fifteen"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "16",
                 accessor: "sixteen",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "sixteen",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"sixteen"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "17",
                 accessor: "seventeen",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "seventeen",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"seventeen"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "18",
                 accessor: "eighteen",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "eighteen",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"eighteen"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "19",
                 accessor: "nineteen",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "nineteen",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"nineteen"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "20",
                 accessor: "twenty",
-                Footer: (info) =>
-                    calculateFootersValues(info, "twenty", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twenty"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "21",
                 accessor: "twentyone",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentyone",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyone"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "22",
                 accessor: "twentytwo",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentytwo",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentytwo"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "23",
                 accessor: "twentythree",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentythree",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentythree"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "24",
                 accessor: "twentyfour",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentyfour",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyfour"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "25",
                 accessor: "twentyfive",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentyfive",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyfive"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "26",
                 accessor: "twentysix",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentysix",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentysix"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "27",
                 accessor: "twentyseven",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentyseven",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyseven"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "28",
                 accessor: "twentyeight",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentyeight",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyeight"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "29",
                 accessor: "twentynine",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "twentynine",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentynine"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "30",
                 accessor: "thirty",
-                Footer: (info) =>
-                    calculateFootersValues(info, "thirty", setZeroWorkingAlarm),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"thirty"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
             {
                 Header: "31",
                 accessor: "thirtyone",
-                Footer: (info) =>
-                    calculateFootersValues(
-                        info,
-                        "thirtyone",
-                        setZeroWorkingAlarm
-                    ),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"thirtyone"}
+                        zeroAlarm={setZeroWorkingAlarm}
+                    />
+                ),
             },
         ],
         [holidaySymbols, showAllVacationers]
@@ -825,6 +912,7 @@ export default function Calendar({ allVacationers, save }) {
         {
             columns,
             data: allHolidaysSelectedTime,
+            // POSSIBLE NEXT VERSION, EXAMPLE CODE for editable Cell values
             // defaultColumn,
             initialState: {
                 hiddenColumns: hiddenColumns,
