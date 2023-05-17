@@ -9,7 +9,7 @@ export default function Combo() {
     const [save, setSave] = useState(false);
     const { user, APIError, setAPIError, newUserState, updateUser } =
         useOutletVariables();
-    const [vacationersAmount, setVacationersAmount] = useState([]);
+    const [allVacationers, setAllVacationers] = useState([]);
 
     // When data has changed, update simple list of vacationers & update user
     useEffect(() => {
@@ -19,7 +19,7 @@ export default function Combo() {
                 withCredentials: true,
             })
             .then((response) => {
-                setVacationersAmount(response.data);
+                setAllVacationers(response.data);
             })
             .catch((error) => {
                 setAPIError(true);
@@ -34,11 +34,11 @@ export default function Combo() {
         <>
             <div className={styles.content}>
                 <Picker
-                    vacationersAmount={vacationersAmount}
+                    allVacationers={allVacationers}
                     save={save}
                     setSave={setSave}
                 />
-                <Calendar vacationersAmount={vacationersAmount} save={save} />
+                <Calendar allVacationers={allVacationers} save={save} />
             </div>
         </>
     );

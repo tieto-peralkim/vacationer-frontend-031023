@@ -31,7 +31,7 @@ export interface Holiday {
     comment: string;
     confirmed: boolean;
 }
-export default function Picker({ save, setSave, vacationersAmount }) {
+export default function Picker({ save, setSave, allVacationers }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
     const NUMBER_OF_SHOWN_DEFAULT = 2;
@@ -287,12 +287,12 @@ export default function Picker({ save, setSave, vacationersAmount }) {
     };
 
     const selectVacationer = (name) => {
-        if (vacationersAmount) {
+        if (allVacationers) {
             let vacationerFound;
 
-            for (let i = 0; i < vacationersAmount.length; i++) {
-                if (vacationersAmount[i].name === name) {
-                    vacationerFound = vacationersAmount[i];
+            for (let i = 0; i < allVacationers.length; i++) {
+                if (allVacationers[i].name === name) {
+                    vacationerFound = allVacationers[i];
                     break;
                 }
             }
@@ -425,16 +425,14 @@ export default function Picker({ save, setSave, vacationersAmount }) {
                                                         )
                                                     }
                                                 >
-                                                    {vacationersAmount.map(
-                                                        (h) => (
-                                                            <MenuItem
-                                                                key={h.id}
-                                                                value={h.name}
-                                                            >
-                                                                {h.name}
-                                                            </MenuItem>
-                                                        )
-                                                    )}
+                                                    {allVacationers.map((h) => (
+                                                        <MenuItem
+                                                            key={h.id}
+                                                            value={h.name}
+                                                        >
+                                                            {h.name}
+                                                        </MenuItem>
+                                                    ))}
                                                 </Select>
                                             </FormControl>
                                         )}

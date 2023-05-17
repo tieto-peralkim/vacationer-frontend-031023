@@ -31,9 +31,8 @@ import DatePicker from "react-datepicker";
 import { Team } from "../Team/TeamPage/TeamPage";
 import { useOutletVariables } from "../../NavigationBar";
 import Typography from "@mui/material/Typography";
-import { ScreenRotationAlt } from "@mui/icons-material";
 
-export default function Calendar({ vacationersAmount, save }) {
+export default function Calendar({ allVacationers, save }) {
     interface ButtonProps {
         onClick?: MouseEventHandler<HTMLButtonElement>;
     }
@@ -54,13 +53,8 @@ export default function Calendar({ vacationersAmount, save }) {
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
     const workerTitle = "Working";
     const onHolidayTitle = "On holiday";
-    const workerColor = "lightblue";
-    const onHolidayColor = "lightgreen";
     const presencePercentage = 0.5;
-    const todayColor = "#e30f2d";
-    const calendarBorderStyle = "solid 0.1em #73D8FF";
-    const columnMaxWidth = "12em";
-    const columnPaddingWidth = "0.2em";
+    const todayColor = "orange";
     const headerColor = "black";
     const headerBackgroundColor = "lightgrey";
     const columnLineHeight = "1em";
@@ -97,8 +91,7 @@ export default function Calendar({ vacationersAmount, save }) {
         createdAt: new Date(),
         updatedAt: new Date(),
     });
-    const [selectedVacationers, setSelectedVacationers] = useState([]);
-    const [vacationersCount, setVacationersCount] = useState(0);
+    const [vacationersOfMonth, setVacationersOfMonth] = useState([]);
 
     // Fetching public holidays from API
     useEffect(() => {
@@ -119,23 +112,24 @@ export default function Calendar({ vacationersAmount, save }) {
 
     // TODO: reduce re-renders!
     useEffect(() => {
+        console.log("ne", vacationersOfMonth, allVacationers);
         // Showing all employees of the selected team, not only the ones with holiday
         if (showAllVacationers && teamToShow.id) {
             setMonthsHolidays(filterHolidays(), teamToShow.members);
         }
-        // Showing all vacationing employees of the selected team
+        // Showing only vacationing employees of the selected team
         else if (teamToShow.id) {
             setMonthsHolidays(filterHolidays(), null);
         }
         // Showing all employees, not only the ones with holiday
         else if (showAllVacationers) {
-            setMonthsHolidays(selectedVacationers, vacationersAmount);
+            setMonthsHolidays(vacationersOfMonth, allVacationers);
         }
-        // Showing all vacationing employees
+        // Showing only vacationing employees
         else {
-            setMonthsHolidays(selectedVacationers, null);
+            setMonthsHolidays(vacationersOfMonth, null);
         }
-    }, [showAllVacationers, teamToShow, selectedVacationers, holidaySymbols]);
+    }, [showAllVacationers, teamToShow, vacationersOfMonth, holidaySymbols]);
 
     // Setting calendar settings of selected user
     useEffect(() => {
@@ -195,7 +189,7 @@ export default function Calendar({ vacationersAmount, save }) {
         let filteredVacations = [];
         for (let i = 0; i < teamToShow.members.length; i++) {
             // Filter the team's holidays from all the holidays of the month
-            const filteredVacation = selectedVacationers.filter(
+            const filteredVacation = vacationersOfMonth.filter(
                 (vacationer) => vacationer.name === teamToShow.members[i].name
             );
             if (filteredVacation.length !== 0) {
@@ -217,7 +211,7 @@ export default function Calendar({ vacationersAmount, save }) {
                 { withCredentials: true }
             )
             .then((response) => {
-                setSelectedVacationers(response.data);
+                setVacationersOfMonth(response.data);
                 setShowSpinner(false);
             })
             .catch((error) => {
@@ -228,7 +222,7 @@ export default function Calendar({ vacationersAmount, save }) {
     };
 
     // Creates the employee rows, vacationingEmployees is the list of employees with holidays,
-    // allEmployees is the list of all employees in db
+    // allEmployees is the list of all users of selected scope (selected team or all users)
     const setMonthsHolidays = (vacationingEmployees, allEmployees) => {
         let pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
@@ -486,8 +480,8 @@ export default function Calendar({ vacationersAmount, save }) {
     //     Cell: EditableCell,
     // };
 
-    const calculateOnHoliday = (info, selectedColumn) => {
-        var peopleOnHoliday = 0;
+    const calculateFootersValues = (info, selectedColumn) => {
+        let peopleOnHoliday = 0;
         for (let i = 0; i < info.rows.length; i++) {
             if (
                 info.rows[i].values[selectedColumn] === holidaySymbols[0] ||
@@ -496,11 +490,19 @@ export default function Calendar({ vacationersAmount, save }) {
                 peopleOnHoliday += 1;
             }
         }
+        let peopleWorking = info.rows.length - peopleOnHoliday;
+
         return (
             <div>
                 <b className={styles.onHolidayNumber}>{peopleOnHoliday}</b>
-                <b className={styles.workingNumber}>
-                    {info.rows.length - peopleOnHoliday}
+                <b
+                    className={
+                        peopleWorking === 0 && peopleOnHoliday !== 0
+                            ? styles.workingNumberWarning
+                            : styles.workingNumber
+                    }
+                >
+                    {peopleWorking}
                 </b>
             </div>
         );
@@ -509,7 +511,7 @@ export default function Calendar({ vacationersAmount, save }) {
     const columns = useMemo(
         () => [
             {
-                Header: "Name",
+                Header: <div>Name</div>,
                 accessor: "name",
                 Footer: (
                     <div>
@@ -519,164 +521,168 @@ export default function Calendar({ vacationersAmount, save }) {
                         <b className={styles.workingTitle}>{workerTitle}</b>
                     </div>
                 ),
+                // styling of "Name" column items
+                Cell: (s) => (
+                    <span className={styles.nameColumn}>{s.value}</span>
+                ),
             },
             {
                 Header: "01",
                 accessor: "one",
-                Footer: (info) => calculateOnHoliday(info, "one"),
+                Footer: (info) => calculateFootersValues(info, "one"),
             },
             {
                 Header: "02",
                 accessor: "two",
-                Footer: (info) => calculateOnHoliday(info, "two"),
+                Footer: (info) => calculateFootersValues(info, "two"),
             },
             {
                 Header: "03",
                 accessor: "three",
-                Footer: (info) => calculateOnHoliday(info, "three"),
+                Footer: (info) => calculateFootersValues(info, "three"),
             },
             {
                 Header: "04",
                 accessor: "four",
-                Footer: (info) => calculateOnHoliday(info, "four"),
+                Footer: (info) => calculateFootersValues(info, "four"),
             },
             {
                 Header: "05",
                 accessor: "five",
-                Footer: (info) => calculateOnHoliday(info, "five"),
+                Footer: (info) => calculateFootersValues(info, "five"),
             },
             {
                 Header: "06",
                 accessor: "six",
-                Footer: (info) => calculateOnHoliday(info, "six"),
+                Footer: (info) => calculateFootersValues(info, "six"),
             },
             {
                 Header: "07",
                 accessor: "seven",
-                Footer: (info) => calculateOnHoliday(info, "seven"),
+                Footer: (info) => calculateFootersValues(info, "seven"),
             },
             {
                 Header: "08",
                 accessor: "eight",
-                Footer: (info) => calculateOnHoliday(info, "eight"),
+                Footer: (info) => calculateFootersValues(info, "eight"),
             },
             {
                 Header: "09",
                 accessor: "nine",
-                Footer: (info) => calculateOnHoliday(info, "nine"),
+                Footer: (info) => calculateFootersValues(info, "nine"),
             },
             {
                 Header: "10",
                 accessor: "ten",
-                Footer: (info) => calculateOnHoliday(info, "ten"),
+                Footer: (info) => calculateFootersValues(info, "ten"),
             },
             {
                 Header: "11",
                 accessor: "eleven",
-                Footer: (info) => calculateOnHoliday(info, "eleven"),
+                Footer: (info) => calculateFootersValues(info, "eleven"),
             },
             {
                 Header: "12",
                 accessor: "twelve",
-                Footer: (info) => calculateOnHoliday(info, "twelve"),
+                Footer: (info) => calculateFootersValues(info, "twelve"),
             },
             {
                 Header: "13",
                 accessor: "thirteen",
-                Footer: (info) => calculateOnHoliday(info, "thirteen"),
+                Footer: (info) => calculateFootersValues(info, "thirteen"),
             },
             {
                 Header: "14",
                 accessor: "fourteen",
-                Footer: (info) => calculateOnHoliday(info, "fourteen"),
+                Footer: (info) => calculateFootersValues(info, "fourteen"),
             },
             {
                 Header: "15",
                 accessor: "fifteen",
-                Footer: (info) => calculateOnHoliday(info, "fifteen"),
+                Footer: (info) => calculateFootersValues(info, "fifteen"),
             },
             {
                 Header: "16",
                 accessor: "sixteen",
-                Footer: (info) => calculateOnHoliday(info, "sixteen"),
+                Footer: (info) => calculateFootersValues(info, "sixteen"),
             },
             {
                 Header: "17",
                 accessor: "seventeen",
-                Footer: (info) => calculateOnHoliday(info, "seventeen"),
+                Footer: (info) => calculateFootersValues(info, "seventeen"),
             },
             {
                 Header: "18",
                 accessor: "eighteen",
-                Footer: (info) => calculateOnHoliday(info, "eighteen"),
+                Footer: (info) => calculateFootersValues(info, "eighteen"),
             },
             {
                 Header: "19",
                 accessor: "nineteen",
-                Footer: (info) => calculateOnHoliday(info, "nineteen"),
+                Footer: (info) => calculateFootersValues(info, "nineteen"),
             },
             {
                 Header: "20",
                 accessor: "twenty",
-                Footer: (info) => calculateOnHoliday(info, "twenty"),
+                Footer: (info) => calculateFootersValues(info, "twenty"),
             },
             {
                 Header: "21",
                 accessor: "twentyone",
-                Footer: (info) => calculateOnHoliday(info, "twentyone"),
+                Footer: (info) => calculateFootersValues(info, "twentyone"),
             },
             {
                 Header: "22",
                 accessor: "twentytwo",
-                Footer: (info) => calculateOnHoliday(info, "twentytwo"),
+                Footer: (info) => calculateFootersValues(info, "twentytwo"),
             },
             {
                 Header: "23",
                 accessor: "twentythree",
-                Footer: (info) => calculateOnHoliday(info, "twentythree"),
+                Footer: (info) => calculateFootersValues(info, "twentythree"),
             },
             {
                 Header: "24",
                 accessor: "twentyfour",
-                Footer: (info) => calculateOnHoliday(info, "twentyfour"),
+                Footer: (info) => calculateFootersValues(info, "twentyfour"),
             },
             {
                 Header: "25",
                 accessor: "twentyfive",
-                Footer: (info) => calculateOnHoliday(info, "twentyfive"),
+                Footer: (info) => calculateFootersValues(info, "twentyfive"),
             },
             {
                 Header: "26",
                 accessor: "twentysix",
-                Footer: (info) => calculateOnHoliday(info, "twentysix"),
+                Footer: (info) => calculateFootersValues(info, "twentysix"),
             },
             {
                 Header: "27",
                 accessor: "twentyseven",
-                Footer: (info) => calculateOnHoliday(info, "twentyseven"),
+                Footer: (info) => calculateFootersValues(info, "twentyseven"),
             },
             {
                 Header: "28",
                 accessor: "twentyeight",
-                Footer: (info) => calculateOnHoliday(info, "twentyeight"),
+                Footer: (info) => calculateFootersValues(info, "twentyeight"),
             },
             {
                 Header: "29",
                 accessor: "twentynine",
-                Footer: (info) => calculateOnHoliday(info, "twentynine"),
+                Footer: (info) => calculateFootersValues(info, "twentynine"),
             },
             {
                 Header: "30",
                 accessor: "thirty",
-                Footer: (info) => calculateOnHoliday(info, "thirty"),
+                Footer: (info) => calculateFootersValues(info, "thirty"),
             },
             {
                 Header: "31",
                 accessor: "thirtyone",
-                Footer: (info) => calculateOnHoliday(info, "thirtyone"),
+                Footer: (info) => calculateFootersValues(info, "thirtyone"),
             },
         ],
-        [holidaySymbols]
+        [holidaySymbols, showAllVacationers]
     );
 
     const {
@@ -752,7 +758,7 @@ export default function Calendar({ vacationersAmount, save }) {
         //     colorToAdd = "bisque";
         //     if (
         //         !teamToShow.id &&
-        //         value < presencePercentage * vacationersAmount.length
+        //         value < presencePercentage * allVacationers.length
         //     ) {
         //         colorToAdd = "orange";
         //     }
@@ -777,15 +783,6 @@ export default function Calendar({ vacationersAmount, save }) {
         return null;
     };
 
-    // Setting the background colors of "On holiday" and "Working" rows
-    const checkRow = (rowValue) => {
-        if (rowValue === onHolidayTitle) {
-            return onHolidayColor;
-        } else if (rowValue === workerTitle) {
-            return workerColor;
-        }
-    };
-
     const setTodayHeader = (header) => {
         if (
             today.getFullYear() === selectedDate.getFullYear() &&
@@ -804,7 +801,7 @@ export default function Calendar({ vacationersAmount, save }) {
             today.getMonth() === selectedDate.getMonth() &&
             parseInt(value.Header) === today.getDate()
         ) {
-            return `solid 1px ${todayColor}`;
+            return `solid 1.5px ${todayColor}`;
         } else {
             return "solid 1px black";
         }
@@ -819,9 +816,9 @@ export default function Calendar({ vacationersAmount, save }) {
         let year = selectedDate.getFullYear();
         let month = selectedDate.getMonth();
         let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
-        let vacationersAmount1 = 0;
+        let vacationersAmount = 0;
 
-        selectedVacationers.forEach((vacationer) => {
+        vacationersOfMonth.forEach((vacationer) => {
             if (teamToShow.id) {
                 if (
                     date.toISOString() >= vacationer.vacations.start &&
@@ -829,7 +826,7 @@ export default function Calendar({ vacationersAmount, save }) {
                 ) {
                     teamToShow.members.forEach((member) => {
                         if (member.name === vacationer.name) {
-                            vacationersAmount1++;
+                            vacationersAmount++;
                         }
                     });
                 }
@@ -838,12 +835,12 @@ export default function Calendar({ vacationersAmount, save }) {
                     date.toISOString() >= vacationer.vacations.start &&
                     date.toISOString() <= vacationer.vacations.end
                 ) {
-                    vacationersAmount1++;
+                    vacationersAmount++;
                 }
             }
         });
 
-        return vacationersAmount1;
+        return vacationersAmount;
     };
 
     const countWorkers = (dayNumber) => {
@@ -860,7 +857,7 @@ export default function Calendar({ vacationersAmount, save }) {
                     }
                 });
             });
-            vacationersAmount.forEach((vacationer) => {
+            allVacationers.forEach((vacationer) => {
                 if (!allNames.includes(vacationer.name)) {
                     allNames.push(vacationer.name);
                 }
@@ -875,8 +872,8 @@ export default function Calendar({ vacationersAmount, save }) {
         let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
         let vacationerNames = [];
 
-        selectedVacationers.forEach((vacationer) => {
-            // if the given day is included in the vacationers holiday add to vacationersAmount
+        vacationersOfMonth.forEach((vacationer) => {
+            // if the given day is included in the vacationers holiday add to allVacationers
             if (teamToShow.id) {
                 if (
                     date.toISOString() >= vacationer.vacations.start &&
@@ -929,7 +926,7 @@ export default function Calendar({ vacationersAmount, save }) {
                     }
                 });
             });
-            vacationersAmount.forEach((vacationer) => {
+            allVacationers.forEach((vacationer) => {
                 if (!onHolidayNames.includes(vacationer.name)) {
                     if (!workerNames.includes(vacationer.name)) {
                         workerNames.push(vacationer.name);
@@ -992,10 +989,7 @@ export default function Calendar({ vacationersAmount, save }) {
                                 label="All teams"
                                 color="secondary"
                                 onClick={() => {
-                                    setMonthsHolidays(
-                                        selectedVacationers,
-                                        null
-                                    );
+                                    setMonthsHolidays(vacationersOfMonth, null);
                                     setTeamToShow({
                                         id: "",
                                         title: "",
@@ -1016,10 +1010,7 @@ export default function Calendar({ vacationersAmount, save }) {
                                 label="All teams"
                                 color="secondary"
                                 onClick={() => {
-                                    setMonthsHolidays(
-                                        selectedVacationers,
-                                        null
-                                    );
+                                    setMonthsHolidays(vacationersOfMonth, null);
                                     setTeamToShow({
                                         id: "",
                                         title: "",
@@ -1088,9 +1079,13 @@ export default function Calendar({ vacationersAmount, save }) {
                                 control={<Switch color="success" />}
                                 disabled={disableConditions}
                                 label={
-                                    teamToShow.id
-                                        ? `Show only people on holiday in team ${teamToShow.title}`
-                                        : "Show only people on holiday"
+                                    <Typography
+                                        className={styles.showAllRadioButton}
+                                    >
+                                        {teamToShow.id
+                                            ? `Show only people on holiday in team ${teamToShow.title}`
+                                            : "Show only people on holiday"}
+                                    </Typography>
                                 }
                             />
                         </FormGroup>
@@ -1108,7 +1103,9 @@ export default function Calendar({ vacationersAmount, save }) {
                                     control={<Radio />}
                                     label={
                                         <Typography
-                                            className={styles.sizeRadioButtons}
+                                            className={
+                                                styles.heightRadioButtons
+                                            }
                                         >
                                             Low
                                         </Typography>
@@ -1119,7 +1116,9 @@ export default function Calendar({ vacationersAmount, save }) {
                                     control={<Radio />}
                                     label={
                                         <Typography
-                                            className={styles.sizeRadioButtons}
+                                            className={
+                                                styles.heightRadioButtons
+                                            }
                                         >
                                             Normal
                                         </Typography>
@@ -1130,7 +1129,9 @@ export default function Calendar({ vacationersAmount, save }) {
                                     control={<Radio />}
                                     label={
                                         <Typography
-                                            className={styles.sizeRadioButtons}
+                                            className={
+                                                styles.heightRadioButtons
+                                            }
                                         >
                                             High
                                         </Typography>
@@ -1153,7 +1154,6 @@ export default function Calendar({ vacationersAmount, save }) {
                                 disabled={disableConditions}
                                 selected={selectedDate}
                                 onChange={(date) => setSelectedDate(date)}
-                                dateFormat="MM/yyyy"
                                 showMonthYearPicker
                                 showFullMonthYearPicker
                                 showFourColumnMonthYearPicker
@@ -1170,123 +1170,114 @@ export default function Calendar({ vacationersAmount, save }) {
                     </Box>
                     {/*{!isMobile ? (*/}
                     <div className="full-calendar">
-                        {allHolidaysSelectedTime.length > 0 && (
-                            <table
-                                {...getTableProps()}
-                                style={{
-                                    border: calendarBorderStyle,
-                                    width: "100%",
-                                }}
-                            >
-                                <thead>
-                                    {headerGroups.map((headerGroup) => (
-                                        <tr
-                                            {...headerGroup.getHeaderGroupProps()}
-                                        >
-                                            {headerGroup.headers.map(
-                                                (column: any) => (
-                                                    <th
-                                                        {...column.getHeaderProps(
-                                                            column.getSortByToggleProps()
-                                                        )}
-                                                        style={{
-                                                            textAlign: "left",
-                                                            background:
-                                                                setTodayHeader(
-                                                                    column.Header
-                                                                ),
-                                                            color: `${headerColor}`,
-                                                        }}
+                        <table
+                            {...getTableProps()}
+                            className={styles.fullCalendar}
+                        >
+                            <thead>
+                                {headerGroups.map((headerGroup) => (
+                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                        {headerGroup.headers.map(
+                                            (column: any) => (
+                                                <th
+                                                    {...column.getHeaderProps(
+                                                        column.getSortByToggleProps(
+                                                            {
+                                                                title: "Sort by pressing column",
+                                                            }
+                                                        )
+                                                    )}
+                                                    style={{
+                                                        background:
+                                                            setTodayHeader(
+                                                                column.Header
+                                                            ),
+                                                        color: `${headerColor}`,
+                                                    }}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.headerNumberAndArrow
+                                                        }
                                                     >
-                                                        <div
+                                                        {column.render(
+                                                            "Header"
+                                                        )}
+                                                        <span
                                                             className={
-                                                                styles.headerNumberAndArrow
+                                                                styles.headerArrowSymbols
                                                             }
                                                         >
-                                                            {column.render(
-                                                                "Header"
-                                                            )}
-                                                            <span
-                                                                className={
-                                                                    styles.arrowSymbols
-                                                                }
-                                                            >
-                                                                {column.isSorted
-                                                                    ? column.isSortedDesc
-                                                                        ? "⬇️"
-                                                                        : "⬆️"
-                                                                    : ""}
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                )
-                                            )}
+                                                            {column.isSorted
+                                                                ? column.isSortedDesc
+                                                                    ? "⬇️"
+                                                                    : "⬆️"
+                                                                : ""}
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                            )
+                                        )}
+                                    </tr>
+                                ))}
+                            </thead>
+                            <tbody {...getTableBodyProps()}>
+                                {rows.map((row) => {
+                                    prepareRow(row);
+                                    return (
+                                        <tr {...row.getRowProps()}>
+                                            {row.cells.map((cell, index) => {
+                                                return (
+                                                    <td
+                                                        className={
+                                                            styles.columnStyle
+                                                        }
+                                                        // COLUMN STYLE
+                                                        style={{
+                                                            fontWeight: setBold(
+                                                                cell.value
+                                                            ),
+                                                            height: `${columnHeight}em`,
+                                                            lineHeight: `${columnLineHeight}`,
+                                                            border: setTodayColumn(
+                                                                cell.column
+                                                            ),
+
+                                                            backgroundColor:
+                                                                isCommonHoliday(
+                                                                    cell.value,
+                                                                    index
+                                                                ),
+                                                        }}
+                                                        key={index}
+                                                    >
+                                                        {cell.render("Cell")}
+                                                    </td>
+                                                );
+                                            })}
                                         </tr>
-                                    ))}
-                                </thead>
-                                <tbody {...getTableBodyProps()}>
-                                    {rows.map((row) => {
-                                        prepareRow(row);
-                                        return (
-                                            <tr
-                                                {...row.getRowProps()}
+                                    );
+                                })}
+                            </tbody>
+                            <tfoot className={styles.footerSection}>
+                                {footerGroups.map((group) => (
+                                    <tr {...group.getFooterGroupProps()}>
+                                        {group.headers.map((column) => (
+                                            <td
+                                                {...column.getFooterProps()}
                                                 style={{
-                                                    backgroundColor: checkRow(
-                                                        row.cells[0].value
+                                                    border: setTodayColumn(
+                                                        column
                                                     ),
                                                 }}
                                             >
-                                                {row.cells.map(
-                                                    (cell, index) => {
-                                                        return (
-                                                            <td
-                                                                // COLUMN STYLE
-                                                                style={{
-                                                                    fontWeight:
-                                                                        setBold(
-                                                                            cell.value
-                                                                        ),
-                                                                    paddingLeft: `${columnPaddingWidth}`,
-                                                                    height: `${columnHeight}em`,
-                                                                    lineHeight: `${columnLineHeight}`,
-                                                                    maxWidth: `${columnMaxWidth}`,
-                                                                    border: setTodayColumn(
-                                                                        cell.column
-                                                                    ),
-                                                                    backgroundColor:
-                                                                        isCommonHoliday(
-                                                                            cell.value,
-                                                                            index
-                                                                        ),
-                                                                }}
-                                                                key={index}
-                                                            >
-                                                                {cell.render(
-                                                                    "Cell"
-                                                                )}
-                                                            </td>
-                                                        );
-                                                    }
-                                                )}
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                                <tfoot className={styles.footerSection}>
-                                    {footerGroups.map((group) => (
-                                        <tr {...group.getFooterGroupProps()}>
-                                            {group.headers.map((column) => (
-                                                <td
-                                                    {...column.getFooterProps()}
-                                                >
-                                                    {column.render("Footer")}
-                                                </td>
-                                            ))}
-                                        </tr>
-                                    ))}
-                                </tfoot>
-                            </table>
-                        )}
+                                                {column.render("Footer")}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tfoot>
+                        </table>
                     </div>
                     {/*) : ( // If the screen width matches mobile*/}
                     {/*<div className={styles.verticalCalendar}>*/}
