@@ -65,6 +65,7 @@ export default function Calendar({ allVacationers, save }) {
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
     const [weekendColor, setWeekendColor] = useState("");
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("");
+    const [zeroWorkingAlarm, setZeroWorkingAlarm] = useState(false);
 
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
@@ -130,6 +131,10 @@ export default function Calendar({ allVacationers, save }) {
             setMonthsHolidays(vacationersOfMonth, null);
         }
     }, [showAllVacationers, teamToShow, vacationersOfMonth, holidaySymbols]);
+
+    useEffect(() => {
+        setZeroWorkingAlarm(false);
+    }, [showAllVacationers]);
 
     // Setting calendar settings of selected user
     useEffect(() => {
@@ -203,6 +208,7 @@ export default function Calendar({ allVacationers, save }) {
 
     // Retrieve the holidays of the selected month
     const getHolidaysOfMonth = (selectedMonth) => {
+        setZeroWorkingAlarm(false);
         axios
             .get(
                 `${
@@ -480,7 +486,7 @@ export default function Calendar({ allVacationers, save }) {
     //     Cell: EditableCell,
     // };
 
-    const calculateFootersValues = (info, selectedColumn) => {
+    const calculateFootersValues = (info, selectedColumn, zeroAlarm) => {
         let peopleOnHoliday = 0;
         for (let i = 0; i < info.rows.length; i++) {
             if (
@@ -491,13 +497,17 @@ export default function Calendar({ allVacationers, save }) {
             }
         }
         let peopleWorking = info.rows.length - peopleOnHoliday;
+        const noWorkersInTeam = peopleWorking === 0 && peopleOnHoliday !== 0;
+        if (noWorkersInTeam) {
+            zeroAlarm(true);
+        }
 
         return (
             <div>
                 <b className={styles.onHolidayNumber}>{peopleOnHoliday}</b>
                 <b
                     className={
-                        peopleWorking === 0 && peopleOnHoliday !== 0
+                        noWorkersInTeam
                             ? styles.workingNumberWarning
                             : styles.workingNumber
                     }
@@ -537,7 +547,7 @@ export default function Calendar({ allVacationers, save }) {
                         <b className={styles.workingTitle}>{workerTitle}</b>
                     </div>
                 ),
-                // styling of "Name" column items
+                // styling of names column (excluding the header)
                 Cell: (s) => (
                     <span className={styles.nameColumn}>{s.value}</span>
                 ),
@@ -548,157 +558,256 @@ export default function Calendar({ allVacationers, save }) {
             {
                 Header: "01",
                 accessor: "one",
-                Footer: (info) => calculateFootersValues(info, "one"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "one", setZeroWorkingAlarm),
             },
             {
                 Header: "02",
                 accessor: "two",
-                Footer: (info) => calculateFootersValues(info, "two"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "two", setZeroWorkingAlarm),
             },
             {
                 Header: "03",
                 accessor: "three",
-                Footer: (info) => calculateFootersValues(info, "three"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "three", setZeroWorkingAlarm),
             },
             {
                 Header: "04",
                 accessor: "four",
-                Footer: (info) => calculateFootersValues(info, "four"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "four", setZeroWorkingAlarm),
             },
             {
                 Header: "05",
                 accessor: "five",
-                Footer: (info) => calculateFootersValues(info, "five"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "five", setZeroWorkingAlarm),
             },
             {
                 Header: "06",
                 accessor: "six",
-                Footer: (info) => calculateFootersValues(info, "six"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "six", setZeroWorkingAlarm),
             },
             {
                 Header: "07",
                 accessor: "seven",
-                Footer: (info) => calculateFootersValues(info, "seven"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "seven", setZeroWorkingAlarm),
             },
             {
                 Header: "08",
                 accessor: "eight",
-                Footer: (info) => calculateFootersValues(info, "eight"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "eight", setZeroWorkingAlarm),
             },
             {
                 Header: "09",
                 accessor: "nine",
-                Footer: (info) => calculateFootersValues(info, "nine"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "nine", setZeroWorkingAlarm),
             },
             {
                 Header: "10",
                 accessor: "ten",
-                Footer: (info) => calculateFootersValues(info, "ten"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "ten", setZeroWorkingAlarm),
             },
             {
                 Header: "11",
                 accessor: "eleven",
-                Footer: (info) => calculateFootersValues(info, "eleven"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "eleven", setZeroWorkingAlarm),
             },
             {
                 Header: "12",
                 accessor: "twelve",
-                Footer: (info) => calculateFootersValues(info, "twelve"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "twelve", setZeroWorkingAlarm),
             },
             {
                 Header: "13",
                 accessor: "thirteen",
-                Footer: (info) => calculateFootersValues(info, "thirteen"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "thirteen",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "14",
                 accessor: "fourteen",
-                Footer: (info) => calculateFootersValues(info, "fourteen"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "fourteen",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "15",
                 accessor: "fifteen",
-                Footer: (info) => calculateFootersValues(info, "fifteen"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "fifteen",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "16",
                 accessor: "sixteen",
-                Footer: (info) => calculateFootersValues(info, "sixteen"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "sixteen",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "17",
                 accessor: "seventeen",
-                Footer: (info) => calculateFootersValues(info, "seventeen"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "seventeen",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "18",
                 accessor: "eighteen",
-                Footer: (info) => calculateFootersValues(info, "eighteen"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "eighteen",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "19",
                 accessor: "nineteen",
-                Footer: (info) => calculateFootersValues(info, "nineteen"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "nineteen",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "20",
                 accessor: "twenty",
-                Footer: (info) => calculateFootersValues(info, "twenty"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "twenty", setZeroWorkingAlarm),
             },
             {
                 Header: "21",
                 accessor: "twentyone",
-                Footer: (info) => calculateFootersValues(info, "twentyone"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentyone",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "22",
                 accessor: "twentytwo",
-                Footer: (info) => calculateFootersValues(info, "twentytwo"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentytwo",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "23",
                 accessor: "twentythree",
-                Footer: (info) => calculateFootersValues(info, "twentythree"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentythree",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "24",
                 accessor: "twentyfour",
-                Footer: (info) => calculateFootersValues(info, "twentyfour"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentyfour",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "25",
                 accessor: "twentyfive",
-                Footer: (info) => calculateFootersValues(info, "twentyfive"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentyfive",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "26",
                 accessor: "twentysix",
-                Footer: (info) => calculateFootersValues(info, "twentysix"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentysix",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "27",
                 accessor: "twentyseven",
-                Footer: (info) => calculateFootersValues(info, "twentyseven"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentyseven",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "28",
                 accessor: "twentyeight",
-                Footer: (info) => calculateFootersValues(info, "twentyeight"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentyeight",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "29",
                 accessor: "twentynine",
-                Footer: (info) => calculateFootersValues(info, "twentynine"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "twentynine",
+                        setZeroWorkingAlarm
+                    ),
             },
             {
                 Header: "30",
                 accessor: "thirty",
-                Footer: (info) => calculateFootersValues(info, "thirty"),
+                Footer: (info) =>
+                    calculateFootersValues(info, "thirty", setZeroWorkingAlarm),
             },
             {
                 Header: "31",
                 accessor: "thirtyone",
-                Footer: (info) => calculateFootersValues(info, "thirtyone"),
+                Footer: (info) =>
+                    calculateFootersValues(
+                        info,
+                        "thirtyone",
+                        setZeroWorkingAlarm
+                    ),
             },
         ],
         [holidaySymbols, showAllVacationers]
@@ -1108,6 +1217,9 @@ export default function Calendar({ allVacationers, save }) {
                                 }
                             />
                         </FormGroup>
+                        {zeroWorkingAlarm && (
+                            <div>One or more days have 0 workers!</div>
+                        )}
                         <FormControl className={styles.heightSettings}>
                             <FormLabel className={styles.heightTitle}>
                                 Calendar height
