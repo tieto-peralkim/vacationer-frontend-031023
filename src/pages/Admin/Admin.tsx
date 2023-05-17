@@ -278,7 +278,9 @@ export default function Admin() {
         <div className={styles.content}>
             <Accordion disableGutters className={styles.instructionBox}>
                 <AccordionSummary
-                    className={styles.instructionBoxSummary}
+                    sx={{
+                        bgcolor: "gainsboro",
+                    }}
                     expandIcon={<ExpandCircleDown />}
                 >
                     <h3>Welcome to Admin page</h3>
