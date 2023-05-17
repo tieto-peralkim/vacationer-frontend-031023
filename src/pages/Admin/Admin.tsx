@@ -274,8 +274,8 @@ export default function Admin() {
     };
 
     return user && user.admin ? (
-        <>
-            <div className={styles.content}>
+        <div className={styles.content}>
+            <div className={styles.borderedBoxes}>
                 <div className={styles.borderedBox}>
                     <InputLabel>{CREATE_TITLE}</InputLabel>
                     <div>
@@ -452,14 +452,18 @@ export default function Admin() {
             </div>
             <div className={styles.slackBox}>
                 <Accordion>
-                    <AccordionSummary>Send Slack message</AccordionSummary>
+                    <AccordionSummary>Slack test message</AccordionSummary>
                     <AccordionDetails>
+                        <p>
+                            Sends a test message to Slack channel 'vacationer'.
+                        </p>
+                        <p>Enabled on QA and local. DON'T SPAM!</p>
                         <Button
                             onClick={() => setOpenSendSlackAlert(true)}
                             variant={"contained"}
-                            disabled={APIError}
+                            disabled={APIError || isProdVersion}
                         >
-                            Send a test message to Slack!
+                            Send test message to Slack!
                         </Button>
                     </AccordionDetails>
                 </Accordion>
@@ -572,7 +576,7 @@ export default function Admin() {
                 cancel={"No"}
                 confirm={"Yes"}
             />
-        </>
+        </div>
     ) : (
         <Navigate to="/" />
     );
