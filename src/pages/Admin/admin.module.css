@@ -20,6 +20,7 @@ ul li {
     border-radius: 1em;
     padding: 1.3em;
     margin: 0.3em;
+    max-width: 500px;
 }
 .borderedBox {
     border: solid 1px blue;

@@ -279,12 +279,9 @@ export default function Admin() {
                 <h3>Welcome to the admin page.</h3>
                 <p>
                     Once user or team is deleted, they are moved to "deleted
-                    lists".
-                    <br />
-                    Deleted lists can be seen on this page in User and Team box.
-                    <br />
-                    One month from deletion they are removed automatically from
-                    the database.
+                    lists". Deleted lists can be seen on this page in User and
+                    Team box. One month from deletion they are removed
+                    automatically from the database.
                 </p>
                 <p>On this page you can:</p>
                 <ul>
@@ -297,6 +294,15 @@ export default function Admin() {
                         "deleted lists"
                     </li>
                     <li>Send Slack test messages on QA and local.</li>
+                </ul>
+                <p>Admins can also:</p>
+                <ul>
+                    <li>
+                        On main page: Add, edit and remove vacations of all the
+                        users (on QA and local). Go to your holidays and select
+                        checkbox on Admin button. Then you can select user.
+                    </li>
+                    <li>On team page: Edit and delete all teams</li>
                 </ul>
             </div>
             <div className={styles.borderedBoxes}>
