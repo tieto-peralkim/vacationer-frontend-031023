@@ -1,10 +1,15 @@
 .content {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.borderedBoxes {
+    display: flex;
     justify-content: center;
     flex-wrap: wrap;
 }
 .slackBox {
-    width: 50%;
+    width: max-content;
     margin: 2em 1em 2em 4em;
 }
 .borderedBox {
