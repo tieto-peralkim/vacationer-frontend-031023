@@ -8,9 +8,18 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+ul li {
+    list-style-type: circle;
+}
 .slackBox {
     width: max-content;
     margin: 2em 1em 2em 4em;
+}
+.instructionBox {
+    margin: 2em;
+}
+.instructionBoxSummary {
+    background-color: gainsboro;
 }
 .borderedBox {
     border: solid 1px blue;
