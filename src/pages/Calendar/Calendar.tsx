@@ -508,6 +508,22 @@ export default function Calendar({ allVacationers, save }) {
         );
     };
 
+    const sortItems = (prev, curr, columnId) => {
+        if (
+            prev.original[columnId].toLowerCase() >
+            curr.original[columnId].toLowerCase()
+        ) {
+            return 1;
+        } else if (
+            prev.original[columnId].toLowerCase() <
+            curr.original[columnId].toLowerCase()
+        ) {
+            return -1;
+        } else {
+            return 0;
+        }
+    };
+
     const columns = useMemo(
         () => [
             {
@@ -525,6 +541,9 @@ export default function Calendar({ allVacationers, save }) {
                 Cell: (s) => (
                     <span className={styles.nameColumn}>{s.value}</span>
                 ),
+                sortType: (prev, curr, columnId) => {
+                    return sortItems(prev, curr, columnId);
+                },
             },
             {
                 Header: "01",
