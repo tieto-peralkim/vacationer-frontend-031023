@@ -1407,7 +1407,7 @@ export default function Calendar({ allVacationers, save }) {
                                                 return (
                                                     <td
                                                         className={
-                                                            styles.columnStyle
+                                                            styles.cellStyle
                                                         }
                                                         // COLUMN STYLE
                                                         style={{
