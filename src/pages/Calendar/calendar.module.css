@@ -166,7 +166,7 @@
     display: flex;
     justify-content: left;
 }
-@media only screen and (min-width: 900px) {
+@media only screen and (min-width: 930px) {
     .cellStyle {
         text-align: center;
         max-width: 12em; /*this value should be minimum 12em so the Name value can fit to the 1st column*/
@@ -206,7 +206,7 @@
         color: white;
     }
 }
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 930px) {
     .cellStyle {
         text-align: center;
         max-width: 8em;
