@@ -65,6 +65,7 @@ export default function Calendar({ allVacationers, save }) {
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
     const [weekendColor, setWeekendColor] = useState("");
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("");
+    const [zeroWorkingAlarm, setZeroWorkingAlarm] = useState(false);
 
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
@@ -479,7 +480,7 @@ export default function Calendar({ allVacationers, save }) {
     //     Cell: EditableCell,
     // };
 
-    const calculateFootersValues = (info, selectedColumn) => {
+    function CalculateFootersValues({ info, selectedColumn }) {
         let peopleOnHoliday = 0;
         for (let i = 0; i < info.rows.length; i++) {
             if (
@@ -491,12 +492,14 @@ export default function Calendar({ allVacationers, save }) {
         }
         let peopleWorking = info.rows.length - peopleOnHoliday;
 
+        const noWorkersInTeam = peopleWorking === 0 && peopleOnHoliday !== 0;
+
         return (
             <div>
                 <b className={styles.onHolidayNumber}>{peopleOnHoliday}</b>
                 <b
                     className={
-                        peopleWorking === 0 && peopleOnHoliday !== 0
+                        noWorkersInTeam
                             ? styles.workingNumberWarning
                             : styles.workingNumber
                     }
@@ -505,7 +508,7 @@ export default function Calendar({ allVacationers, save }) {
                 </b>
             </div>
         );
-    };
+    }
 
     const sortItems = (prev, curr, columnId) => {
         if (
@@ -536,7 +539,7 @@ export default function Calendar({ allVacationers, save }) {
                         <b className={styles.workingTitle}>{workerTitle}</b>
                     </div>
                 ),
-                // styling of "Name" column items
+                // styling of names column (excluding the header)
                 Cell: (s) => (
                     <span className={styles.nameColumn}>{s.value}</span>
                 ),
@@ -547,160 +550,315 @@ export default function Calendar({ allVacationers, save }) {
             {
                 Header: "01",
                 accessor: "one",
-                Footer: (info) => calculateFootersValues(info, "one"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"one"}
+                    />
+                ),
             },
             {
                 Header: "02",
                 accessor: "two",
-                Footer: (info) => calculateFootersValues(info, "two"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"two"}
+                    />
+                ),
             },
             {
                 Header: "03",
                 accessor: "three",
-                Footer: (info) => calculateFootersValues(info, "three"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"three"}
+                    />
+                ),
             },
             {
                 Header: "04",
                 accessor: "four",
-                Footer: (info) => calculateFootersValues(info, "four"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"four"}
+                    />
+                ),
             },
             {
                 Header: "05",
                 accessor: "five",
-                Footer: (info) => calculateFootersValues(info, "five"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"five"}
+                    />
+                ),
             },
             {
                 Header: "06",
                 accessor: "six",
-                Footer: (info) => calculateFootersValues(info, "six"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"six"}
+                    />
+                ),
             },
             {
                 Header: "07",
                 accessor: "seven",
-                Footer: (info) => calculateFootersValues(info, "seven"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"seven"}
+                    />
+                ),
             },
             {
                 Header: "08",
                 accessor: "eight",
-                Footer: (info) => calculateFootersValues(info, "eight"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"eight"}
+                    />
+                ),
             },
             {
                 Header: "09",
                 accessor: "nine",
-                Footer: (info) => calculateFootersValues(info, "nine"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"nine"}
+                    />
+                ),
             },
             {
                 Header: "10",
                 accessor: "ten",
-                Footer: (info) => calculateFootersValues(info, "ten"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"ten"}
+                    />
+                ),
             },
             {
                 Header: "11",
                 accessor: "eleven",
-                Footer: (info) => calculateFootersValues(info, "eleven"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"eleven"}
+                    />
+                ),
             },
             {
                 Header: "12",
                 accessor: "twelve",
-                Footer: (info) => calculateFootersValues(info, "twelve"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twelve"}
+                    />
+                ),
             },
             {
                 Header: "13",
                 accessor: "thirteen",
-                Footer: (info) => calculateFootersValues(info, "thirteen"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"thirteen"}
+                    />
+                ),
             },
             {
                 Header: "14",
                 accessor: "fourteen",
-                Footer: (info) => calculateFootersValues(info, "fourteen"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"fourteen"}
+                    />
+                ),
             },
             {
                 Header: "15",
                 accessor: "fifteen",
-                Footer: (info) => calculateFootersValues(info, "fifteen"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"fifteen"}
+                    />
+                ),
             },
             {
                 Header: "16",
                 accessor: "sixteen",
-                Footer: (info) => calculateFootersValues(info, "sixteen"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"sixteen"}
+                    />
+                ),
             },
             {
                 Header: "17",
                 accessor: "seventeen",
-                Footer: (info) => calculateFootersValues(info, "seventeen"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"seventeen"}
+                    />
+                ),
             },
             {
                 Header: "18",
                 accessor: "eighteen",
-                Footer: (info) => calculateFootersValues(info, "eighteen"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"eighteen"}
+                    />
+                ),
             },
             {
                 Header: "19",
                 accessor: "nineteen",
-                Footer: (info) => calculateFootersValues(info, "nineteen"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"nineteen"}
+                    />
+                ),
             },
             {
                 Header: "20",
                 accessor: "twenty",
-                Footer: (info) => calculateFootersValues(info, "twenty"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twenty"}
+                    />
+                ),
             },
             {
                 Header: "21",
                 accessor: "twentyone",
-                Footer: (info) => calculateFootersValues(info, "twentyone"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyone"}
+                    />
+                ),
             },
             {
                 Header: "22",
                 accessor: "twentytwo",
-                Footer: (info) => calculateFootersValues(info, "twentytwo"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentytwo"}
+                    />
+                ),
             },
             {
                 Header: "23",
                 accessor: "twentythree",
-                Footer: (info) => calculateFootersValues(info, "twentythree"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentythree"}
+                    />
+                ),
             },
             {
                 Header: "24",
                 accessor: "twentyfour",
-                Footer: (info) => calculateFootersValues(info, "twentyfour"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyfour"}
+                    />
+                ),
             },
             {
                 Header: "25",
                 accessor: "twentyfive",
-                Footer: (info) => calculateFootersValues(info, "twentyfive"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyfive"}
+                    />
+                ),
             },
             {
                 Header: "26",
                 accessor: "twentysix",
-                Footer: (info) => calculateFootersValues(info, "twentysix"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentysix"}
+                    />
+                ),
             },
             {
                 Header: "27",
                 accessor: "twentyseven",
-                Footer: (info) => calculateFootersValues(info, "twentyseven"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyseven"}
+                    />
+                ),
             },
             {
                 Header: "28",
                 accessor: "twentyeight",
-                Footer: (info) => calculateFootersValues(info, "twentyeight"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentyeight"}
+                    />
+                ),
             },
             {
                 Header: "29",
                 accessor: "twentynine",
-                Footer: (info) => calculateFootersValues(info, "twentynine"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"twentynine"}
+                    />
+                ),
             },
             {
                 Header: "30",
                 accessor: "thirty",
-                Footer: (info) => calculateFootersValues(info, "thirty"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"thirty"}
+                    />
+                ),
             },
             {
                 Header: "31",
                 accessor: "thirtyone",
-                Footer: (info) => calculateFootersValues(info, "thirtyone"),
+                Footer: (info) => (
+                    <CalculateFootersValues
+                        info={info}
+                        selectedColumn={"thirtyone"}
+                    />
+                ),
             },
         ],
-        [holidaySymbols, showAllVacationers]
+        [holidaySymbols]
     );
 
     const {
@@ -715,6 +873,7 @@ export default function Calendar({ allVacationers, save }) {
         {
             columns,
             data: allHolidaysSelectedTime,
+            // POSSIBLE NEXT VERSION, EXAMPLE CODE for editable Cell values
             // defaultColumn,
             initialState: {
                 hiddenColumns: hiddenColumns,

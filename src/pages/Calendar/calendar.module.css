@@ -175,10 +175,12 @@
     .headerNumberAndArrow {
         display: flex;
         justify-content: left;
+        width: 1em;
     }
     .headerArrowSymbols {
-        font-size: small;
+        font-size: x-small;
         margin: 0;
+        height: 1em;
     }
     .onHolidayTitle {
         padding-left: 0.2em;
@@ -217,11 +219,13 @@
     .headerNumberAndArrow {
         display: flex;
         justify-content: left;
+        align-items: center;
         font-size: xx-small;
     }
     .headerArrowSymbols {
         font-size: xx-small;
         margin: 0;
+        height: 1em;
     }
     .onHolidayTitle {
         padding-left: 0.2em;
