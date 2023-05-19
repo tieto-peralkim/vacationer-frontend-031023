@@ -858,7 +858,7 @@ export default function Calendar({ allVacationers, save }) {
                 ),
             },
         ],
-        [holidaySymbols, showAllVacationers, teamToShow]
+        [holidaySymbols]
     );
 
     const {
