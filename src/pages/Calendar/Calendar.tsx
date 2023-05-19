@@ -1409,7 +1409,6 @@ export default function Calendar({ allVacationers, save }) {
                                                         className={
                                                             styles.cellStyle
                                                         }
-                                                        // COLUMN STYLE
                                                         style={{
                                                             fontWeight: setBold(
                                                                 cell.value
