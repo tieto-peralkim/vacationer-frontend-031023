@@ -113,7 +113,6 @@ export default function Calendar({ allVacationers, save }) {
 
     // TODO: reduce re-renders!
     useEffect(() => {
-        console.log("ne", vacationersOfMonth, allVacationers);
         // Showing all employees of the selected team, not only the ones with holiday
         if (showAllVacationers && teamToShow.id) {
             setMonthsHolidays(filterHolidays(), teamToShow.members);
@@ -131,10 +130,6 @@ export default function Calendar({ allVacationers, save }) {
             setMonthsHolidays(vacationersOfMonth, null);
         }
     }, [showAllVacationers, teamToShow, vacationersOfMonth, holidaySymbols]);
-
-    useEffect(() => {
-        setZeroWorkingAlarm(false);
-    }, [showAllVacationers]);
 
     // Setting calendar settings of selected user
     useEffect(() => {
@@ -208,7 +203,6 @@ export default function Calendar({ allVacationers, save }) {
 
     // Retrieve the holidays of the selected month
     const getHolidaysOfMonth = (selectedMonth) => {
-        setZeroWorkingAlarm(false);
         axios
             .get(
                 `${
@@ -486,7 +480,7 @@ export default function Calendar({ allVacationers, save }) {
     //     Cell: EditableCell,
     // };
 
-    function CalculateFootersValues({ info, selectedColumn, zeroAlarm }) {
+    function CalculateFootersValues({ info, selectedColumn }) {
         let peopleOnHoliday = 0;
         for (let i = 0; i < info.rows.length; i++) {
             if (
@@ -497,10 +491,8 @@ export default function Calendar({ allVacationers, save }) {
             }
         }
         let peopleWorking = info.rows.length - peopleOnHoliday;
+
         const noWorkersInTeam = peopleWorking === 0 && peopleOnHoliday !== 0;
-        if (noWorkersInTeam) {
-            zeroAlarm(true);
-        }
 
         return (
             <div>
@@ -562,7 +554,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"one"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -573,7 +564,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"two"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -584,7 +574,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"three"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -595,7 +584,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"four"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -606,7 +594,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"five"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -617,7 +604,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"six"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -628,7 +614,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"seven"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -639,7 +624,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"eight"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -650,7 +634,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"nine"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -661,7 +644,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"ten"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -672,7 +654,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"eleven"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -683,7 +664,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twelve"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -694,7 +674,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"thirteen"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -705,7 +684,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"fourteen"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -716,7 +694,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"fifteen"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -727,7 +704,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"sixteen"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -738,7 +714,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"seventeen"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -749,7 +724,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"eighteen"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -760,7 +734,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"nineteen"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -771,7 +744,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twenty"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -782,7 +754,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentyone"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -793,7 +764,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentytwo"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -804,7 +774,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentythree"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -815,7 +784,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentyfour"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -826,7 +794,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentyfive"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -837,7 +804,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentysix"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -848,7 +814,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentyseven"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -859,7 +824,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentyeight"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -870,7 +834,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"twentynine"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -881,7 +844,6 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"thirty"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
@@ -892,12 +854,11 @@ export default function Calendar({ allVacationers, save }) {
                     <CalculateFootersValues
                         info={info}
                         selectedColumn={"thirtyone"}
-                        zeroAlarm={setZeroWorkingAlarm}
                     />
                 ),
             },
         ],
-        [holidaySymbols, showAllVacationers]
+        [holidaySymbols, showAllVacationers, teamToShow]
     );
 
     const {
@@ -1305,9 +1266,6 @@ export default function Calendar({ allVacationers, save }) {
                                 }
                             />
                         </FormGroup>
-                        {zeroWorkingAlarm && (
-                            <div>One or more days have 0 workers!</div>
-                        )}
                         <FormControl className={styles.heightSettings}>
                             <FormLabel className={styles.heightTitle}>
                                 Calendar height
