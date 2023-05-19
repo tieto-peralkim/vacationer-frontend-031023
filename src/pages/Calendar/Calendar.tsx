@@ -57,7 +57,6 @@ export default function Calendar({ allVacationers, save }) {
     const todayColor = "orange";
     const headerColor = "black";
     const headerBackgroundColor = "lightgrey";
-    const columnLineHeight = "1em";
 
     // HolidaySymbol can not be a number!
     const [holidaySymbols, setHolidaySymbols] = useState([]);
@@ -1414,11 +1413,9 @@ export default function Calendar({ allVacationers, save }) {
                                                                 cell.value
                                                             ),
                                                             height: `${columnHeight}em`,
-                                                            lineHeight: `${columnLineHeight}`,
                                                             border: setTodayColumn(
                                                                 cell.column
                                                             ),
-
                                                             backgroundColor:
                                                                 isCommonHoliday(
                                                                     cell.value,
