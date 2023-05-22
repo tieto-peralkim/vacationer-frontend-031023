@@ -80,7 +80,7 @@ export default function TeamAdd({
                         variant="outlined"
                         value={newTeam}
                         helperText={
-                            nameError && "Name must be at 3-15 characters"
+                            nameError && "Name must be at 3 - 20 characters"
                         }
                         onChange={(e) => setNewTeam(e.target.value)}
                     />

@@ -188,7 +188,7 @@ export default function TeamModify({
                     variant="outlined"
                     value={newTeam}
                     helperText={
-                        nameError && "New name must be at least 3 characters"
+                        nameError && "New name must be at 3 - 20 characters"
                     }
                     onChange={(e) => setNewTeam(e.target.value)}
                     placeholder={selectedTeam && selectedTeam.title}
