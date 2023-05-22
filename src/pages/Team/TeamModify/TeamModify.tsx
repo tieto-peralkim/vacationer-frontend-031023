@@ -39,6 +39,8 @@ export default function TeamModify({
     completedAction,
     setCompletedAction,
     openAPIError,
+    minNameLength,
+    maxNameLength,
 }) {
     const { user, APIError, setAPIError } = useOutletVariables();
     const [newTeam, setNewTeam] = useState("");
@@ -56,7 +58,8 @@ export default function TeamModify({
     const [openDeleteUserAlert, setOpenDeleteUserAlert] = useState(false);
     const [openDeleteTeamAlert, setOpenDeleteTeamAlert] = useState(false);
 
-    const nameError = newTeam.length < 3;
+    const nameError =
+        newTeam.length < minNameLength || newTeam.length > maxNameLength;
 
     const handleClose = () => {
         setAlreadyExistsError(false);
@@ -128,7 +131,9 @@ export default function TeamModify({
     };
 
     const changeTeamName = (newName) => {
-        if (!nameError) {
+        if (nameError) {
+            setTeamNameError(true);
+        } else {
             axios
                 .patch(
                     `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
@@ -145,8 +150,6 @@ export default function TeamModify({
                     openAPIError();
                     console.error("There was a put new name error!", error);
                 });
-        } else {
-            setTeamNameError(true);
         }
     };
 
@@ -184,11 +187,12 @@ export default function TeamModify({
                 <TextField
                     className={styles.teamAddTextField}
                     required
-                    inputProps={{ minLength: 3 }}
+                    inputProps={{ minLength: minNameLength }}
                     variant="outlined"
                     value={newTeam}
                     helperText={
-                        nameError && "New name must be at least 3 characters"
+                        nameError &&
+                        `New name must be ${minNameLength}-${maxNameLength} characters`
                     }
                     onChange={(e) => setNewTeam(e.target.value)}
                     placeholder={selectedTeam && selectedTeam.title}
@@ -334,9 +338,7 @@ export default function TeamModify({
                 openAlert={teamNameError}
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
-                dialogContent={
-                    "This team name is too short (less than 3 characters)!"
-                }
+                dialogContent={`The team name must be ${minNameLength}-${maxNameLength} characters`}
                 cancel={""}
                 confirm={""}
             />

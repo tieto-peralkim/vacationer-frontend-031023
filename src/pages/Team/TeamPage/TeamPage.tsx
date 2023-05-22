@@ -22,14 +22,14 @@ export interface Team {
 }
 
 export default function TeamPage() {
+    const minNameLength = 3;
+    const maxNameLength = 20;
     const [teams, setTeams] = useState([]);
     const { user, APIError, setAPIError } = useOutletVariables();
     const [vacationers, setVacationers] = useState([]);
-
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
     const [openTeamModify, setOpenTeamModify] = useState(false);
     const [selectedTeam, setSelectedTeam] = useState<Team | null>();
-
     const [completedAction, setCompletedAction] = useState(false);
 
     const openAPIError = () => {
@@ -92,6 +92,8 @@ export default function TeamPage() {
                 completedAction={completedAction}
                 setCompletedAction={setCompletedAction}
                 openAPIError={openAPIError}
+                minNameLength={minNameLength}
+                maxNameLength={maxNameLength}
             />
             <TeamModify
                 open={openTeamModify}
@@ -102,6 +104,8 @@ export default function TeamPage() {
                 completedAction={completedAction}
                 setCompletedAction={setCompletedAction}
                 openAPIError={openAPIError}
+                minNameLength={minNameLength}
+                maxNameLength={maxNameLength}
             />
             {user && user.name && (
                 <div className={styles.content}>
