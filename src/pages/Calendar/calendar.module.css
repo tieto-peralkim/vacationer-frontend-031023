@@ -39,14 +39,7 @@
 }
 .footerSection {
 }
-.infoBox {
-    float: right;
-    border: 0.1em solid #2A55E7;
-    border-radius: 12px;
-    padding: 0.5em;
-    margin-top: 0.5em;
-    margin-right: 1em;
-}
+
 .wholeCalendar {
     display: flex;
     flex-direction: column;
@@ -217,8 +210,12 @@
         color: white;
     }
     .calendarSettingsBox{
+        border: 0.1em solid #2A55E7;
+        border-radius: 12px;
+        padding: 0.3em;
         min-width: max-content;
         margin-left: 0.3em;
+        max-height: 2.5em;
     }
 }
 @media only screen and (max-width: 930px) {
@@ -269,7 +266,12 @@
         font-size: xx-small;
     }
     .calendarSettingsBox{
+        font-size: x-small;
+        border: 0.1em solid #2A55E7;
+        border-radius: 12px;
+        padding: 0.3em;
         margin-left: 0.3em;
+        max-height: 8em;
     }
 }
 

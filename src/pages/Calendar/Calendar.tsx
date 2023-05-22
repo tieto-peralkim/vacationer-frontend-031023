@@ -1199,16 +1199,13 @@ export default function Calendar({ allVacationers, save }) {
                                 ))}
                             </ToggleButtonGroup>
                         </div>
-                        <div className={styles.calendarSettingsBox}>
-                            {user && user.name && (
-                                // !isMobile &&
-                                <div className={styles.infoBox}>
-                                    {holidaySymbols[0]} = confirmed holiday{" "}
-                                    <br /> {holidaySymbols[1]} = un-confirmed
-                                    holiday
-                                </div>
-                            )}
-                        </div>
+                        {user && user.name && (
+                            // !isMobile &&
+                            <div className={styles.calendarSettingsBox}>
+                                {holidaySymbols[0]} = confirmed holiday <br />{" "}
+                                {holidaySymbols[1]} = un-confirmed holiday
+                            </div>
+                        )}
                     </div>
 
                     <div className={styles.chips}>
