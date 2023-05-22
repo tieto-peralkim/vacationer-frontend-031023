@@ -128,7 +128,9 @@ export default function TeamModify({
     };
 
     const changeTeamName = (newName) => {
-        if (!nameError) {
+        if (newTeam.length < 3 || newTeam.length > 20) {
+            setTeamNameError(true);
+        } else {
             axios
                 .patch(
                     `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
@@ -145,8 +147,6 @@ export default function TeamModify({
                     openAPIError();
                     console.error("There was a put new name error!", error);
                 });
-        } else {
-            setTeamNameError(true);
         }
     };
 
@@ -335,7 +335,7 @@ export default function TeamModify({
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
                 dialogContent={
-                    "This team name is too short (less than 3 characters)!"
+                    "The team name must be between 3 - 20 characters"
                 }
                 cancel={""}
                 confirm={""}

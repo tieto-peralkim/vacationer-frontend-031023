@@ -36,7 +36,9 @@ export default function TeamAdd({
     };
 
     const createTeam = (newTeam) => {
-        if (!nameError) {
+        if (newTeam.length < 3 || newTeam.length > 20) {
+            setTeamNameError(true);
+        } else {
             let firstUser = { name: user.name, vacationerId: user.id };
             // Set the user as a member of the new team
             const teamToAdd = {
@@ -58,8 +60,6 @@ export default function TeamAdd({
                 .then(() => {
                     handleClose();
                 });
-        } else {
-            setTeamNameError(true);
         }
     };
 
@@ -80,7 +80,7 @@ export default function TeamAdd({
                         variant="outlined"
                         value={newTeam}
                         helperText={
-                            nameError && "Name must be at least 3 characters"
+                            nameError && "Name must be at 3-15 characters"
                         }
                         onChange={(e) => setNewTeam(e.target.value)}
                     />
@@ -107,7 +107,7 @@ export default function TeamAdd({
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
                 dialogContent={
-                    "This team name is too short (less than 3 characters)!"
+                    "The team name must be between 3 - 20 characters"
                 }
             />
 
