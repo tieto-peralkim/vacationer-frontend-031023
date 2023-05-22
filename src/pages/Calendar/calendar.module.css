@@ -17,11 +17,22 @@
 .showAllRadioButton {
 }
 
-.teamChips {
-    padding-top: 20px;
-    float: left;
+.topRow {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+    margin-bottom: 0.3em;
 }
-
+.teamSelectionElements {
+    display: flex;
+}
+.chips {
+    min-height: 3em;
+}
+.toggleButton{
+    display: flex;
+    flex-wrap: wrap;
+}
 .monthSelection {
     margin-right: 1em;
     margin-left: 1em;
@@ -205,6 +216,10 @@
         justify-content: center;
         color: white;
     }
+    .calendarSettingsBox{
+        min-width: max-content;
+        margin-left: 0.3em;
+    }
 }
 @media only screen and (max-width: 930px) {
     .cellStyle {
@@ -252,6 +267,9 @@
         justify-content: center;
         color: white;
         font-size: xx-small;
+    }
+    .calendarSettingsBox{
+        margin-left: 0.3em;
     }
 }
 
