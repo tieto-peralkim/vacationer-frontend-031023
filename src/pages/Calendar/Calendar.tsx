@@ -23,6 +23,8 @@ import {
     Radio,
     RadioGroup,
     Switch,
+    ToggleButton,
+    ToggleButtonGroup,
 } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -38,7 +40,6 @@ export default function Calendar({ allVacationers, save }) {
     }
 
     // const isMobile = useBreakpoint(down("md")); // md breakpoint activates when screen width <= 768px https://www.npmjs.com/package/styled-breakpoints
-
     const { user, APIError, setAPIError } = useOutletVariables();
 
     const today = new Date();
@@ -53,8 +54,9 @@ export default function Calendar({ allVacationers, save }) {
     const [allHolidaysSelectedTime, setAllHolidaysSelectedTime] = useState([]);
     const workerTitle = "Working";
     const onHolidayTitle = "On holiday";
-    const presencePercentage = 0.5;
-    const todayColor = "orange";
+    const columnColorToday = "orange";
+    const columnStyleToday = `solid 1.5px ${columnColorToday}`;
+    const columnStyleDefault = "solid 1px black";
     const headerColor = "black";
     const headerBackgroundColor = "lightgrey";
 
@@ -64,7 +66,6 @@ export default function Calendar({ allVacationers, save }) {
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
     const [weekendColor, setWeekendColor] = useState("");
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("");
-    const [zeroWorkingAlarm, setZeroWorkingAlarm] = useState(false);
 
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
@@ -74,23 +75,14 @@ export default function Calendar({ allVacationers, save }) {
     const [selectedYear, setSelectedYear] = useState(
         thisMonthFirst.getFullYear()
     );
+    const [selectedTeams, setSelectedTeams] = useState<Team[]>([]);
+    const [selectedMembers, setSelectedMembers] = useState([]);
+
     const [publicHolidaysOfMonth, setPublicHolidaysOfMonth] = useState([]);
     const [publicHolidays, setPublicHolidays] = useState([]);
 
     const hiddenColumns = [];
     const [teams, setTeams] = useState<Team[]>([]);
-    const [teamToShow, setTeamToShow] = useState<Team>({
-        id: "",
-        title: "",
-        members: [
-            {
-                name: "",
-                vacationerId: "",
-            },
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    });
     const [vacationersOfMonth, setVacationersOfMonth] = useState([]);
 
     // Fetching public holidays from API
@@ -110,14 +102,32 @@ export default function Calendar({ allVacationers, save }) {
             });
     }, [selectedYear]);
 
+    useEffect(() => {
+        let membersToChoose = [];
+        // Add members of selectedteams without duplicates
+        if (selectedTeams && selectedTeams.length !== 0) {
+            selectedTeams.forEach(function (team) {
+                team.members.forEach(function (member) {
+                    const found = membersToChoose.some(
+                        (el) => el.name === member.name
+                    );
+                    if (!found) {
+                        membersToChoose.push(member);
+                    }
+                });
+            });
+        }
+        setSelectedMembers(membersToChoose);
+    }, [selectedTeams]);
+
     // TODO: reduce re-renders!
     useEffect(() => {
         // Showing all employees of the selected team, not only the ones with holiday
-        if (showAllVacationers && teamToShow.id) {
-            setMonthsHolidays(filterHolidays(), teamToShow.members);
+        if (showAllVacationers && selectedMembers.length > 0) {
+            setMonthsHolidays(filterHolidays(), selectedMembers);
         }
         // Showing only vacationing employees of the selected team
-        else if (teamToShow.id) {
+        else if (selectedMembers.length > 0) {
             setMonthsHolidays(filterHolidays(), null);
         }
         // Showing all employees, not only the ones with holiday
@@ -128,7 +138,12 @@ export default function Calendar({ allVacationers, save }) {
         else {
             setMonthsHolidays(vacationersOfMonth, null);
         }
-    }, [showAllVacationers, teamToShow, vacationersOfMonth, holidaySymbols]);
+    }, [
+        showAllVacationers,
+        vacationersOfMonth,
+        holidaySymbols,
+        selectedMembers,
+    ]);
 
     // Setting calendar settings of selected user
     useEffect(() => {
@@ -186,10 +201,10 @@ export default function Calendar({ allVacationers, save }) {
 
     const filterHolidays = () => {
         let filteredVacations = [];
-        for (let i = 0; i < teamToShow.members.length; i++) {
+        for (let i = 0; i < selectedMembers.length; i++) {
             // Filter the team's holidays from all the holidays of the month
             const filteredVacation = vacationersOfMonth.filter(
-                (vacationer) => vacationer.name === teamToShow.members[i].name
+                (vacationer) => vacationer.name === selectedMembers[i].name
             );
             if (filteredVacation.length !== 0) {
                 filteredVacations.push(filteredVacation);
@@ -928,23 +943,6 @@ export default function Calendar({ allVacationers, save }) {
                 }
             }
         }
-        // TODO:
-        // This would add alert color for the dates where there are too few people working. Not working after adding the "Working" row
-        // else if (typeof value === "number") {
-        //     colorToAdd = "bisque";
-        //     if (
-        //         !teamToShow.id &&
-        //         value < presencePercentage * allVacationers.length
-        //     ) {
-        //         colorToAdd = "orange";
-        //     }
-        //     if (
-        //         teamToShow.id &&
-        //         value < presencePercentage * teamToShow.members.length
-        //     ) {
-        //         colorToAdd = "orange";
-        //     }
-        // }
         return colorToAdd;
     };
 
@@ -965,21 +963,21 @@ export default function Calendar({ allVacationers, save }) {
             today.getMonth() === selectedDate.getMonth() &&
             parseInt(header) === today.getDate()
         ) {
-            return todayColor;
+            return columnColorToday;
         } else {
             return headerBackgroundColor;
         }
     };
 
-    const setTodayColumn = (value) => {
+    const setColumnStyle = (value) => {
         if (
             today.getFullYear() === selectedDate.getFullYear() &&
             today.getMonth() === selectedDate.getMonth() &&
             parseInt(value.Header) === today.getDate()
         ) {
-            return `solid 1.5px ${todayColor}`;
+            return `${columnStyleToday}`;
         } else {
-            return "solid 1px black";
+            return `${columnStyleDefault}`;
         }
     };
 
@@ -988,130 +986,130 @@ export default function Calendar({ allVacationers, save }) {
      * As a parameter accepts the number of the day and returns the amount of
      * workers on holiday on given day.
      */
-    const countVacationers = (dayNumber): number => {
-        let year = selectedDate.getFullYear();
-        let month = selectedDate.getMonth();
-        let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
-        let vacationersAmount = 0;
+    // const countVacationers = (dayNumber): number => {
+    //     let year = selectedDate.getFullYear();
+    //     let month = selectedDate.getMonth();
+    //     let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
+    //     let vacationersAmount = 0;
+    //
+    //     vacationersOfMonth.forEach((vacationer) => {
+    //         if (teamToShow.id) {
+    //             if (
+    //                 date.toISOString() >= vacationer.vacations.start &&
+    //                 date.toISOString() <= vacationer.vacations.end
+    //             ) {
+    //                 teamToShow.members.forEach((member) => {
+    //                     if (member.name === vacationer.name) {
+    //                         vacationersAmount++;
+    //                     }
+    //                 });
+    //             }
+    //         } else {
+    //             if (
+    //                 date.toISOString() >= vacationer.vacations.start &&
+    //                 date.toISOString() <= vacationer.vacations.end
+    //             ) {
+    //                 vacationersAmount++;
+    //             }
+    //         }
+    //     });
+    //
+    //     return vacationersAmount;
+    // };
 
-        vacationersOfMonth.forEach((vacationer) => {
-            if (teamToShow.id) {
-                if (
-                    date.toISOString() >= vacationer.vacations.start &&
-                    date.toISOString() <= vacationer.vacations.end
-                ) {
-                    teamToShow.members.forEach((member) => {
-                        if (member.name === vacationer.name) {
-                            vacationersAmount++;
-                        }
-                    });
-                }
-            } else {
-                if (
-                    date.toISOString() >= vacationer.vacations.start &&
-                    date.toISOString() <= vacationer.vacations.end
-                ) {
-                    vacationersAmount++;
-                }
-            }
-        });
+    // const countWorkers = (dayNumber) => {
+    //     let onHolidayCount = countVacationers(dayNumber);
+    //     let allNames = [];
+    //
+    //     if (teamToShow.id) {
+    //         return teamToShow.members.length - onHolidayCount;
+    //     } else {
+    //         teams.forEach((team) => {
+    //             team.members.forEach((member) => {
+    //                 if (!allNames.includes(member.name)) {
+    //                     allNames.push(member.name);
+    //                 }
+    //             });
+    //         });
+    //         allVacationers.forEach((vacationer) => {
+    //             if (!allNames.includes(vacationer.name)) {
+    //                 allNames.push(vacationer.name);
+    //             }
+    //         });
+    //         return allNames.length - onHolidayCount;
+    //     }
+    // };
 
-        return vacationersAmount;
-    };
+    // const getVacationerNames = (dayNumber) => {
+    //     let year = selectedDate.getFullYear();
+    //     let month = selectedDate.getMonth();
+    //     let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
+    //     let vacationerNames = [];
+    //
+    //     vacationersOfMonth.forEach((vacationer) => {
+    //         // if the given day is included in the vacationers holiday add to allVacationers
+    //         if (teamToShow.id) {
+    //             if (
+    //                 date.toISOString() >= vacationer.vacations.start &&
+    //                 date.toISOString() <= vacationer.vacations.end
+    //             ) {
+    //                 teamToShow.members.forEach((member) => {
+    //                     if (vacationer.name === member.name) {
+    //                         vacationerNames.push(vacationer.name);
+    //                     }
+    //                 });
+    //             }
+    //         } else {
+    //             if (
+    //                 date.toISOString() >= vacationer.vacations.start &&
+    //                 date.toISOString() <= vacationer.vacations.end
+    //             ) {
+    //                 vacationerNames.push(vacationer.name);
+    //             }
+    //         }
+    //     });
+    //
+    //     return vacationerNames;
+    // };
 
-    const countWorkers = (dayNumber) => {
-        let onHolidayCount = countVacationers(dayNumber);
-        let allNames = [];
-
-        if (teamToShow.id) {
-            return teamToShow.members.length - onHolidayCount;
-        } else {
-            teams.forEach((team) => {
-                team.members.forEach((member) => {
-                    if (!allNames.includes(member.name)) {
-                        allNames.push(member.name);
-                    }
-                });
-            });
-            allVacationers.forEach((vacationer) => {
-                if (!allNames.includes(vacationer.name)) {
-                    allNames.push(vacationer.name);
-                }
-            });
-            return allNames.length - onHolidayCount;
-        }
-    };
-
-    const getVacationerNames = (dayNumber) => {
-        let year = selectedDate.getFullYear();
-        let month = selectedDate.getMonth();
-        let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
-        let vacationerNames = [];
-
-        vacationersOfMonth.forEach((vacationer) => {
-            // if the given day is included in the vacationers holiday add to allVacationers
-            if (teamToShow.id) {
-                if (
-                    date.toISOString() >= vacationer.vacations.start &&
-                    date.toISOString() <= vacationer.vacations.end
-                ) {
-                    teamToShow.members.forEach((member) => {
-                        if (vacationer.name === member.name) {
-                            vacationerNames.push(vacationer.name);
-                        }
-                    });
-                }
-            } else {
-                if (
-                    date.toISOString() >= vacationer.vacations.start &&
-                    date.toISOString() <= vacationer.vacations.end
-                ) {
-                    vacationerNames.push(vacationer.name);
-                }
-            }
-        });
-
-        return vacationerNames;
-    };
-
-    const getWorkerNames = (dayNumber) => {
-        let workerNames = [];
-        let onHolidayNames = getVacationerNames(dayNumber);
-
-        if (teamToShow.id) {
-            teamToShow.members.forEach((member) => {
-                if (onHolidayNames.length > 0) {
-                    onHolidayNames.forEach((vacationer) => {
-                        if (member.name != vacationer) {
-                            workerNames.push(member.name);
-                        }
-                    });
-                } else {
-                    workerNames.push(member.name);
-                }
-            });
-
-            return workerNames;
-        } else {
-            teams.forEach((team) => {
-                team.members.forEach((member) => {
-                    if (!onHolidayNames.includes(member.name)) {
-                        if (!workerNames.includes(member.name)) {
-                            workerNames.push(member.name);
-                        }
-                    }
-                });
-            });
-            allVacationers.forEach((vacationer) => {
-                if (!onHolidayNames.includes(vacationer.name)) {
-                    if (!workerNames.includes(vacationer.name)) {
-                        workerNames.push(vacationer.name);
-                    }
-                }
-            });
-            return workerNames;
-        }
-    };
+    // const getWorkerNames = (dayNumber) => {
+    //     let workerNames = [];
+    //     let onHolidayNames = getVacationerNames(dayNumber);
+    //
+    //     if (teamToShow.id) {
+    //         teamToShow.members.forEach((member) => {
+    //             if (onHolidayNames.length > 0) {
+    //                 onHolidayNames.forEach((vacationer) => {
+    //                     if (member.name != vacationer) {
+    //                         workerNames.push(member.name);
+    //                     }
+    //                 });
+    //             } else {
+    //                 workerNames.push(member.name);
+    //             }
+    //         });
+    //
+    //         return workerNames;
+    //     } else {
+    //         teams.forEach((team) => {
+    //             team.members.forEach((member) => {
+    //                 if (!onHolidayNames.includes(member.name)) {
+    //                     if (!workerNames.includes(member.name)) {
+    //                         workerNames.push(member.name);
+    //                     }
+    //                 }
+    //             });
+    //         });
+    //         allVacationers.forEach((vacationer) => {
+    //             if (!onHolidayNames.includes(vacationer.name)) {
+    //                 if (!workerNames.includes(vacationer.name)) {
+    //                     workerNames.push(vacationer.name);
+    //                 }
+    //             }
+    //         });
+    //         return workerNames;
+    //     }
+    // };
 
     const ButtonCustomInput = forwardRef<HTMLInputElement, ButtonProps>(
         (props, ref) => {
@@ -1127,105 +1125,95 @@ export default function Calendar({ allVacationers, save }) {
         }
     );
 
-    const getDayFromInt = (day) => {
-        switch (day) {
-            case 0:
-                return "Mon";
-
-            case 1:
-                return "Tue";
-
-            case 2:
-                return "Wed";
-
-            case 3:
-                return "Thu";
-
-            case 4:
-                return "Fri";
-
-            case 5:
-                return "Sat";
-
-            case 6:
-                return "Sun";
-
-            default:
-                break;
-        }
+    const selectTeam = (e: any, newTeams: Team[]) => {
+        setSelectedTeams(newTeams);
     };
+
+    // const getDayFromInt = (day) => {
+    //     switch (day) {
+    //         case 0:
+    //             return "Mon";
+    //
+    //         case 1:
+    //             return "Tue";
+    //
+    //         case 2:
+    //             return "Wed";
+    //
+    //         case 3:
+    //             return "Thu";
+    //
+    //         case 4:
+    //             return "Fri";
+    //
+    //         case 5:
+    //             return "Sat";
+    //
+    //         case 6:
+    //             return "Sun";
+    //
+    //         default:
+    //             break;
+    //     }
+    // };
 
     return (
         <>
             <div className={styles.wholeCalendar}>
                 <div>
-                    <div className={styles.teamChips}>
-                        {teamToShow.id.length === 0 ? (
-                            <Chip
-                                label="All teams"
-                                color="secondary"
-                                onClick={() => {
-                                    setMonthsHolidays(vacationersOfMonth, null);
-                                    setTeamToShow({
-                                        id: "",
-                                        title: "",
-                                        members: [
-                                            {
-                                                name: "",
-                                                vacationerId: "",
-                                            },
-                                        ],
-                                        createdAt: new Date(),
-                                        updatedAt: new Date(),
-                                    });
+                    <div className={styles.topRow}>
+                        <div className={styles.teamSelectionElements}>
+                            <ToggleButton
+                                onChange={() => setSelectedTeams([])}
+                                value={""}
+                                size={"small"}
+                                color={"secondary"}
+                                selected={selectedMembers.length === 0}
+                                style={{ textTransform: "none" }}
+                                key={"all teams"}
+                                sx={{
+                                    borderWidth: "0.2em",
                                 }}
-                            />
-                        ) : (
-                            <Chip
-                                variant={"outlined"}
-                                label="All teams"
-                                color="secondary"
-                                onClick={() => {
-                                    setMonthsHolidays(vacationersOfMonth, null);
-                                    setTeamToShow({
-                                        id: "",
-                                        title: "",
-                                        members: [
-                                            {
-                                                name: "",
-                                                vacationerId: "",
-                                            },
-                                        ],
-                                        createdAt: new Date(),
-                                        updatedAt: new Date(),
-                                    });
-                                }}
-                            />
-                        )}
-                        {teams.map((team) =>
-                            teamToShow.id && teamToShow.title === team.title ? (
-                                <Chip
-                                    key={team.id}
-                                    color="primary"
-                                    label={team.title}
-                                    onClick={() => {
-                                        setTeamToShow(team);
-                                    }}
-                                />
-                            ) : (
-                                <Chip
-                                    key={team.id}
-                                    variant={"outlined"}
-                                    color="primary"
-                                    label={team.title}
-                                    onClick={() => {
-                                        setTeamToShow(team);
-                                    }}
-                                />
-                            )
-                        )}
-                        {teamToShow.id &&
-                            teamToShow.members
+                            >
+                                <b>All teams</b>
+                            </ToggleButton>
+                            <ToggleButtonGroup
+                                size={"small"}
+                                color="primary"
+                                value={selectedTeams}
+                                onChange={selectTeam}
+                                className={styles.toggleButton}
+                            >
+                                {teams.map((team) => (
+                                    <ToggleButton
+                                        value={team}
+                                        key={team.id}
+                                        style={{ textTransform: "none" }}
+                                        sx={{
+                                            borderWidth: "0.05em",
+                                            borderColor: "black",
+                                        }}
+                                    >
+                                        {team.title}
+                                    </ToggleButton>
+                                ))}
+                            </ToggleButtonGroup>
+                        </div>
+                        <div className={styles.calendarSettingsBox}>
+                            {user && user.name && (
+                                // !isMobile &&
+                                <div className={styles.infoBox}>
+                                    {holidaySymbols[0]} = confirmed holiday{" "}
+                                    <br /> {holidaySymbols[1]} = un-confirmed
+                                    holiday
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles.chips}>
+                        {selectedMembers &&
+                            selectedMembers
                                 // some sorting?
                                 // .sort((v1, v2) => v1.name - v2.name)
                                 .map((member) => (
@@ -1235,13 +1223,6 @@ export default function Calendar({ allVacationers, save }) {
                                     />
                                 ))}
                     </div>
-                    {user && user.name && (
-                        // !isMobile &&
-                        <div className={styles.infoBox}>
-                            {holidaySymbols[0]} = confirmed holiday <br />{" "}
-                            {holidaySymbols[1]} = un-confirmed holiday
-                        </div>
-                    )}
                 </div>
                 <div className={styles.wholeCalendar}>
                     {/*{!isMobile && (*/}
@@ -1258,9 +1239,11 @@ export default function Calendar({ allVacationers, save }) {
                                     <Typography
                                         className={styles.showAllRadioButton}
                                     >
-                                        {teamToShow.id
-                                            ? `Show only people on holiday in team ${teamToShow.title}`
-                                            : "Show only people on holiday"}
+                                        {selectedTeams.length === 0
+                                            ? "Show only people on holiday in all teams"
+                                            : selectedTeams.length === 1
+                                            ? `Show only people on holiday in ${selectedTeams[0].title}`
+                                            : "Show only people on holiday in selected teams"}
                                     </Typography>
                                 }
                             />
@@ -1413,7 +1396,7 @@ export default function Calendar({ allVacationers, save }) {
                                                                 cell.value
                                                             ),
                                                             height: `${columnHeight}em`,
-                                                            border: setTodayColumn(
+                                                            border: setColumnStyle(
                                                                 cell.column
                                                             ),
                                                             backgroundColor:
@@ -1439,7 +1422,7 @@ export default function Calendar({ allVacationers, save }) {
                                             <td
                                                 {...column.getFooterProps()}
                                                 style={{
-                                                    border: setTodayColumn(
+                                                    border: setColumnStyle(
                                                         column
                                                     ),
                                                 }}
