@@ -19,6 +19,8 @@ export default function TeamAdd({
     completedAction,
     setCompletedAction,
     openAPIError,
+    minNameLength,
+    maxNameLength,
 }) {
     const { user, APIError, setAPIError } = useOutletVariables();
     const [newTeam, setNewTeam] = useState("");
@@ -26,7 +28,8 @@ export default function TeamAdd({
     const [teamNameError, setTeamNameError] = useState(false);
     const [alreadyExistsError, setAlreadyExistsError] = useState(false);
 
-    const nameError = newTeam.length < 3;
+    const nameError =
+        newTeam.length < minNameLength || newTeam.length > maxNameLength;
 
     const handleClose = () => {
         setOpenTeamAdd(false);
@@ -36,7 +39,7 @@ export default function TeamAdd({
     };
 
     const createTeam = (newTeam) => {
-        if (newTeam.length < 3 || newTeam.length > 20) {
+        if (newTeam.length < minNameLength || newTeam.length > maxNameLength) {
             setTeamNameError(true);
         } else {
             let firstUser = { name: user.name, vacationerId: user.id };
@@ -74,13 +77,14 @@ export default function TeamAdd({
                     <TextField
                         className={styles.teamAddTextField}
                         required
-                        inputProps={{ minLength: 3 }}
+                        inputProps={{ minLength: minNameLength }}
                         label="Team name"
                         disabled={APIError}
                         variant="outlined"
                         value={newTeam}
                         helperText={
-                            nameError && "Name must be at 3 - 20 characters"
+                            nameError &&
+                            `Name must be ${minNameLength}-${maxNameLength} characters`
                         }
                         onChange={(e) => setNewTeam(e.target.value)}
                     />
@@ -106,9 +110,7 @@ export default function TeamAdd({
                 openAlert={teamNameError}
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
-                dialogContent={
-                    "The team name must be between 3 - 20 characters"
-                }
+                dialogContent={`The team name must be ${minNameLength}-${maxNameLength}  characters`}
             />
 
             <AlertDialog
