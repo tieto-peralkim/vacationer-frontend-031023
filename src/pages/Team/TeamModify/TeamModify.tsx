@@ -131,7 +131,7 @@ export default function TeamModify({
     };
 
     const changeTeamName = (newName) => {
-        if (newTeam.length < minNameLength || newTeam.length > maxNameLength) {
+        if (nameError) {
             setTeamNameError(true);
         } else {
             axios
