@@ -24,6 +24,7 @@ import {
     Backdrop,
 } from "@mui/material";
 import { useOutletVariables } from "../../../NavigationBar";
+import { validateText } from "../../../functions/Validate";
 
 export interface Member {
     name: "";
@@ -131,9 +132,11 @@ export default function TeamModify({
     };
 
     const changeTeamName = (newName) => {
-        if (nameError) {
+        if (nameError || validateText(newName) == null) {
             setTeamNameError(true);
         } else {
+            newName = validateText(newName);
+
             axios
                 .patch(
                     `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
@@ -338,7 +341,7 @@ export default function TeamModify({
                 openAlert={teamNameError}
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
-                dialogContent={`The team name must be ${minNameLength}-${maxNameLength} characters`}
+                dialogContent={`The team name must be ${minNameLength}-${maxNameLength} characters and it cant contain leading or trailing whitespaces.`}
                 cancel={""}
                 confirm={""}
             />

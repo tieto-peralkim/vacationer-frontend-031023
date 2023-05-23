@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import { useOutletVariables } from "../../../NavigationBar";
+import { validateText } from "../../../functions/Validate";
 
 export default function PickerModal({
     resetForm,
@@ -59,6 +60,7 @@ export default function PickerModal({
     const [warningStartDate, setWarningStartDate] = useState(new Date());
     const [warningEndDate, setWarningEndDate] = useState(new Date());
     const [overlapErrorMessage, setOverlapErrorMessage] = useState(false);
+    const [commentError, setCommentError] = useState(false);
 
     const handleCloseCalendar = () => {
         setOpenCalendar(false);
@@ -171,12 +173,22 @@ export default function PickerModal({
 
     const confirmEdit = () => {
         if (!overlapErrorMessage) {
-            handleOpenEditAlert();
+            if (validateText(comment) != null) {
+                setComment(validateText(comment));
+                handleOpenEditAlert();
+            } else {
+                setCommentError(true);
+            }
         }
     };
     const confirmAdd = () => {
         if (!overlapErrorMessage) {
-            handleOpenAddAlert();
+            if (validateText(comment) != null) {
+                setComment(validateText(comment));
+                handleOpenAddAlert();
+            } else {
+                setCommentError(true);
+            }
         }
     };
 
@@ -466,6 +478,16 @@ export default function PickerModal({
                 }
                 cancel={"No"}
                 confirm={"Yes add"}
+            />
+
+            <AlertDialog
+                openAlert={commentError}
+                handleAction={() => void 0}
+                handleCloseAlert={() => setCommentError(false)}
+                dialogTitle={"ERROR!"}
+                dialogContent={`Comments can't contain leading or trailing whitespaces.`}
+                cancel={""}
+                confirm={""}
             />
         </>
     );

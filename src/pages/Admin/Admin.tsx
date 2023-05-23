@@ -19,6 +19,7 @@ import { Navigate } from "react-router-dom";
 import { useOutletVariables, Vacationer } from "../../NavigationBar";
 import { Team } from "../Team/TeamPage/TeamPage";
 import { ExpandCircleDown } from "@mui/icons-material";
+import { validateText } from "../../functions/Validate";
 
 // TODO: add employee amount and minimum amount
 export default function Admin() {
@@ -190,31 +191,39 @@ export default function Admin() {
     const createUser = (e) => {
         e.preventDefault();
         if (!nameError) {
-            const newVacationer = {
-                name: newUser,
-                nameId: newUser,
-            };
+            if (validateText(newUser) != null) {
+                setNewUser(validateText(newUser));
+                const newVacationer = {
+                    name: newUser,
+                    nameId: newUser,
+                };
 
-            axios
-                .post(
-                    `${process.env.REACT_APP_ADDRESS}/vacationers`,
-                    newVacationer,
-                    { withCredentials: true }
-                )
-                .then((response) => {
-                    setUserCreated(true);
-                    setCompletedAction(!completedAction);
-                    setNewUser("");
-                })
-                .catch((error) => {
-                    console.error("There was a user creation error!", error);
+                axios
+                    .post(
+                        `${process.env.REACT_APP_ADDRESS}/vacationers`,
+                        newVacationer,
+                        { withCredentials: true }
+                    )
+                    .then((response) => {
+                        setUserCreated(true);
+                        setCompletedAction(!completedAction);
+                        setNewUser("");
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "There was a user creation error!",
+                            error
+                        );
 
-                    if (error.response) {
-                        setUserCreationMessage(error.response.data);
-                    } else {
-                        setAPIError(true);
-                    }
-                });
+                        if (error.response) {
+                            setUserCreationMessage(error.response.data);
+                        } else {
+                            setAPIError(true);
+                        }
+                    });
+            } else {
+                setUserNameError(true);
+            }
         } else {
             setUserNameError(true);
         }
@@ -577,7 +586,7 @@ export default function Admin() {
                 handleAction={() => void 0}
                 handleCloseAlert={() => setUserNameError(false)}
                 dialogTitle={"ERROR!"}
-                dialogContent={`This username is not between ${minNameLength}-${maxNameLength} characters`}
+                dialogContent={`This username is not between ${minNameLength}-${maxNameLength} characters or it contains leading or trailing whitespaces.`}
                 cancel={""}
                 confirm={""}
             />
