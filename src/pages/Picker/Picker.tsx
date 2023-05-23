@@ -352,17 +352,14 @@ export default function Picker({ save, setSave, allVacationers }) {
     return (
         <Accordion className={styles.accordion} disabled={APIError}>
             <AccordionSummary
-                sx={{
-                    bgcolor: "lightblue",
-                }}
+                sx={{ backgroundColor: "aliceblue" }}
                 expandIcon={<ExpandCircleDown />}
             >
-                <div className={styles.dropdownSummary}>
-                    <div className={styles.dropdownText}>
+                <div className={styles.accordionSummaryElements}>
+                    <div>
                         <h3>Your holidays</h3>
                     </div>
                     <Button
-                        className={styles.dropdownButton}
                         variant="contained"
                         color="primary"
                         disabled={user && !user.name}
@@ -376,7 +373,7 @@ export default function Picker({ save, setSave, allVacationers }) {
                     </Button>
                 </div>
             </AccordionSummary>
-            <Divider className={styles.divider} />
+            <Divider variant={"middle"} className={styles.accordionDivider} />
             <AccordionDetails className={styles.dropdown}>
                 <ThemeProvider theme={theme}>
                     <div className={styles.content}>
@@ -496,7 +493,6 @@ export default function Picker({ save, setSave, allVacationers }) {
                                             key={holiday.id}
                                         >
                                             <ButtonGroup
-                                                className={styles.buttonGroup}
                                                 size="medium"
                                                 key={holiday.id}
                                             >

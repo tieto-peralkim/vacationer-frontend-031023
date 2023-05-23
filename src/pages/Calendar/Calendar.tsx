@@ -23,9 +23,11 @@ import {
     Radio,
     RadioGroup,
     Switch,
-    ToggleButton,
     ToggleButtonGroup,
 } from "@mui/material";
+
+import MuiToggleButton from "@mui/material/ToggleButton";
+import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./calendar.module.css";
@@ -84,6 +86,14 @@ export default function Calendar({ allVacationers, save }) {
     const hiddenColumns = [];
     const [teams, setTeams] = useState<Team[]>([]);
     const [vacationersOfMonth, setVacationersOfMonth] = useState([]);
+
+    const ToggleButton = styled(MuiToggleButton)({
+        "&.Mui-selected, &.Mui-selected:hover": {
+            color: "white",
+            backgroundColor: "#3874CB",
+            borderColor: "grey",
+        },
+    });
 
     // Fetching public holidays from API
     useEffect(() => {
@@ -1163,49 +1173,39 @@ export default function Calendar({ allVacationers, save }) {
                 <div>
                     <div className={styles.topRow}>
                         <div className={styles.teamSelectionElements}>
-                            <ToggleButton
-                                onChange={() => setSelectedTeams([])}
-                                value={""}
-                                size={"small"}
-                                color={"secondary"}
-                                selected={selectedMembers.length === 0}
-                                style={{ textTransform: "none" }}
-                                key={"all teams"}
-                                sx={{
-                                    borderWidth: "0.2em",
-                                }}
-                            >
-                                <b>All teams</b>
-                            </ToggleButton>
+                            <div>
+                                <ToggleButton
+                                    onChange={() => setSelectedTeams([])}
+                                    value={""}
+                                    size={"small"}
+                                    selected={selectedMembers.length === 0}
+                                    key={"all teams"}
+                                    className={styles.toggleButton}
+                                >
+                                    <h4 className={styles.buttonAllTeams}>
+                                        All teams
+                                    </h4>
+                                </ToggleButton>
+                            </div>
                             <ToggleButtonGroup
                                 size={"small"}
-                                color="primary"
                                 value={selectedTeams}
                                 onChange={selectTeam}
-                                className={styles.toggleButton}
+                                className={styles.toggleButtonGroup}
                             >
                                 {teams.map((team) => (
                                     <ToggleButton
                                         value={team}
                                         key={team.id}
-                                        style={{ textTransform: "none" }}
-                                        sx={{
-                                            borderWidth: "0.05em",
-                                            borderColor: "black",
-                                        }}
+                                        className={styles.toggleButton}
                                     >
-                                        {team.title}
+                                        <h5 className={styles.buttonSingleTeam}>
+                                            {team.title}
+                                        </h5>
                                     </ToggleButton>
                                 ))}
                             </ToggleButtonGroup>
                         </div>
-                        {user && user.name && (
-                            // !isMobile &&
-                            <div className={styles.calendarSettingsBox}>
-                                {holidaySymbols[0]} = confirmed holiday <br />{" "}
-                                {holidaySymbols[1]} = un-confirmed holiday
-                            </div>
-                        )}
                     </div>
 
                     <div className={styles.chips}>
@@ -1233,9 +1233,7 @@ export default function Calendar({ allVacationers, save }) {
                                 control={<Switch color="success" />}
                                 disabled={disableConditions}
                                 label={
-                                    <Typography
-                                        className={styles.showAllRadioButton}
-                                    >
+                                    <Typography>
                                         {selectedTeams.length === 0
                                             ? "Show only people on holiday in all teams"
                                             : selectedTeams.length === 1
@@ -1245,56 +1243,84 @@ export default function Calendar({ allVacationers, save }) {
                                 }
                             />
                         </FormGroup>
-                        <FormControl className={styles.heightSettings}>
-                            <FormLabel className={styles.heightTitle}>
-                                Calendar height
-                            </FormLabel>
-                            <RadioGroup
-                                row
-                                value={columnHeight}
-                                onChange={changeCalendarHeight}
-                            >
-                                <FormControlLabel
-                                    value="1"
-                                    control={<Radio />}
-                                    label={
-                                        <Typography
-                                            className={
-                                                styles.heightRadioButtons
+                        {user && user.name && (
+                            // !isMobile &&
+                            <div className={styles.calendarSettingsBox}>
+                                <div>
+                                    {holidaySymbols[0]} = confirmed holiday{" "}
+                                    <br /> {holidaySymbols[1]} = un-confirmed
+                                    holiday
+                                </div>
+                                <FormControl>
+                                    <div className={styles.heightTitle}>
+                                        Calendar height
+                                    </div>
+                                    <RadioGroup
+                                        row
+                                        value={columnHeight}
+                                        onChange={changeCalendarHeight}
+                                    >
+                                        <FormControlLabel
+                                            value="1"
+                                            control={
+                                                <Radio
+                                                    sx={{
+                                                        "& .MuiSvgIcon-root": {
+                                                            fontSize: 16,
+                                                        },
+                                                    }}
+                                                />
                                             }
-                                        >
-                                            Low
-                                        </Typography>
-                                    }
-                                />
-                                <FormControlLabel
-                                    value="1.5"
-                                    control={<Radio />}
-                                    label={
-                                        <Typography
-                                            className={
-                                                styles.heightRadioButtons
+                                            label={
+                                                <Typography
+                                                    sx={{ fontSize: "10px" }}
+                                                >
+                                                    Low
+                                                </Typography>
                                             }
-                                        >
-                                            Normal
-                                        </Typography>
-                                    }
-                                />
-                                <FormControlLabel
-                                    value="2"
-                                    control={<Radio />}
-                                    label={
-                                        <Typography
-                                            className={
-                                                styles.heightRadioButtons
+                                        />
+                                        <FormControlLabel
+                                            value="1.5"
+                                            control={
+                                                <Radio
+                                                    sx={{
+                                                        "& .MuiSvgIcon-root": {
+                                                            fontSize: 16,
+                                                        },
+                                                    }}
+                                                />
                                             }
-                                        >
-                                            High
-                                        </Typography>
-                                    }
-                                />
-                            </RadioGroup>
-                        </FormControl>
+                                            label={
+                                                <Typography
+                                                    sx={{ fontSize: "10px" }}
+                                                >
+                                                    Normal
+                                                </Typography>
+                                            }
+                                        />
+                                        <FormControlLabel
+                                            value="2"
+                                            control={
+                                                <Radio
+                                                    sx={{
+                                                        "& .MuiSvgIcon-root": {
+                                                            fontSize: 16,
+                                                        },
+                                                    }}
+                                                />
+                                            }
+                                            label={
+                                                <Typography
+                                                    sx={{ fontSize: "10px" }}
+                                                >
+                                                    High
+                                                </Typography>
+                                            }
+                                        />
+                                    </RadioGroup>
+                                </FormControl>
+                            </div>
+                        )}
                     </div>
                     {/*)}*/}
                     <Box className={styles.monthSelectionButtons}>
@@ -1325,7 +1351,7 @@ export default function Calendar({ allVacationers, save }) {
                         </Button>
                     </Box>
                     {/*{!isMobile ? (*/}
-                    <div className="full-calendar">
+                    <div>
                         <table
                             {...getTableProps()}
                             className={styles.fullCalendar}
