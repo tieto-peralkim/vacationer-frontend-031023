@@ -45,7 +45,8 @@ export default function Admin() {
     const [vacationers, setVacationers] = useState([]);
     const [newUser, setNewUser] = useState("");
     const nameError =
-        newUser.length < minNameLength || newUser.length > maxNameLength;
+        newUser.trim().length < minNameLength ||
+        newUser.trim().length > maxNameLength;
 
     const { user, APIError, setAPIError } = useOutletVariables();
     const [completedAction, setCompletedAction] = useState(false);
@@ -191,8 +192,8 @@ export default function Admin() {
         e.preventDefault();
         if (!nameError) {
             const newVacationer = {
-                name: newUser,
-                nameId: newUser,
+                name: newUser.trim(),
+                nameId: newUser.trim(),
             };
 
             axios
