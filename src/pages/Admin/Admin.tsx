@@ -355,6 +355,11 @@ export default function Admin() {
                                 onChange={(e: any) => {
                                     setSelectedUser(e.target.value);
                                 }}
+                                MenuProps={{
+                                    sx: {
+                                        height: 300,
+                                    },
+                                }}
                             >
                                 {vacationers.map((vacationer) => (
                                     <MenuItem
@@ -412,6 +417,11 @@ export default function Admin() {
                                 onChange={(e: any) => {
                                     setSelectedDeletedUser(e.target.value);
                                 }}
+                                MenuProps={{
+                                    sx: {
+                                        height: 300,
+                                    },
+                                }}
                             >
                                 {deletedVacationers &&
                                     deletedVacationers.map((vacationer) => (
@@ -458,6 +468,11 @@ export default function Admin() {
                                 className={styles.nameSelectBox}
                                 onChange={(e: any) => {
                                     setSelectedDeletedTeam(e.target.value);
+                                }}
+                                MenuProps={{
+                                    sx: {
+                                        height: 300,
+                                    },
                                 }}
                             >
                                 {deletedTeams &&
