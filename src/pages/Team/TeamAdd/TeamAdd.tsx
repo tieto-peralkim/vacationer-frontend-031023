@@ -11,6 +11,7 @@ import axios from "axios";
 import { useState } from "react";
 import styles from "../team.module.css";
 import { useOutletVariables } from "../../../NavigationBar";
+import { validateText } from "../../../functions/Validate";
 
 export default function TeamAdd({
     open,
@@ -39,13 +40,18 @@ export default function TeamAdd({
     };
 
     const createTeam = (newTeam) => {
-        if (newTeam.length < minNameLength || newTeam.length > maxNameLength) {
+        if (
+            newTeam.length < minNameLength ||
+            newTeam.length > maxNameLength ||
+            validateText(newTeam) == null
+        ) {
             setTeamNameError(true);
         } else {
             let firstUser = { name: user.name, vacationerId: user.id };
+            let teamTitle: string = validateText(newTeam);
             // Set the user as a member of the new team
             const teamToAdd = {
-                title: newTeam,
+                title: teamTitle,
                 members: firstUser,
             };
             axios
@@ -110,7 +116,7 @@ export default function TeamAdd({
                 openAlert={teamNameError}
                 handleCloseAlert={() => setTeamNameError(false)}
                 dialogTitle={"ERROR!"}
-                dialogContent={`The team name must be ${minNameLength}-${maxNameLength}  characters`}
+                dialogContent={`The team name must be ${minNameLength}-${maxNameLength} characters and it cant contain leading or trailing whitespaces.`}
             />
 
             <AlertDialog
