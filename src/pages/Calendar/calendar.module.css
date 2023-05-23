@@ -2,40 +2,47 @@
     display: flex;
     justify-content: space-between;
 }
-.heightSettings{
-    min-height: max-content;
-}
-.heightRadioButtons {
-}
+
 .heightTitle {
+    margin-top: 0.6em;
 }
 .monthSelectionButtons {
     align-items: center;
     justify-content: center;
     display: flex;
 }
-.showAllRadioButton {
+
+.topRow {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5em;
+    margin-bottom: 0.3em;
+}
+.teamSelectionElements {
+
+}
+.toggleButtonGroup {
+    margin-top: 0.2em;
+    width: 95vw;
+    overflow: auto;
+}
+.chips {
+    min-height: 3em;
 }
 
-.teamChips {
-    padding-top: 20px;
-    float: left;
+.buttonAllTeams {
+    text-transform: none;
 }
-
+.buttonSingleTeam {
+    text-transform: none;
+}
 .monthSelection {
     margin-right: 1em;
     margin-left: 1em;
 }
 .footerSection {
 }
-.infoBox {
-    float: right;
-    border: 0.1em solid #2A55E7;
-    border-radius: 12px;
-    padding: 0.5em;
-    margin-top: 0.5em;
-    margin-right: 1em;
-}
+
 .wholeCalendar {
     display: flex;
     flex-direction: column;
@@ -81,7 +88,7 @@
     align-items: center;
 }
 .fullCalendar {
-    border: solid 0.1em #73D8FF;
+    border: solid 0.1em rgb(56, 116, 203);
     width: 100%;
 }
 .content {
@@ -205,6 +212,17 @@
         justify-content: center;
         color: white;
     }
+    .calendarSettingsBox{
+        font-size: small;
+        border: 0.1em solid #2A55E7;
+        border-radius: 12px;
+        padding: 0.3em;
+        margin-left: 0.3em;
+    }
+    .toggleButton {
+        border-color: rgb(56, 116, 203);
+        max-height: 3.5em;
+    }
 }
 @media only screen and (max-width: 930px) {
     .cellStyle {
@@ -252,6 +270,17 @@
         justify-content: center;
         color: white;
         font-size: xx-small;
+    }
+    .calendarSettingsBox{
+        font-size: x-small;
+        border: 0.1em solid #2A55E7;
+        border-radius: 12px;
+        padding: 0.6em;
+        margin-left: 0.3em;
+    }
+    .toggleButton {
+        border-color: rgb(56, 116, 203);
+        max-height: 3em;
     }
 }
 
