@@ -59,7 +59,8 @@ export default function TeamModify({
     const [openDeleteTeamAlert, setOpenDeleteTeamAlert] = useState(false);
 
     const nameError =
-        newTeam.length < minNameLength || newTeam.length > maxNameLength;
+        newTeam.trim().length < minNameLength ||
+        newTeam.trim().length > maxNameLength;
 
     const handleClose = () => {
         setAlreadyExistsError(false);
@@ -138,7 +139,7 @@ export default function TeamModify({
                 .patch(
                     `${process.env.REACT_APP_ADDRESS}/teams/${selectedTeam.id}`,
                     {
-                        newName: newName,
+                        newName: newName.trim(),
                     },
                     { withCredentials: true }
                 )

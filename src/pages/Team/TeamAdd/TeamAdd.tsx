@@ -29,7 +29,8 @@ export default function TeamAdd({
     const [alreadyExistsError, setAlreadyExistsError] = useState(false);
 
     const nameError =
-        newTeam.length < minNameLength || newTeam.length > maxNameLength;
+        newTeam.trim().length < minNameLength ||
+        newTeam.trim().length > maxNameLength;
 
     const handleClose = () => {
         setOpenTeamAdd(false);
@@ -39,13 +40,13 @@ export default function TeamAdd({
     };
 
     const createTeam = (newTeam) => {
-        if (newTeam.length < minNameLength || newTeam.length > maxNameLength) {
+        if (nameError) {
             setTeamNameError(true);
         } else {
             let firstUser = { name: user.name, vacationerId: user.id };
             // Set the user as a member of the new team
             const teamToAdd = {
-                title: newTeam,
+                title: newTeam.trim(),
                 members: firstUser,
             };
             axios

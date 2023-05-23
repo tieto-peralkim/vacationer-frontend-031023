@@ -146,7 +146,7 @@ export default function PickerModal({
             let newHoliday = {
                 start: startDate,
                 end: endDate,
-                comment: comment,
+                comment: comment.trim(),
                 confirmed: confirmed,
             };
             axios
@@ -208,7 +208,7 @@ export default function PickerModal({
         let editedHoliday = {
             start: startDate,
             end: endDate,
-            comment: comment,
+            comment: comment.trim(),
             confirmed: confirmed,
             id: idToEdit,
         };
