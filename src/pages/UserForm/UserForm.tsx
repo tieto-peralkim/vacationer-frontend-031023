@@ -86,13 +86,13 @@ export default function UserForm() {
 
     const changeUserName = (newName) => {
         if (
-            newName.length >= minNameLength &&
-            newName.length <= maxNameLength
+            newName.trim().length >= minNameLength &&
+            newName.trim().length <= maxNameLength
         ) {
             axios
                 .patch(
                     `${process.env.REACT_APP_ADDRESS}/vacationers/${user.id}`,
-                    { newName: newName },
+                    { newName: newName.trim() },
                     { withCredentials: true }
                 )
                 .then(() => {
