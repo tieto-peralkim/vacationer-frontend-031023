@@ -11,6 +11,7 @@ import {
     List,
     ListItem,
     ListItemIcon,
+    Tooltip,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -153,35 +154,47 @@ function NavigationBar() {
             <AppBar position="sticky">
                 <Toolbar>
                     <IconButton onClick={() => setIsOpen(!isOpen)}>
-                        <MenuIcon />
+                        <Tooltip
+                            title={"Profile settings, Team creation and edit"}
+                        >
+                            <MenuIcon />
+                        </Tooltip>
                     </IconButton>
                     <>
-                        <Typography
-                            variant="h6"
-                            className={styles.profileTitle}
-                        >
-                            {APIError || !user ? (
-                                <div>No user</div>
-                            ) : (
-                                <Link
-                                    to="/profile"
-                                    className={styles.linkTitle}
-                                >
-                                    <PersonPin className={styles.userIcon} />
-                                    {user && user.name}
-                                    {newUserWarning && (
-                                        <FiberNewIcon
-                                            className={styles.newOrDeletedIcon}
+                        <Tooltip title={"Profile settings"}>
+                            <Typography
+                                variant="h6"
+                                className={styles.profileTitle}
+                            >
+                                {APIError || !user ? (
+                                    <div>No user</div>
+                                ) : (
+                                    <Link
+                                        to="/profile"
+                                        className={styles.linkTitle}
+                                    >
+                                        <PersonPin
+                                            className={styles.userIcon}
                                         />
-                                    )}
-                                    {deletedUserWarning && (
-                                        <DeleteForeverIcon
-                                            className={styles.newOrDeletedIcon}
-                                        />
-                                    )}
-                                </Link>
-                            )}
-                        </Typography>
+                                        {user && user.name}
+                                        {newUserWarning && (
+                                            <FiberNewIcon
+                                                className={
+                                                    styles.newOrDeletedIcon
+                                                }
+                                            />
+                                        )}
+                                        {deletedUserWarning && (
+                                            <DeleteForeverIcon
+                                                className={
+                                                    styles.newOrDeletedIcon
+                                                }
+                                            />
+                                        )}
+                                    </Link>
+                                )}
+                            </Typography>
+                        </Tooltip>
                         <Typography variant="h6" className={styles.signInTitle}>
                             {APIError || !user ? (
                                 <a

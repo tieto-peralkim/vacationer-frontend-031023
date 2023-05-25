@@ -18,6 +18,7 @@ import {
     MenuItem,
     Select,
     ThemeProvider,
+    Tooltip,
 } from "@mui/material";
 import ClearIcon from "@mui/icons-material/Clear";
 import AlertDialog from "../Dialogs/AlertDialog";
@@ -353,7 +354,11 @@ export default function Picker({ save, setSave, allVacationers }) {
         <Accordion className={styles.accordion} disabled={APIError}>
             <AccordionSummary
                 sx={{ backgroundColor: "aliceblue" }}
-                expandIcon={<ExpandCircleDown />}
+                expandIcon={
+                    <Tooltip title={"Show / hide your holiday list"}>
+                        <ExpandCircleDown />
+                    </Tooltip>
+                }
             >
                 <div className={styles.accordionSummaryElements}>
                     <div>
@@ -496,33 +501,43 @@ export default function Picker({ save, setSave, allVacationers }) {
                                                 size="medium"
                                                 key={holiday.id}
                                             >
-                                                <Button
-                                                    className={
-                                                        styles.buttonStyle
-                                                    }
-                                                    onClick={() =>
-                                                        editHoliday(holiday.id)
-                                                    }
-                                                    color="info"
-                                                    variant={
-                                                        holiday.confirmed
-                                                            ? "contained"
-                                                            : "outlined"
-                                                    }
+                                                <Tooltip title={"Edit holiday"}>
+                                                    <Button
+                                                        className={
+                                                            styles.buttonStyle
+                                                        }
+                                                        onClick={() =>
+                                                            editHoliday(
+                                                                holiday.id
+                                                            )
+                                                        }
+                                                        color="info"
+                                                        variant={
+                                                            holiday.confirmed
+                                                                ? "contained"
+                                                                : "outlined"
+                                                        }
+                                                    >
+                                                        {startAndEndTimeJSX(
+                                                            holiday
+                                                        )}
+                                                    </Button>
+                                                </Tooltip>
+                                                <Tooltip
+                                                    title={"Delete holiday"}
                                                 >
-                                                    {startAndEndTimeJSX(
-                                                        holiday
-                                                    )}
-                                                </Button>
-                                                <Button
-                                                    onClick={() =>
-                                                        confirmDeletion(holiday)
-                                                    }
-                                                    color={"error"}
-                                                    variant="contained"
-                                                >
-                                                    <ClearIcon />
-                                                </Button>
+                                                    <Button
+                                                        onClick={() =>
+                                                            confirmDeletion(
+                                                                holiday
+                                                            )
+                                                        }
+                                                        color={"error"}
+                                                        variant="contained"
+                                                    >
+                                                        <ClearIcon />
+                                                    </Button>
+                                                </Tooltip>
                                             </ButtonGroup>
                                         </Grid>
                                     ))}

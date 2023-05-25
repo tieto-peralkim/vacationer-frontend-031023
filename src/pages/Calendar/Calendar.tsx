@@ -24,6 +24,7 @@ import {
     RadioGroup,
     Switch,
     ToggleButtonGroup,
+    Tooltip,
 } from "@mui/material";
 
 import MuiToggleButton from "@mui/material/ToggleButton";
@@ -1174,18 +1175,25 @@ export default function Calendar({ allVacationers, save }) {
                     <div className={styles.topRow}>
                         <div className={styles.teamSelectionElements}>
                             <div>
-                                <ToggleButton
-                                    onChange={() => setSelectedTeams([])}
-                                    value={""}
-                                    size={"small"}
-                                    selected={selectedMembers.length === 0}
-                                    key={"all teams"}
-                                    className={styles.toggleButton}
+                                <Tooltip
+                                    title={
+                                        "Show all teams or set the displayed team"
+                                    }
+                                    placement={"top"}
                                 >
-                                    <h4 className={styles.buttonAllTeams}>
-                                        All teams
-                                    </h4>
-                                </ToggleButton>
+                                    <ToggleButton
+                                        onChange={() => setSelectedTeams([])}
+                                        value={""}
+                                        size={"small"}
+                                        selected={selectedMembers.length === 0}
+                                        key={"all teams"}
+                                        className={styles.toggleButton}
+                                    >
+                                        <h4 className={styles.buttonAllTeams}>
+                                            All teams
+                                        </h4>
+                                    </ToggleButton>
+                                </Tooltip>
                             </div>
                             <ToggleButtonGroup
                                 size={"small"}
@@ -1233,13 +1241,19 @@ export default function Calendar({ allVacationers, save }) {
                                 control={<Switch color="success" />}
                                 disabled={disableConditions}
                                 label={
-                                    <Typography>
-                                        {selectedTeams.length === 0
-                                            ? "Show only people on holiday in all teams"
-                                            : selectedTeams.length === 1
-                                            ? `Show only people on holiday in ${selectedTeams[0].title}`
-                                            : "Show only people on holiday in selected teams"}
-                                    </Typography>
+                                    <Tooltip
+                                        title={
+                                            "Filter people with holidays / all people"
+                                        }
+                                    >
+                                        <Typography>
+                                            {selectedTeams.length === 0
+                                                ? "Show only people on holiday in all teams"
+                                                : selectedTeams.length === 1
+                                                ? `Show only people on holiday in ${selectedTeams[0].title}`
+                                                : "Show only people on holiday in selected teams"}
+                                        </Typography>
+                                    </Tooltip>
                                 }
                             />
                         </FormGroup>
@@ -1323,33 +1337,35 @@ export default function Calendar({ allVacationers, save }) {
                         )}
                     </div>
                     {/*)}*/}
-                    <Box className={styles.monthSelectionButtons}>
-                        <Button
-                            onClick={() => changeMonth(-1)}
-                            startIcon={<ArrowBackIosIcon />}
-                            disabled={disableConditions}
-                        >
-                            Prev
-                        </Button>
-                        <div className={styles.monthSelection}>
-                            <DatePicker
+                    <Tooltip title={"Select displayed month"} placement={"top"}>
+                        <Box className={styles.monthSelectionButtons}>
+                            <Button
+                                onClick={() => changeMonth(-1)}
+                                startIcon={<ArrowBackIosIcon />}
                                 disabled={disableConditions}
-                                selected={selectedDate}
-                                onChange={(date) => setSelectedDate(date)}
-                                showMonthYearPicker
-                                showFullMonthYearPicker
-                                showFourColumnMonthYearPicker
-                                customInput={<ButtonCustomInput />}
-                            />
-                        </div>
-                        <Button
-                            onClick={() => changeMonth(1)}
-                            endIcon={<ArrowForwardIosIcon />}
-                            disabled={disableConditions}
-                        >
-                            Next
-                        </Button>
-                    </Box>
+                            >
+                                Prev
+                            </Button>
+                            <div className={styles.monthSelection}>
+                                <DatePicker
+                                    disabled={disableConditions}
+                                    selected={selectedDate}
+                                    onChange={(date) => setSelectedDate(date)}
+                                    showMonthYearPicker
+                                    showFullMonthYearPicker
+                                    showFourColumnMonthYearPicker
+                                    customInput={<ButtonCustomInput />}
+                                />
+                            </div>
+                            <Button
+                                onClick={() => changeMonth(1)}
+                                endIcon={<ArrowForwardIosIcon />}
+                                disabled={disableConditions}
+                            >
+                                Next
+                            </Button>
+                        </Box>
+                    </Tooltip>
                     {/*{!isMobile ? (*/}
                     <div>
                         <table
