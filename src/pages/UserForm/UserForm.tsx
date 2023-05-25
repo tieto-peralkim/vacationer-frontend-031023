@@ -1,4 +1,11 @@
-import { Button, List, ListItem, ListItemIcon, TextField } from "@mui/material";
+import {
+    Button,
+    List,
+    ListItem,
+    ListItemIcon,
+    TextField,
+    Tooltip,
+} from "@mui/material";
 import styles from "./userform.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
 import axios from "axios";
@@ -193,33 +200,50 @@ export default function UserForm() {
             <div className={styles.content}>
                 {user && user.name && (
                     <>
-                        <div className={styles.borderedBox}>
+                        <div className={styles.borderedBoxProfile}>
                             <h3>Profile</h3>
                             <List>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <BadgeIcon />
-                                    </ListItemIcon>
-                                    name: {user.name}
-                                </ListItem>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <GitHubIcon />
-                                    </ListItemIcon>
-                                    nameId: {user.nameId}
-                                </ListItem>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <SecurityIcon />
-                                    </ListItemIcon>
-                                    admin: {user.admin ? "yes" : "no"}
-                                </ListItem>
-                                <ListItem>
-                                    <ListItemIcon>
-                                        <UpdateIcon />
-                                    </ListItemIcon>
-                                    user updated: {userUpdatedAt}
-                                </ListItem>
+                                <Tooltip title={"Name"} placement={"top-start"}>
+                                    <ListItem>
+                                        <ListItemIcon>
+                                            <BadgeIcon />
+                                        </ListItemIcon>
+                                        {user.name}
+                                    </ListItem>
+                                </Tooltip>
+                                <Tooltip
+                                    title={"Github account"}
+                                    placement={"top-start"}
+                                >
+                                    <ListItem>
+                                        <ListItemIcon>
+                                            <GitHubIcon />
+                                        </ListItemIcon>
+                                        {user.nameId}
+                                    </ListItem>
+                                </Tooltip>
+                                <Tooltip
+                                    title={"User status"}
+                                    placement={"top-start"}
+                                >
+                                    <ListItem>
+                                        <ListItemIcon>
+                                            <SecurityIcon />
+                                        </ListItemIcon>
+                                        {user.admin ? "Admin" : "User"}
+                                    </ListItem>
+                                </Tooltip>
+                                <Tooltip
+                                    title={"User updated"}
+                                    placement={"top-start"}
+                                >
+                                    <ListItem>
+                                        <ListItemIcon>
+                                            <UpdateIcon />
+                                        </ListItemIcon>
+                                        {userUpdatedAt}
+                                    </ListItem>
+                                </Tooltip>
                             </List>
                             <div className={styles.changeNameButton}>
                                 <Button

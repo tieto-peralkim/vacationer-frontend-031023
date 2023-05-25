@@ -5,12 +5,12 @@ import {
     AppBar,
     Box,
     CircularProgress,
-    Dialog,
     Drawer,
     IconButton,
     List,
     ListItem,
     ListItemIcon,
+    Tooltip,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -26,8 +26,6 @@ import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
 import Login from "./pages/Login/Login";
 import CustomAlert from "./components/CustomAlert";
-import HelpIcon from "@mui/icons-material/Help";
-import help from "./images/help.png";
 import { Buffer } from "buffer";
 
 export interface Vacationer {
@@ -76,7 +74,6 @@ function NavigationBar() {
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
     const [userName, setUserName] = useState("");
     const [showSpinner, setShowSpinner] = useState(true);
-    const [open, setOpen] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [deletedUserWarning, setDeletedUserWarning] = useState(false);
 
@@ -140,48 +137,52 @@ function NavigationBar() {
         }
     }, [newUserState]);
 
-    const handleOpenHelp = () => {
-        setOpen(true);
-    };
-
-    const handleCloseHelp = () => {
-        setOpen(false);
-    };
-
     return (
         <div className={styles.wholePage}>
             <AppBar position="sticky">
                 <Toolbar>
                     <IconButton onClick={() => setIsOpen(!isOpen)}>
-                        <MenuIcon />
+                        <Tooltip
+                            title={"Profile settings, create and edit teams"}
+                        >
+                            <MenuIcon />
+                        </Tooltip>
                     </IconButton>
                     <>
-                        <Typography
-                            variant="h6"
-                            className={styles.profileTitle}
-                        >
-                            {APIError || !user ? (
-                                <div>No user</div>
-                            ) : (
-                                <Link
-                                    to="/profile"
-                                    className={styles.linkTitle}
-                                >
-                                    <PersonPin className={styles.userIcon} />
-                                    {user && user.name}
-                                    {newUserWarning && (
-                                        <FiberNewIcon
-                                            className={styles.newOrDeletedIcon}
+                        <Tooltip title={"Profile settings"}>
+                            <Typography
+                                variant="h6"
+                                className={styles.profileTitle}
+                            >
+                                {APIError || !user ? (
+                                    <div>No user</div>
+                                ) : (
+                                    <Link
+                                        to="/profile"
+                                        className={styles.linkTitle}
+                                    >
+                                        <PersonPin
+                                            className={styles.userIcon}
                                         />
-                                    )}
-                                    {deletedUserWarning && (
-                                        <DeleteForeverIcon
-                                            className={styles.newOrDeletedIcon}
-                                        />
-                                    )}
-                                </Link>
-                            )}
-                        </Typography>
+                                        {user && user.name}
+                                        {newUserWarning && (
+                                            <FiberNewIcon
+                                                className={
+                                                    styles.newOrDeletedIcon
+                                                }
+                                            />
+                                        )}
+                                        {deletedUserWarning && (
+                                            <DeleteForeverIcon
+                                                className={
+                                                    styles.newOrDeletedIcon
+                                                }
+                                            />
+                                        )}
+                                    </Link>
+                                )}
+                            </Typography>
+                        </Tooltip>
                         <Typography variant="h6" className={styles.signInTitle}>
                             {APIError || !user ? (
                                 <a
@@ -304,14 +305,6 @@ function NavigationBar() {
                     </>
                 )}
             </div>
-            <Dialog
-                open={open}
-                fullWidth={true}
-                maxWidth="lg"
-                onClose={handleCloseHelp}
-            >
-                <img src={help} />
-            </Dialog>
             <footer className={styles.footer}>
                 <div className={styles.footerElements}>
                     <div>
@@ -325,20 +318,6 @@ function NavigationBar() {
                             Report bugs / ideas
                         </a>
                     </div>
-                    {window.location.pathname === "/" &&
-                        user &&
-                        !APIError &&
-                        !deletedUserWarning && (
-                            <div
-                                className={styles.footerHelp}
-                                onClick={() => {
-                                    handleOpenHelp();
-                                }}
-                            >
-                                <HelpIcon />
-                                Help
-                            </div>
-                        )}
                     <div>Version: {process.env.REACT_APP_VERSION}</div>
 
                     <div className={styles.footerRight}>
