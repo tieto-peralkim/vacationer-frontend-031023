@@ -1175,25 +1175,25 @@ export default function Calendar({ allVacationers, save }) {
                     <div className={styles.topRow}>
                         <div className={styles.teamSelectionElements}>
                             <div>
-                                <Tooltip
-                                    title={
-                                        "Show all teams or set the displayed team"
-                                    }
-                                    placement={"top"}
+                                <ToggleButton
+                                    onChange={() => setSelectedTeams([])}
+                                    value={""}
+                                    size={"small"}
+                                    selected={selectedMembers.length === 0}
+                                    key={"all teams"}
+                                    className={styles.toggleButton}
                                 >
-                                    <ToggleButton
-                                        onChange={() => setSelectedTeams([])}
-                                        value={""}
-                                        size={"small"}
-                                        selected={selectedMembers.length === 0}
-                                        key={"all teams"}
-                                        className={styles.toggleButton}
+                                    <Tooltip
+                                        title={
+                                            "Show all teams or set the displayed team"
+                                        }
+                                        placement={"top"}
                                     >
                                         <h4 className={styles.buttonAllTeams}>
                                             All teams
                                         </h4>
-                                    </ToggleButton>
-                                </Tooltip>
+                                    </Tooltip>
+                                </ToggleButton>
                             </div>
                             <ToggleButtonGroup
                                 size={"small"}
@@ -1207,9 +1207,20 @@ export default function Calendar({ allVacationers, save }) {
                                         key={team.id}
                                         className={styles.toggleButton}
                                     >
-                                        <h5 className={styles.buttonSingleTeam}>
-                                            {team.title}
-                                        </h5>
+                                        <Tooltip
+                                            title={
+                                                "Show all teams or set the displayed team"
+                                            }
+                                            placement={"bottom"}
+                                        >
+                                            <h5
+                                                className={
+                                                    styles.buttonSingleTeam
+                                                }
+                                            >
+                                                {team.title}
+                                            </h5>
+                                        </Tooltip>
                                     </ToggleButton>
                                 ))}
                             </ToggleButtonGroup>
@@ -1233,19 +1244,21 @@ export default function Calendar({ allVacationers, save }) {
                     {/*{!isMobile && (*/}
                     <div className={styles.rowOnCalendar}>
                         <FormGroup>
-                            <FormControlLabel
-                                checked={!showAllVacationers}
-                                onChange={() => {
-                                    setShowAllVacationers(!showAllVacationers);
-                                }}
-                                control={<Switch color="success" />}
-                                disabled={disableConditions}
-                                label={
-                                    <Tooltip
-                                        title={
-                                            "Filter people with holidays / all people"
-                                        }
-                                    >
+                            <Tooltip
+                                title={
+                                    "Filter people with holidays / all people"
+                                }
+                            >
+                                <FormControlLabel
+                                    checked={!showAllVacationers}
+                                    onChange={() => {
+                                        setShowAllVacationers(
+                                            !showAllVacationers
+                                        );
+                                    }}
+                                    control={<Switch color="success" />}
+                                    disabled={disableConditions}
+                                    label={
                                         <Typography>
                                             {selectedTeams.length === 0
                                                 ? "Show only people on holiday in all teams"
@@ -1253,9 +1266,9 @@ export default function Calendar({ allVacationers, save }) {
                                                 ? `Show only people on holiday in ${selectedTeams[0].title}`
                                                 : "Show only people on holiday in selected teams"}
                                         </Typography>
-                                    </Tooltip>
-                                }
-                            />
+                                    }
+                                />
+                            </Tooltip>
                         </FormGroup>
                         {user && user.name && (
                             // !isMobile &&

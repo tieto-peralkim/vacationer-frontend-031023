@@ -77,7 +77,7 @@ function NavigationBar() {
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
     const [userName, setUserName] = useState("");
     const [showSpinner, setShowSpinner] = useState(true);
-    const [open, setOpen] = useState(false);
+    // const [open, setOpen] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [deletedUserWarning, setDeletedUserWarning] = useState(false);
 
@@ -141,13 +141,13 @@ function NavigationBar() {
         }
     }, [newUserState]);
 
-    const handleOpenHelp = () => {
-        setOpen(true);
-    };
-
-    const handleCloseHelp = () => {
-        setOpen(false);
-    };
+    // const handleOpenHelp = () => {
+    //     setOpen(true);
+    // };
+    //
+    // const handleCloseHelp = () => {
+    //     setOpen(false);
+    // };
 
     return (
         <div className={styles.wholePage}>
@@ -317,14 +317,14 @@ function NavigationBar() {
                     </>
                 )}
             </div>
-            <Dialog
-                open={open}
-                fullWidth={true}
-                maxWidth="lg"
-                onClose={handleCloseHelp}
-            >
-                <img src={help} />
-            </Dialog>
+            {/*<Dialog*/}
+            {/*    open={open}*/}
+            {/*    fullWidth={true}*/}
+            {/*    maxWidth="lg"*/}
+            {/*    onClose={handleCloseHelp}*/}
+            {/*>*/}
+            {/*    <img src={help} />*/}
+            {/*</Dialog>*/}
             <footer className={styles.footer}>
                 <div className={styles.footerElements}>
                     <div>
@@ -338,20 +338,20 @@ function NavigationBar() {
                             Report bugs / ideas
                         </a>
                     </div>
-                    {window.location.pathname === "/" &&
-                        user &&
-                        !APIError &&
-                        !deletedUserWarning && (
-                            <div
-                                className={styles.footerHelp}
-                                onClick={() => {
-                                    handleOpenHelp();
-                                }}
-                            >
-                                <HelpIcon />
-                                Help
-                            </div>
-                        )}
+                    {/*{window.location.pathname === "/" &&*/}
+                    {/*    user &&*/}
+                    {/*    !APIError &&*/}
+                    {/*    !deletedUserWarning && (*/}
+                    {/*        <div*/}
+                    {/*            className={styles.footerHelp}*/}
+                    {/*            onClick={() => {*/}
+                    {/*                handleOpenHelp();*/}
+                    {/*            }}*/}
+                    {/*        >*/}
+                    {/*            <HelpIcon />*/}
+                    {/*            Help*/}
+                    {/*        </div>*/}
+                    {/*    )}*/}
                     <div>Version: {process.env.REACT_APP_VERSION}</div>
 
                     <div className={styles.footerRight}>
