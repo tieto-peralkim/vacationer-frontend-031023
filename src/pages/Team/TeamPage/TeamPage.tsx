@@ -1,4 +1,11 @@
-import { List, ListItem, ListItemText, Chip, Button } from "@mui/material";
+import {
+    List,
+    ListItem,
+    ListItemText,
+    Chip,
+    Button,
+    Tooltip,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import styles from "../team.module.css";
 import axios from "axios";
@@ -125,49 +132,58 @@ export default function TeamPage() {
                                 (member) => member["name"] === user.name
                             ) || user.admin ? (
                                 <div className={styles.itemCont} key={team.id}>
-                                    <ListItem
-                                        key={team.id}
-                                        alignItems="flex-start"
-                                        className={styles.listItem}
-                                        onClick={() => {
-                                            handleClickOpenTeamModify(team);
-                                        }}
+                                    <Tooltip
+                                        title={"Edit team"}
+                                        placement={"left"}
                                     >
-                                        <ListItemText
-                                            disableTypography
+                                        <ListItem
                                             key={team.id}
-                                            primary={
-                                                <Typography
-                                                    className={styles.teamName}
-                                                >
-                                                    {team.title}
-                                                </Typography>
-                                            }
-                                            className={styles.title}
-                                            secondary={
-                                                <div
-                                                    className={styles.chipCont}
-                                                >
-                                                    {team.members.map(
-                                                        (member) => (
-                                                            <Chip
-                                                                className={
-                                                                    styles.memberChip
-                                                                }
-                                                                key={
-                                                                    member.vacationerId
-                                                                }
-                                                                color="primary"
-                                                                label={
-                                                                    member.name
-                                                                }
-                                                            />
-                                                        )
-                                                    )}
-                                                </div>
-                                            }
-                                        />
-                                    </ListItem>
+                                            alignItems="flex-start"
+                                            className={styles.listItem}
+                                            onClick={() => {
+                                                handleClickOpenTeamModify(team);
+                                            }}
+                                        >
+                                            <ListItemText
+                                                disableTypography
+                                                key={team.id}
+                                                primary={
+                                                    <Typography
+                                                        className={
+                                                            styles.teamName
+                                                        }
+                                                    >
+                                                        {team.title}
+                                                    </Typography>
+                                                }
+                                                className={styles.title}
+                                                secondary={
+                                                    <div
+                                                        className={
+                                                            styles.chipCont
+                                                        }
+                                                    >
+                                                        {team.members.map(
+                                                            (member) => (
+                                                                <Chip
+                                                                    className={
+                                                                        styles.memberChip
+                                                                    }
+                                                                    key={
+                                                                        member.vacationerId
+                                                                    }
+                                                                    color="primary"
+                                                                    label={
+                                                                        member.name
+                                                                    }
+                                                                />
+                                                            )
+                                                        )}
+                                                    </div>
+                                                }
+                                            />
+                                        </ListItem>
+                                    </Tooltip>
                                 </div>
                             ) : (
                                 <div className={styles.itemCont} key={team.id}>
