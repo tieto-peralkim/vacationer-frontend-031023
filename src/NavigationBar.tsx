@@ -74,7 +74,6 @@ function NavigationBar() {
     const logoutAddress = `${process.env.REACT_APP_ADDRESS}/logout`;
     const [userName, setUserName] = useState("");
     const [showSpinner, setShowSpinner] = useState(true);
-    // const [open, setOpen] = useState(false);
     const [newUserWarning, setNewUserWarning] = useState(false);
     const [deletedUserWarning, setDeletedUserWarning] = useState(false);
 
