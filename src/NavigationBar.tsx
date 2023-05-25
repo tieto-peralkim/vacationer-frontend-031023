@@ -155,7 +155,7 @@ function NavigationBar() {
                 <Toolbar>
                     <IconButton onClick={() => setIsOpen(!isOpen)}>
                         <Tooltip
-                            title={"Profile settings, Team creation and edit"}
+                            title={"Profile settings, create and edit teams"}
                         >
                             <MenuIcon />
                         </Tooltip>
