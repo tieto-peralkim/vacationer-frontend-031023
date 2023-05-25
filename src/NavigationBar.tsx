@@ -5,7 +5,6 @@ import {
     AppBar,
     Box,
     CircularProgress,
-    Dialog,
     Drawer,
     IconButton,
     List,
@@ -27,8 +26,6 @@ import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
 import Login from "./pages/Login/Login";
 import CustomAlert from "./components/CustomAlert";
-import HelpIcon from "@mui/icons-material/Help";
-import help from "./images/help.png";
 import { Buffer } from "buffer";
 
 export interface Vacationer {
@@ -140,14 +137,6 @@ function NavigationBar() {
                 });
         }
     }, [newUserState]);
-
-    // const handleOpenHelp = () => {
-    //     setOpen(true);
-    // };
-    //
-    // const handleCloseHelp = () => {
-    //     setOpen(false);
-    // };
 
     return (
         <div className={styles.wholePage}>
@@ -317,14 +306,6 @@ function NavigationBar() {
                     </>
                 )}
             </div>
-            {/*<Dialog*/}
-            {/*    open={open}*/}
-            {/*    fullWidth={true}*/}
-            {/*    maxWidth="lg"*/}
-            {/*    onClose={handleCloseHelp}*/}
-            {/*>*/}
-            {/*    <img src={help} />*/}
-            {/*</Dialog>*/}
             <footer className={styles.footer}>
                 <div className={styles.footerElements}>
                     <div>
@@ -338,20 +319,6 @@ function NavigationBar() {
                             Report bugs / ideas
                         </a>
                     </div>
-                    {/*{window.location.pathname === "/" &&*/}
-                    {/*    user &&*/}
-                    {/*    !APIError &&*/}
-                    {/*    !deletedUserWarning && (*/}
-                    {/*        <div*/}
-                    {/*            className={styles.footerHelp}*/}
-                    {/*            onClick={() => {*/}
-                    {/*                handleOpenHelp();*/}
-                    {/*            }}*/}
-                    {/*        >*/}
-                    {/*            <HelpIcon />*/}
-                    {/*            Help*/}
-                    {/*        </div>*/}
-                    {/*    )}*/}
                     <div>Version: {process.env.REACT_APP_VERSION}</div>
 
                     <div className={styles.footerRight}>
