@@ -4,8 +4,15 @@
 .borderedBox {
     border: solid 1px blue;
     border-radius: 1em;
-    padding: 1em;
-    margin: 1em;
+    padding: 0 1em 1em 1em;
+    margin: 2em 2em 2em 1em;
+}
+.borderedBoxProfile {
+    border: solid 1px blue;
+    border-radius: 1em;
+    padding: 0 1em 1em 1em;
+    margin: 2em 1em 2em 2em;
+    height: max-content;
 }
 .holidaySymbolBox{
     max-width: 7em;
