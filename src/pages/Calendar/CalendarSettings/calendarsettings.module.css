@@ -1,0 +1,38 @@
+.content {
+    padding: 0 1em 1em 1em;
+}
+.colorPickers {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+}
+.rowFlex {
+    margin-top: 1em;
+    gap: 2em;
+    display: flex;
+}
+.columnFlex {
+    font-size: small;
+    width: 12em;
+    display: flex;
+    flex-direction: column;
+}
+.buttons {
+    margin-top: 1em;
+    display: flex;
+    gap: 1em;
+}
+.symbolFields {
+    width: 8em;
+}
+.topRow{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.2em;
+    margin-left: 1em;
+    font-size: small;
+}
+.changesDoneWarning {
+    color: red;
+}
