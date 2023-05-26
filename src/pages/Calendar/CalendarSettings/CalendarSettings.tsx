@@ -8,7 +8,7 @@ import {
     TextField,
     Tooltip,
 } from "@mui/material";
-import { SliderPicker } from "react-color";
+import { CompactPicker } from "react-color";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useOutletVariables } from "../../../NavigationBar";
@@ -146,21 +146,52 @@ export default function CalendarSettings({
         }
     };
 
+    const resetSettings = () => {
+        setHolidaySymbol(user.calendarSettings[0].holidaySymbol);
+        setUnconfirmedHolidaySymbol(
+            user.calendarSettings[0].unConfirmedHolidaySymbol
+        );
+        setHolidayColor(user.calendarSettings[0].holidayColor);
+        setUnConfirmedHolidayColor(
+            user.calendarSettings[0].unConfirmedHolidayColor
+        );
+        setWeekendColor(user.calendarSettings[0].weekendColor);
+        setWeekendHolidayColor(user.calendarSettings[0].weekendHolidayColor);
+    };
+
     return (
-        <>
-            <Button
-                onClick={() => {
-                    if (!changesDoneWarning) {
-                        setSettingsOpen(false);
-                    } else {
-                        setNotSavedError(true);
-                    }
-                }}
-                size={"small"}
-            >
-                <CloseIcon />
-            </Button>
-            <div className={styles.content}>
+        <div className={styles.content}>
+            <div className={styles.buttons}>
+                <Button
+                    onClick={() => {
+                        if (!changesDoneWarning) {
+                            setSettingsOpen(false);
+                        } else {
+                            setNotSavedError(true);
+                        }
+                    }}
+                >
+                    <CloseIcon />
+                </Button>
+                <Button
+                    disabled={!user}
+                    onClick={resetColors}
+                    variant="outlined"
+                    color={"secondary"}
+                    size={"small"}
+                >
+                    Set to default colors
+                </Button>
+                <Button
+                    disabled={!user || !changesDoneWarning}
+                    onClick={updateCalendarSettings}
+                    variant="contained"
+                    size={"small"}
+                >
+                    Save Calendar settings
+                </Button>
+            </div>
+            <div>
                 <div className={styles.topRow}>
                     <div>
                         <Tooltip
@@ -216,25 +247,8 @@ export default function CalendarSettings({
                                     />
                                 }
                                 label={
-                                    <Typography sx={{ fontSize: "10px" }}>
+                                    <Typography sx={{ fontSize: "16px" }}>
                                         Low
-                                    </Typography>
-                                }
-                            />
-                            <FormControlLabel
-                                value="1.5"
-                                control={
-                                    <Radio
-                                        sx={{
-                                            "& .MuiSvgIcon-root": {
-                                                fontSize: 16,
-                                            },
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <Typography sx={{ fontSize: "10px" }}>
-                                        Normal
                                     </Typography>
                                 }
                             />
@@ -250,7 +264,24 @@ export default function CalendarSettings({
                                     />
                                 }
                                 label={
-                                    <Typography sx={{ fontSize: "10px" }}>
+                                    <Typography sx={{ fontSize: "16px" }}>
+                                        Normal
+                                    </Typography>
+                                }
+                            />
+                            <FormControlLabel
+                                value="3"
+                                control={
+                                    <Radio
+                                        sx={{
+                                            "& .MuiSvgIcon-root": {
+                                                fontSize: 16,
+                                            },
+                                        }}
+                                    />
+                                }
+                                label={
+                                    <Typography sx={{ fontSize: "16px" }}>
                                         High
                                     </Typography>
                                 }
@@ -258,18 +289,18 @@ export default function CalendarSettings({
                         </RadioGroup>
                     </FormControl>
                 </div>
-                <div className={styles.colorPickers}>
-                    <div className={styles.rowFlex}>
+                <div>
+                    <div className={styles.colorPickers}>
                         <div className={styles.columnFlex}>
                             <b>Holiday</b>
-                            <SliderPicker
+                            <CompactPicker
                                 color={holidayColor}
                                 onChangeComplete={handleHolidayColorChange}
                             />
                         </div>
                         <div className={styles.columnFlex}>
                             <b>Unconfirmed holiday</b>
-                            <SliderPicker
+                            <CompactPicker
                                 color={unConfirmedHolidayColor}
                                 onChangeComplete={
                                     handleUnconfirmedHolidayColorChange
@@ -279,14 +310,14 @@ export default function CalendarSettings({
 
                         <div className={styles.columnFlex}>
                             <b>Weekend</b>
-                            <SliderPicker
+                            <CompactPicker
                                 color={weekendColor}
                                 onChangeComplete={handleWeekendColorChange}
                             />
                         </div>
                         <div className={styles.columnFlex}>
                             <b>Weekend holiday</b>
-                            <SliderPicker
+                            <CompactPicker
                                 color={weekendHolidayColor}
                                 onChangeComplete={
                                     handleWeekendHolidayColorChange
@@ -294,25 +325,6 @@ export default function CalendarSettings({
                             />
                         </div>
                     </div>
-                </div>
-                <div className={styles.buttons}>
-                    <Button
-                        disabled={!user}
-                        onClick={resetColors}
-                        variant="outlined"
-                        color={"secondary"}
-                        size={"small"}
-                    >
-                        Reset colors
-                    </Button>
-                    <Button
-                        disabled={!user || !changesDoneWarning}
-                        onClick={updateCalendarSettings}
-                        variant="contained"
-                        size={"small"}
-                    >
-                        Save Calendar settings
-                    </Button>
                 </div>
                 <AlertDialog
                     openAlert={openSettingsSave}
@@ -336,18 +348,22 @@ export default function CalendarSettings({
                     confirm={""}
                 />
                 <AlertDialog
-                    handleAction={() => void 0}
+                    handleAction={() => {
+                        updateCalendarSettings();
+                        setSettingsOpen(false);
+                    }}
                     openAlert={notSavedError}
                     handleCloseAlert={() => {
                         setSettingsOpen(false);
-                        setNotSavedError(false);
+                        resetSettings();
+                        setChangesDoneWarning(false);
                     }}
                     dialogTitle={"Warning!"}
-                    dialogContent={"Calendar settings not saved yet!"}
-                    cancel={""}
-                    confirm={""}
+                    dialogContent={"Do you want to save the settings?"}
+                    cancel={"No"}
+                    confirm={"Yes"}
                 />
             </div>
-        </>
+        </div>
     );
 }

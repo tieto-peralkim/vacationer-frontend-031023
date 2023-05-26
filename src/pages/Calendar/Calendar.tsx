@@ -1145,7 +1145,7 @@ export default function Calendar({ allVacationers, save }) {
     );
 
     const handleSettingsClick = (e) => {
-        setSettingsOpen(true);
+        setSettingsOpen(!settingsOpen);
         setAnchorEl(e.currentTarget);
     };
 
@@ -1302,7 +1302,7 @@ export default function Calendar({ allVacationers, save }) {
                                 </Button>
                                 <Popper
                                     open={settingsOpen}
-                                    placement={"top"}
+                                    placement={"top-start"}
                                     anchorEl={anchorEl}
                                 >
                                     <Box className={styles.settingsBox}>

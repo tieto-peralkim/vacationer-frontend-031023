@@ -1,37 +1,36 @@
 .content {
-    padding: 0 1em 1em 1em;
-}
-.colorPickers {
-    display: flex;
-    flex-direction: column;
-    width: auto;
+    padding: 0.5em 1em 1em 0.5em;
+    min-width: 400px;
 }
 .rowFlex {
     margin-top: 1em;
     gap: 2em;
     display: flex;
 }
+.colorPickers {
+    margin-top: 0.7em;
+    display: flex;
+    flex-wrap: wrap;;
+    gap: 1em;
+}
 .columnFlex {
     font-size: small;
-    width: 12em;
     display: flex;
     flex-direction: column;
 }
 .buttons {
-    margin-top: 1em;
+    margin-top: 0.5em;
     display: flex;
-    gap: 1em;
+    gap: 0.5em;
 }
 .symbolFields {
     width: 8em;
 }
 .topRow{
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 0.2em;
-    margin-left: 1em;
+    margin-top: 0.4em;
     font-size: small;
+    gap: 4em;
 }
 .changesDoneWarning {
     color: red;
