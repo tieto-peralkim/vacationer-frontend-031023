@@ -3,8 +3,12 @@ import {
     Button,
     FormControl,
     FormControlLabel,
+    InputLabel,
+    MenuItem,
+    NativeSelect,
     Radio,
     RadioGroup,
+    Select,
     TextField,
     Tooltip,
 } from "@mui/material";
@@ -15,6 +19,7 @@ import { useOutletVariables } from "../../../NavigationBar";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
+import * as React from "react";
 
 export default function CalendarSettings({
     changesDoneWarning,
@@ -41,6 +46,14 @@ export default function CalendarSettings({
     const [symbolAlarmError, setSymbolAlarmError] = useState(false);
     const [notSavedError, setNotSavedError] = useState(false);
 
+    const paletteNames = [
+        "holiday",
+        "unconfirmed-holiday",
+        "weekend",
+        "weekend-holiday",
+    ];
+    const [colorPalette, setColorPalette] = useState(paletteNames[0]);
+    const [colorToPick, setColorToPick] = useState(holidayColor);
     const symbolNumberError =
         holidaySymbol.trim().length === 0 || !isNaN(Number(holidaySymbol));
     const unconfirmedSymbolError =
@@ -48,26 +61,12 @@ export default function CalendarSettings({
         !isNaN(Number(unconfirmedHolidaySymbol));
 
     const resetColors = () => {
+        setColorToPick("#73D8FF");
+        setColorPalette(paletteNames[0]);
         setHolidayColor("#73D8FF");
         setUnConfirmedHolidayColor("#68CCCA");
         setWeekendColor("#808080");
         setWeekendHolidayColor("#CCCCCC");
-    };
-
-    const handleHolidayColorChange = (color) => {
-        setHolidayColor(color.hex);
-    };
-
-    const handleUnconfirmedHolidayColorChange = (color) => {
-        setUnConfirmedHolidayColor(color.hex);
-    };
-
-    const handleWeekendColorChange = (color) => {
-        setWeekendColor(color.hex);
-    };
-
-    const handleWeekendHolidayColorChange = (color) => {
-        setWeekendHolidayColor(color.hex);
     };
 
     useEffect(() => {
@@ -96,6 +95,42 @@ export default function CalendarSettings({
 
     const changeCalendarHeight = (e: any) => {
         setColumnHeight(e.target.value);
+    };
+
+    const selectColorPalette = (event) => {
+        setColorPalette(event.target.value);
+        switch (event.target.value) {
+            case paletteNames[0]:
+                setColorToPick(holidayColor);
+                break;
+            case paletteNames[1]:
+                setColorToPick(unConfirmedHolidayColor);
+                break;
+            case paletteNames[2]:
+                setColorToPick(weekendColor);
+                break;
+            case paletteNames[3]:
+                setColorToPick(weekendHolidayColor);
+                break;
+        }
+    };
+
+    const doColorChange = (color) => {
+        setColorToPick(color.hex);
+        switch (colorPalette) {
+            case paletteNames[0]:
+                setHolidayColor(color.hex);
+                break;
+            case paletteNames[1]:
+                setUnConfirmedHolidayColor(color.hex);
+                break;
+            case paletteNames[2]:
+                setWeekendColor(color.hex);
+                break;
+            case paletteNames[3]:
+                setWeekendHolidayColor(color.hex);
+                break;
+        }
     };
 
     const updateCalendarSettings = () => {
@@ -160,45 +195,25 @@ export default function CalendarSettings({
     };
 
     return (
-        <div className={styles.content}>
-            <div className={styles.buttons}>
-                <Button
-                    onClick={() => {
-                        if (!changesDoneWarning) {
-                            setSettingsOpen(false);
-                        } else {
-                            setNotSavedError(true);
-                        }
-                    }}
-                >
-                    <CloseIcon />
-                </Button>
-                <Button
-                    disabled={!user}
-                    onClick={resetColors}
-                    variant="outlined"
-                    color={"secondary"}
-                    size={"small"}
-                >
-                    Set to default colors
-                </Button>
-                <Button
-                    disabled={!user || !changesDoneWarning}
-                    onClick={updateCalendarSettings}
-                    variant="contained"
-                    size={"small"}
-                >
-                    Save Calendar settings
-                </Button>
-            </div>
-            <div>
+        <div>
+            <Button
+                variant={"contained"}
+                size={"small"}
+                onClick={() => {
+                    if (!changesDoneWarning) {
+                        setSettingsOpen(false);
+                    } else {
+                        setNotSavedError(true);
+                    }
+                }}
+            >
+                <CloseIcon />
+            </Button>
+            <div className={styles.content}>
                 <div className={styles.topRow}>
                     <div>
-                        <Tooltip
-                            title={"You can also copy-paste a short emoji"}
-                        >
-                            <b>Holiday symbols</b>
-                        </Tooltip>
+                        <b>Holiday symbols</b>
+                        <div>You can also copy-paste a short emoji</div>
                         <div className={styles.rowFlex}>
                             <TextField
                                 className={styles.symbolFields}
@@ -290,40 +305,53 @@ export default function CalendarSettings({
                     </FormControl>
                 </div>
                 <div>
-                    <div className={styles.colorPickers}>
-                        <div className={styles.columnFlex}>
-                            <b>Holiday</b>
+                    <div className={styles.lowRow}>
+                        <FormControl>
+                            <b>Holiday colors</b>
+                            <Select
+                                value={colorPalette as ""}
+                                onChange={selectColorPalette}
+                                className={styles.selectComponent}
+                            >
+                                <MenuItem key={0} value={paletteNames[0]}>
+                                    Weekday holiday (Confirmed)
+                                </MenuItem>
+                                <MenuItem key={1} value={paletteNames[1]}>
+                                    Weekday holiday (Unconfirmed)
+                                </MenuItem>
+                                <MenuItem key={2} value={paletteNames[2]}>
+                                    Weekend / public holiday
+                                </MenuItem>
+                                <MenuItem key={3} value={paletteNames[3]}>
+                                    Holiday on weekend / public holiday
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
+                        <div className={styles.colorPicker}>
                             <CompactPicker
-                                color={holidayColor}
-                                onChangeComplete={handleHolidayColorChange}
+                                color={colorToPick as string}
+                                onChangeComplete={doColorChange}
                             />
                         </div>
-                        <div className={styles.columnFlex}>
-                            <b>Unconfirmed holiday</b>
-                            <CompactPicker
-                                color={unConfirmedHolidayColor}
-                                onChangeComplete={
-                                    handleUnconfirmedHolidayColorChange
-                                }
-                            />
-                        </div>
-
-                        <div className={styles.columnFlex}>
-                            <b>Weekend</b>
-                            <CompactPicker
-                                color={weekendColor}
-                                onChangeComplete={handleWeekendColorChange}
-                            />
-                        </div>
-                        <div className={styles.columnFlex}>
-                            <b>Weekend holiday</b>
-                            <CompactPicker
-                                color={weekendHolidayColor}
-                                onChangeComplete={
-                                    handleWeekendHolidayColorChange
-                                }
-                            />
-                        </div>
+                    </div>
+                    <div className={styles.buttons}>
+                        <Button
+                            disabled={!user}
+                            onClick={resetColors}
+                            variant="outlined"
+                            color={"secondary"}
+                            size={"small"}
+                        >
+                            Set to default colors
+                        </Button>
+                        <Button
+                            disabled={!user || !changesDoneWarning}
+                            onClick={updateCalendarSettings}
+                            variant="contained"
+                            size={"small"}
+                        >
+                            Save Calendar settings
+                        </Button>
                     </div>
                 </div>
                 <AlertDialog
