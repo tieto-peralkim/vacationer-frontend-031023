@@ -20,6 +20,7 @@ import {
     FormControlLabel,
     FormGroup,
     FormLabel,
+    Popper,
     Radio,
     RadioGroup,
     Switch,
@@ -36,6 +37,7 @@ import DatePicker from "react-datepicker";
 import { Team } from "../Team/TeamPage/TeamPage";
 import { useOutletVariables } from "../../NavigationBar";
 import Typography from "@mui/material/Typography";
+import CalendarSettings from "./CalendarSettings/CalendarSettings";
 
 export default function Calendar({ allVacationers, save }) {
     interface ButtonProps {
@@ -64,7 +66,9 @@ export default function Calendar({ allVacationers, save }) {
     const headerBackgroundColor = "lightgrey";
 
     // HolidaySymbol can not be a number!
-    const [holidaySymbols, setHolidaySymbols] = useState([]);
+    const [holidaySymbol, setHolidaySymbol] = useState("");
+    const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
+        useState("");
     const [holidayColor, setHolidayColor] = useState("");
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
     const [weekendColor, setWeekendColor] = useState("");
@@ -83,6 +87,9 @@ export default function Calendar({ allVacationers, save }) {
 
     const [publicHolidaysOfMonth, setPublicHolidaysOfMonth] = useState([]);
     const [publicHolidays, setPublicHolidays] = useState([]);
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState();
+    const [changesDoneWarning, setChangesDoneWarning] = useState(false);
 
     const hiddenColumns = [];
     const [teams, setTeams] = useState<Team[]>([]);
@@ -152,7 +159,8 @@ export default function Calendar({ allVacationers, save }) {
     }, [
         showAllVacationers,
         vacationersOfMonth,
-        holidaySymbols,
+        holidaySymbol,
+        unconfirmedHolidaySymbol,
         selectedMembers,
     ]);
 
@@ -167,12 +175,10 @@ export default function Calendar({ allVacationers, save }) {
             setWeekendHolidayColor(
                 user.calendarSettings[0].weekendHolidayColor
             );
-            let newHolidaySymbols = [];
-            newHolidaySymbols.push(user.calendarSettings[0].holidaySymbol);
-            newHolidaySymbols.push(
+            setHolidaySymbol(user.calendarSettings[0].holidaySymbol);
+            setUnconfirmedHolidaySymbol(
                 user.calendarSettings[0].unConfirmedHolidaySymbol
             );
-            setHolidaySymbols(newHolidaySymbols);
         }
     }, [user]);
 
@@ -205,10 +211,6 @@ export default function Calendar({ allVacationers, save }) {
         }
         setPublicHolidaysOfMonth(publicMonthsHolidays);
     }, [selectedDate, publicHolidays]);
-
-    const changeCalendarHeight = (e: any) => {
-        setColumnHeight(e.target.value);
-    };
 
     const filterHolidays = () => {
         let filteredVacations = [];
@@ -313,9 +315,9 @@ export default function Calendar({ allVacationers, save }) {
         let endingNumber = 0;
 
         if (!confirmedHoliday) {
-            symbolToUse = holidaySymbols[1];
+            symbolToUse = unconfirmedHolidaySymbol;
         } else {
-            symbolToUse = holidaySymbols[0];
+            symbolToUse = holidaySymbol;
         }
 
         // Can this be shortened?
@@ -509,8 +511,8 @@ export default function Calendar({ allVacationers, save }) {
         let peopleOnHoliday = 0;
         for (let i = 0; i < info.rows.length; i++) {
             if (
-                info.rows[i].values[selectedColumn] === holidaySymbols[0] ||
-                info.rows[i].values[selectedColumn] === holidaySymbols[1]
+                info.rows[i].values[selectedColumn] === holidaySymbol ||
+                info.rows[i].values[selectedColumn] === unconfirmedHolidaySymbol
             ) {
                 peopleOnHoliday += 1;
             }
@@ -883,7 +885,7 @@ export default function Calendar({ allVacationers, save }) {
                 ),
             },
         ],
-        [holidaySymbols]
+        [holidaySymbol, unconfirmedHolidaySymbol]
     );
 
     const {
@@ -925,9 +927,9 @@ export default function Calendar({ allVacationers, save }) {
         let colorToAdd = null;
 
         if (index !== 0 && typeof value !== "number") {
-            if (value === holidaySymbols[0]) {
+            if (value === holidaySymbol) {
                 colorToAdd = holidayColor;
-            } else if (value === holidaySymbols[1]) {
+            } else if (value === unconfirmedHolidaySymbol) {
                 colorToAdd = unConfirmedHolidayColor;
             }
             let dateToCheck = new Date(
@@ -938,7 +940,10 @@ export default function Calendar({ allVacationers, save }) {
 
             // Saturday or Sunday
             if (dateToCheck.getDay() === 0 || dateToCheck.getDay() === 6) {
-                if (holidaySymbols.includes(value)) {
+                if (
+                    holidaySymbol === value ||
+                    unconfirmedHolidaySymbol === value
+                ) {
                     colorToAdd = weekendHolidayColor;
                 } else {
                     colorToAdd = weekendColor;
@@ -947,7 +952,10 @@ export default function Calendar({ allVacationers, save }) {
 
             // Public holidays
             if (publicHolidaysOfMonth.filter((e) => e === index).length > 0) {
-                if (holidaySymbols.includes(value)) {
+                if (
+                    holidaySymbol === value ||
+                    unconfirmedHolidaySymbol === value
+                ) {
                     colorToAdd = weekendHolidayColor;
                 } else {
                     colorToAdd = weekendColor;
@@ -1136,6 +1144,11 @@ export default function Calendar({ allVacationers, save }) {
         }
     );
 
+    const handleSettingsClick = (e) => {
+        setSettingsOpen(true);
+        setAnchorEl(e.currentTarget);
+    };
+
     const selectTeam = (e: any, newTeams: Team[]) => {
         setSelectedTeams(newTeams);
     };
@@ -1273,84 +1286,72 @@ export default function Calendar({ allVacationers, save }) {
                         {user && user.name && (
                             // !isMobile &&
                             <div className={styles.calendarSettingsBox}>
-                                <div>
-                                    {holidaySymbols[0]} = confirmed holiday{" "}
-                                    <br /> {holidaySymbols[1]} = un-confirmed
+                                <div className={styles.calendarSettingSymbols}>
+                                    {holidaySymbol} = confirmed holiday <br />{" "}
+                                    {unconfirmedHolidaySymbol} = un-confirmed
                                     holiday
                                 </div>
-                                <FormControl>
-                                    <div className={styles.heightTitle}>
-                                        Calendar height
-                                    </div>
-                                    <RadioGroup
-                                        row
-                                        value={columnHeight}
-                                        onChange={changeCalendarHeight}
-                                    >
-                                        <FormControlLabel
-                                            value="1"
-                                            control={
-                                                <Radio
-                                                    sx={{
-                                                        "& .MuiSvgIcon-root": {
-                                                            fontSize: 16,
-                                                        },
-                                                    }}
-                                                />
+                                <Button
+                                    variant={"contained"}
+                                    color={"secondary"}
+                                    onClick={handleSettingsClick}
+                                    disabled={settingsOpen}
+                                    size={"small"}
+                                >
+                                    Calendar settings{" "}
+                                    {changesDoneWarning && "*"}
+                                </Button>
+                                <Popper
+                                    open={settingsOpen}
+                                    anchorEl={anchorEl}
+                                    placement={"left-end"}
+                                >
+                                    <Box className={styles.popperBox}>
+                                        <CalendarSettings
+                                            changesDoneWarning={
+                                                changesDoneWarning
                                             }
-                                            label={
-                                                <Typography
-                                                    sx={{ fontSize: "10px" }}
-                                                >
-                                                    Low
-                                                </Typography>
+                                            setChangesDoneWarning={
+                                                setChangesDoneWarning
                                             }
-                                        />
-                                        <FormControlLabel
-                                            value="1.5"
-                                            control={
-                                                <Radio
-                                                    sx={{
-                                                        "& .MuiSvgIcon-root": {
-                                                            fontSize: 16,
-                                                        },
-                                                    }}
-                                                />
+                                            setSettingsOpen={setSettingsOpen}
+                                            columnHeight={columnHeight}
+                                            setColumnHeight={setColumnHeight}
+                                            holidaySymbol={holidaySymbol}
+                                            setHolidaySymbol={setHolidaySymbol}
+                                            unconfirmedHolidaySymbol={
+                                                unconfirmedHolidaySymbol
                                             }
-                                            label={
-                                                <Typography
-                                                    sx={{ fontSize: "10px" }}
-                                                >
-                                                    Normal
-                                                </Typography>
+                                            setUnconfirmedHolidaySymbol={
+                                                setUnconfirmedHolidaySymbol
                                             }
-                                        />
-                                        <FormControlLabel
-                                            value="2"
-                                            control={
-                                                <Radio
-                                                    sx={{
-                                                        "& .MuiSvgIcon-root": {
-                                                            fontSize: 16,
-                                                        },
-                                                    }}
-                                                />
+                                            holidayColor={holidayColor}
+                                            setHolidayColor={setHolidayColor}
+                                            unConfirmedHolidayColor={
+                                                unConfirmedHolidayColor
                                             }
-                                            label={
-                                                <Typography
-                                                    sx={{ fontSize: "10px" }}
-                                                >
-                                                    High
-                                                </Typography>
+                                            setUnConfirmedHolidayColor={
+                                                setUnConfirmedHolidayColor
+                                            }
+                                            weekendColor={weekendColor}
+                                            setWeekendColor={setWeekendColor}
+                                            weekendHolidayColor={
+                                                weekendHolidayColor
+                                            }
+                                            setWeekendHolidayColor={
+                                                setWeekendHolidayColor
                                             }
                                         />
-                                    </RadioGroup>
-                                </FormControl>
+                                    </Box>
+                                </Popper>
                             </div>
                         )}
                     </div>
                     {/*)}*/}
-                    <Tooltip title={"Select displayed month"} placement={"top"}>
+                    <Tooltip
+                        title={"Select displayed month"}
+                        placement={"top-start"}
+                    >
                         <Box className={styles.monthSelectionButtons}>
                             <Button
                                 onClick={() => changeMonth(-1)}

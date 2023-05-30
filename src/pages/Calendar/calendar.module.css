@@ -2,16 +2,11 @@
     display: flex;
     justify-content: space-between;
 }
-
-.heightTitle {
-    margin-top: 0.6em;
-}
 .monthSelectionButtons {
     align-items: center;
     justify-content: center;
     display: flex;
 }
-
 .topRow {
     display: flex;
     justify-content: space-between;
@@ -157,7 +152,6 @@
     text-overflow: ellipsis;
 }
 
-
 .headerCont {
     display: flex;
     height: 20%;
@@ -168,10 +162,17 @@
 .headerNameTitle {
     margin-left: 0;
 }
-
+.calendarSettingSymbols {
+    margin-bottom: 0.5em;
+}
 .nameColumn {
     display: flex;
     justify-content: left;
+}
+.popperBox {
+    border: solid 2px rgb(56, 116, 203);
+    background-color: white;
+    margin-right: 1em;
 }
 @media only screen and (min-width: 930px) {
     .cellStyle {
@@ -223,6 +224,7 @@
         border-color: rgb(56, 116, 203);
         max-height: 3.5em;
     }
+
 }
 @media only screen and (max-width: 930px) {
     .cellStyle {
@@ -275,7 +277,7 @@
         font-size: x-small;
         border: 0.1em solid #2A55E7;
         border-radius: 12px;
-        padding: 0.6em;
+        padding: 0.3em;
         margin-left: 0.3em;
     }
     .toggleButton {

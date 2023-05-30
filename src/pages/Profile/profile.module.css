@@ -1,0 +1,23 @@
+.content {
+    display: flex;
+    justify-content: center;
+}
+
+.borderedBoxProfile {
+    border: solid 1px blue;
+    border-radius: 1em;
+    padding: 0 1em 1em 1em;
+    margin: 2em 1em 2em 2em;
+    height: max-content;
+}
+.nameSelectBox {
+    min-width: 15em;
+    margin-bottom: 2em;
+}
+.changeNameButton {
+    margin-top: 2em;
+}
+.alertAPI {
+    justify-content: center;
+    width: 100%;
+}
