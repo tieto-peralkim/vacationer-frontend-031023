@@ -13,9 +13,6 @@
     margin-top: 0.5em;
     margin-bottom: 0.3em;
 }
-.teamSelectionElements {
-
-}
 .toggleButtonGroup {
     margin-top: 0.2em;
     width: 95vw;
@@ -24,7 +21,6 @@
 .chips {
     min-height: 3em;
 }
-
 .buttonAllTeams {
     text-transform: none;
 }
@@ -35,53 +31,11 @@
     margin-right: 1em;
     margin-left: 1em;
 }
-.footerSection {
-}
-
 .wholeCalendar {
     display: flex;
     flex-direction: column;
 }
-.verticalCalendar {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0px;
-}
 
-.dayDiv {
-    background-color: lightblue;
-    width: 100%;
-    min-height: 150px;
-    margin-top: 20px;
-    margin-left: 150px;
-    margin-right: 150px;
-    border-radius: 5px;
-    display: flex;
-    border: 2px solid black;
-}
-
-.dayNumber {
-    display: flex;
-    flex-direction: column;
-    width: 10%;
-    height: auto;
-    background-color: lightyellow;
-    justify-content: center;
-    align-items: center;
-    border-right: 2px solid black;
-}
-
-.dayContent {
-    display: flex;
-    flex-direction: column;
-    width: 90%;
-    height: 100%;
-    background-color: azure;
-    justify-content: center;
-    align-items: center;
-}
 .fullCalendar {
     border: solid 0.1em rgb(56, 116, 203);
     width: 100%;
@@ -93,74 +47,6 @@
     height: 80%;
     width: 100%;
     min-height: 14em;
-}
-
-.onHolidayContent {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    height: 100%;
-    flex-direction: column;
-}
-
-.onHolidayContent > p {
-    text-align: left;
-    margin: 0;
-    width: 80%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.onHoliday {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    background-color: lightgreen;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.working {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    background-color: lightblue;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-left: 2px solid black;
-}
-
-.workingContent {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
-    height: 100%;
-    border-left: 2px solid black;
-    flex-direction: column;
-    min-height: 14em;
-}
-
-.workingContent > p{
-    text-align: left;
-    margin: 0;
-    width: 80%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.headerCont {
-    display: flex;
-    height: 20%;
-    width: 100%;
-    border-top: 2px solid black;
-}
-
-.headerNameTitle {
-    margin-left: 0;
 }
 .calendarSettingSymbols {
     margin-bottom: 0.5em;
@@ -284,21 +170,4 @@
         border-color: rgb(56, 116, 203);
         max-height: 3em;
     }
-}
-
-.dateColumn{
-    display: flex;
-    justify-content: flex-end;
-}
-
-.dayDiv > * > p {
-    font-weight: bold;
-}
-
-.dayDiv > * > * {
-    font-weight: bold;
-}
-
-.dayNumber > p {
-    margin: 0;
 }

@@ -1,7 +1,3 @@
-// These are for changing the page layout depending on the screen size.
-import { useBreakpoint } from "styled-breakpoints/react-styled";
-import { down } from "styled-breakpoints";
-
 import {
     forwardRef,
     MouseEventHandler,
@@ -16,13 +12,9 @@ import {
     Button,
     Chip,
     CircularProgress,
-    FormControl,
     FormControlLabel,
     FormGroup,
-    FormLabel,
     Popper,
-    Radio,
-    RadioGroup,
     Switch,
     ToggleButtonGroup,
     Tooltip,
@@ -44,7 +36,6 @@ export default function Calendar({ allVacationers, save }) {
         onClick?: MouseEventHandler<HTMLButtonElement>;
     }
 
-    // const isMobile = useBreakpoint(down("md")); // md breakpoint activates when screen width <= 768px https://www.npmjs.com/package/styled-breakpoints
     const { user, APIError, setAPIError } = useOutletVariables();
 
     const today = new Date();
@@ -1000,136 +991,6 @@ export default function Calendar({ allVacationers, save }) {
         }
     };
 
-    /**
-     * Counts how many vacationers exist in a given day.
-     * As a parameter accepts the number of the day and returns the amount of
-     * workers on holiday on given day.
-     */
-    // const countVacationers = (dayNumber): number => {
-    //     let year = selectedDate.getFullYear();
-    //     let month = selectedDate.getMonth();
-    //     let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
-    //     let vacationersAmount = 0;
-    //
-    //     vacationersOfMonth.forEach((vacationer) => {
-    //         if (teamToShow.id) {
-    //             if (
-    //                 date.toISOString() >= vacationer.vacations.start &&
-    //                 date.toISOString() <= vacationer.vacations.end
-    //             ) {
-    //                 teamToShow.members.forEach((member) => {
-    //                     if (member.name === vacationer.name) {
-    //                         vacationersAmount++;
-    //                     }
-    //                 });
-    //             }
-    //         } else {
-    //             if (
-    //                 date.toISOString() >= vacationer.vacations.start &&
-    //                 date.toISOString() <= vacationer.vacations.end
-    //             ) {
-    //                 vacationersAmount++;
-    //             }
-    //         }
-    //     });
-    //
-    //     return vacationersAmount;
-    // };
-
-    // const countWorkers = (dayNumber) => {
-    //     let onHolidayCount = countVacationers(dayNumber);
-    //     let allNames = [];
-    //
-    //     if (teamToShow.id) {
-    //         return teamToShow.members.length - onHolidayCount;
-    //     } else {
-    //         teams.forEach((team) => {
-    //             team.members.forEach((member) => {
-    //                 if (!allNames.includes(member.name)) {
-    //                     allNames.push(member.name);
-    //                 }
-    //             });
-    //         });
-    //         allVacationers.forEach((vacationer) => {
-    //             if (!allNames.includes(vacationer.name)) {
-    //                 allNames.push(vacationer.name);
-    //             }
-    //         });
-    //         return allNames.length - onHolidayCount;
-    //     }
-    // };
-
-    // const getVacationerNames = (dayNumber) => {
-    //     let year = selectedDate.getFullYear();
-    //     let month = selectedDate.getMonth();
-    //     let date = new Date(year, month, dayNumber, 15, 0, 0, 0);
-    //     let vacationerNames = [];
-    //
-    //     vacationersOfMonth.forEach((vacationer) => {
-    //         // if the given day is included in the vacationers holiday add to allVacationers
-    //         if (teamToShow.id) {
-    //             if (
-    //                 date.toISOString() >= vacationer.vacations.start &&
-    //                 date.toISOString() <= vacationer.vacations.end
-    //             ) {
-    //                 teamToShow.members.forEach((member) => {
-    //                     if (vacationer.name === member.name) {
-    //                         vacationerNames.push(vacationer.name);
-    //                     }
-    //                 });
-    //             }
-    //         } else {
-    //             if (
-    //                 date.toISOString() >= vacationer.vacations.start &&
-    //                 date.toISOString() <= vacationer.vacations.end
-    //             ) {
-    //                 vacationerNames.push(vacationer.name);
-    //             }
-    //         }
-    //     });
-    //
-    //     return vacationerNames;
-    // };
-
-    // const getWorkerNames = (dayNumber) => {
-    //     let workerNames = [];
-    //     let onHolidayNames = getVacationerNames(dayNumber);
-    //
-    //     if (teamToShow.id) {
-    //         teamToShow.members.forEach((member) => {
-    //             if (onHolidayNames.length > 0) {
-    //                 onHolidayNames.forEach((vacationer) => {
-    //                     if (member.name != vacationer) {
-    //                         workerNames.push(member.name);
-    //                     }
-    //                 });
-    //             } else {
-    //                 workerNames.push(member.name);
-    //             }
-    //         });
-    //
-    //         return workerNames;
-    //     } else {
-    //         teams.forEach((team) => {
-    //             team.members.forEach((member) => {
-    //                 if (!onHolidayNames.includes(member.name)) {
-    //                     if (!workerNames.includes(member.name)) {
-    //                         workerNames.push(member.name);
-    //                     }
-    //                 }
-    //             });
-    //         });
-    //         allVacationers.forEach((vacationer) => {
-    //             if (!onHolidayNames.includes(vacationer.name)) {
-    //                 if (!workerNames.includes(vacationer.name)) {
-    //                     workerNames.push(vacationer.name);
-    //                 }
-    //             }
-    //         });
-    //         return workerNames;
-    //     }
-    // };
-
     const ButtonCustomInput = forwardRef<HTMLInputElement, ButtonProps>(
         (props, ref) => {
             const { onClick } = props;
@@ -1153,40 +1014,12 @@ export default function Calendar({ allVacationers, save }) {
         setSelectedTeams(newTeams);
     };
 
-    // const getDayFromInt = (day) => {
-    //     switch (day) {
-    //         case 0:
-    //             return "Mon";
-    //
-    //         case 1:
-    //             return "Tue";
-    //
-    //         case 2:
-    //             return "Wed";
-    //
-    //         case 3:
-    //             return "Thu";
-    //
-    //         case 4:
-    //             return "Fri";
-    //
-    //         case 5:
-    //             return "Sat";
-    //
-    //         case 6:
-    //             return "Sun";
-    //
-    //         default:
-    //             break;
-    //     }
-    // };
-
     return (
         <>
             <div className={styles.wholeCalendar}>
                 <div>
                     <div className={styles.topRow}>
-                        <div className={styles.teamSelectionElements}>
+                        <div>
                             <div>
                                 <ToggleButton
                                     onChange={() => setSelectedTeams([])}
@@ -1254,7 +1087,6 @@ export default function Calendar({ allVacationers, save }) {
                     </div>
                 </div>
                 <div className={styles.wholeCalendar}>
-                    {/*{!isMobile && (*/}
                     <div className={styles.rowOnCalendar}>
                         <FormGroup>
                             <Tooltip
@@ -1284,7 +1116,6 @@ export default function Calendar({ allVacationers, save }) {
                             </Tooltip>
                         </FormGroup>
                         {user && user.name && (
-                            // !isMobile &&
                             <div className={styles.calendarSettingsBox}>
                                 <div className={styles.calendarSettingSymbols}>
                                     {holidaySymbol} = confirmed holiday <br />{" "}
@@ -1380,7 +1211,6 @@ export default function Calendar({ allVacationers, save }) {
                             </Button>
                         </Box>
                     </Tooltip>
-                    {/*{!isMobile ? (*/}
                     <div>
                         <table
                             {...getTableProps()}
@@ -1468,7 +1298,7 @@ export default function Calendar({ allVacationers, save }) {
                                     );
                                 })}
                             </tbody>
-                            <tfoot className={styles.footerSection}>
+                            <tfoot>
                                 {footerGroups.map((group) => (
                                     <tr {...group.getFooterGroupProps()}>
                                         {group.headers.map((column) => (
@@ -1488,63 +1318,6 @@ export default function Calendar({ allVacationers, save }) {
                             </tfoot>
                         </table>
                     </div>
-                    {/*) : ( // If the screen width matches mobile*/}
-                    {/*<div className={styles.verticalCalendar}>*/}
-                    {/*    {[*/}
-                    {/*        ...Array(*/}
-                    {/*            new Date(*/}
-                    {/*                selectedDate.getFullYear(),*/}
-                    {/*                selectedDate.getMonth() + 1,*/}
-                    {/*                0*/}
-                    {/*            ).getDate()*/}
-                    {/*        ),*/}
-                    {/*    ].map((e, i) => (*/}
-                    {/*        <div className={styles.dayDiv} key={i}>*/}
-                    {/*            <div className={styles.dayNumber}>*/}
-                    {/*                <p>{i + 1}</p>*/}
-                    {/*                <p>*/}
-                    {/*                    {getDayFromInt(*/}
-                    {/*                        new Date(*/}
-                    {/*                            selectedDate.getFullYear(),*/}
-                    {/*                            selectedDate.getMonth(),*/}
-                    {/*                            i*/}
-                    {/*                        ).getDay()*/}
-                    {/*                    )}*/}
-                    {/*                </p>*/}
-                    {/*            </div>*/}
-                    {/*            <div className={styles.dayContent}>*/}
-                    {/*                <div className={styles.content}>*/}
-                    {/*                    <div*/}
-                    {/*                        className={styles.onHolidayContent}*/}
-                    {/*                    >*/}
-                    {/*                        {getVacationerNames(i + 1).map(*/}
-                    {/*                            (name, index) => (*/}
-                    {/*                                <p key={index}>{name}</p>*/}
-                    {/*                            )*/}
-                    {/*                        )}*/}
-                    {/*                    </div>*/}
-                    {/*                    <div className={styles.workingContent}>*/}
-                    {/*                        {getWorkerNames(i + 1).map(*/}
-                    {/*                            (name, index) => (*/}
-                    {/*                                <p key={index}>{name}</p>*/}
-                    {/*                            )*/}
-                    {/*                        )}*/}
-                    {/*                    </div>*/}
-                    {/*                </div>*/}
-                    {/*                <div className={styles.headerCont}>*/}
-                    {/*                    <div className={styles.onHoliday}>*/}
-                    {/*                        On Holiday:{" "}*/}
-                    {/*                        {countVacationers(i + 1)}*/}
-                    {/*                    </div>*/}
-                    {/*                    <div className={styles.working}>*/}
-                    {/*                        Working: {countWorkers(i + 1)}*/}
-                    {/*                    </div>*/}
-                    {/*                </div>*/}
-                    {/*            </div>*/}
-                    {/*        </div>*/}
-                    {/*    ))}*/}
-                    {/*</div>*/}
-                    {/*)}*/}
                     {showSpinner && <CircularProgress />}
                 </div>
             </div>

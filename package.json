@@ -19,7 +19,6 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.10.0",
     "react-table": "^7.8.0",
-    "styled-breakpoints": "^11.2.0",
     "styled-components": "^5.3.10",
     "web-vitals": "^3.3.1"
   },
