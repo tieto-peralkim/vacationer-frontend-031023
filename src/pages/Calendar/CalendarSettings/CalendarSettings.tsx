@@ -332,6 +332,14 @@ export default function CalendarSettings({
                     </div>
                     <div className={styles.buttons}>
                         <Button
+                            disabled={!user || !changesDoneWarning}
+                            onClick={updateCalendarSettings}
+                            variant="contained"
+                            size={"small"}
+                        >
+                            Save Calendar settings
+                        </Button>
+                        <Button
                             disabled={!user}
                             onClick={resetColors}
                             variant="outlined"
@@ -339,14 +347,6 @@ export default function CalendarSettings({
                             size={"small"}
                         >
                             Set to default colors
-                        </Button>
-                        <Button
-                            disabled={!user || !changesDoneWarning}
-                            onClick={updateCalendarSettings}
-                            variant="contained"
-                            size={"small"}
-                        >
-                            Save Calendar settings
                         </Button>
                     </div>
                 </div>
