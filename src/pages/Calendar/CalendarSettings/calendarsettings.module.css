@@ -9,12 +9,6 @@
 .changesDoneWarning {
     color: red;
 }
-.colorPicker {
-    margin-left: 2em;
-}
-.selectComponent {
-    width: 18em;
-}
 
 @media only screen and (min-width: 930px) {
     .lowRow {
@@ -37,26 +31,25 @@
     .content {
         padding: 0em 1em 1em 0.5em;
     }
+    .selectComponent {
+        width: 19em;
+    }
+    .colorPicker {
+        margin-left: 2em;
+    }
 }
 @media only screen and (max-width: 930px) {
     .lowRow {
         margin-top: 0.5em;
         display: flex;
         flex-direction: column;
-        align-items: center;
         gap: 1em;
-        font-size: xx-small;
-    }
-    .columnFlex {
-        font-size: xx-small;
-        display: flex;
-        flex-direction: column;
+        font-size: small;
     }
     .topRow{
         display: flex;
         flex-direction: column;
-        align-items: center;
-        font-size: xx-small;
+        font-size: small;
         gap: 1em;
     }
     .buttons {
@@ -67,5 +60,11 @@
     }
     .content {
         padding: 0.5em 1em 1em 0.5em;
+    }
+    .selectComponent {
+        width: 14em;
+    }
+    .colorPicker {
+        margin-left: 0;
     }
 }
