@@ -1129,8 +1129,7 @@ export default function Calendar({ allVacationers, save }) {
                                     disabled={settingsOpen}
                                     size={"small"}
                                 >
-                                    Calendar settings{" "}
-                                    {changesDoneWarning && "*"}
+                                    Calendar settings
                                 </Button>
                                 <Popper
                                     open={settingsOpen}

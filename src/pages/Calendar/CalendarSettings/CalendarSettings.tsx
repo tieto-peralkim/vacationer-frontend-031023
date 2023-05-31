@@ -3,14 +3,10 @@ import {
     Button,
     FormControl,
     FormControlLabel,
-    InputLabel,
-    MenuItem,
     NativeSelect,
     Radio,
     RadioGroup,
-    Select,
     TextField,
-    Tooltip,
 } from "@mui/material";
 import { CompactPicker } from "react-color";
 import axios from "axios";
@@ -308,24 +304,24 @@ export default function CalendarSettings({
                     <div className={styles.lowRow}>
                         <FormControl>
                             <b>Holiday colors</b>
-                            <Select
+                            <NativeSelect
                                 value={colorPalette as ""}
                                 onChange={selectColorPalette}
                                 className={styles.selectComponent}
                             >
-                                <MenuItem key={0} value={paletteNames[0]}>
+                                <option key={0} value={paletteNames[0]}>
                                     Weekday holiday (Confirmed)
-                                </MenuItem>
-                                <MenuItem key={1} value={paletteNames[1]}>
+                                </option>
+                                <option key={1} value={paletteNames[1]}>
                                     Weekday holiday (Unconfirmed)
-                                </MenuItem>
-                                <MenuItem key={2} value={paletteNames[2]}>
+                                </option>
+                                <option key={2} value={paletteNames[2]}>
                                     Weekend / public holiday
-                                </MenuItem>
-                                <MenuItem key={3} value={paletteNames[3]}>
+                                </option>
+                                <option key={3} value={paletteNames[3]}>
                                     Holiday on weekend / public holiday
-                                </MenuItem>
-                            </Select>
+                                </option>
+                            </NativeSelect>
                         </FormControl>
                         <div className={styles.colorPicker}>
                             <CompactPicker
