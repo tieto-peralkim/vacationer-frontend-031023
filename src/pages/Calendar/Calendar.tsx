@@ -1122,15 +1122,20 @@ export default function Calendar({ allVacationers, save }) {
                                     {unconfirmedHolidaySymbol} = un-confirmed
                                     holiday
                                 </div>
-                                <Button
-                                    variant={"contained"}
-                                    color={"secondary"}
-                                    onClick={handleSettingsClick}
-                                    disabled={settingsOpen}
-                                    size={"small"}
+                                <Tooltip
+                                    title={"Edit colors, symbols or size"}
+                                    placement={"bottom"}
                                 >
-                                    Calendar settings
-                                </Button>
+                                    <Button
+                                        variant={"contained"}
+                                        color={"secondary"}
+                                        onClick={handleSettingsClick}
+                                        disabled={settingsOpen}
+                                        size={"small"}
+                                    >
+                                        Calendar settings
+                                    </Button>
+                                </Tooltip>
                                 <Popper
                                     open={settingsOpen}
                                     anchorEl={anchorEl}
@@ -1178,10 +1183,7 @@ export default function Calendar({ allVacationers, save }) {
                         )}
                     </div>
                     {/*)}*/}
-                    <Tooltip
-                        title={"Select displayed month"}
-                        placement={"top-start"}
-                    >
+                    <Tooltip title={"Select displayed month"} placement={"top"}>
                         <Box className={styles.monthSelectionButtons}>
                             <Button
                                 onClick={() => changeMonth(-1)}

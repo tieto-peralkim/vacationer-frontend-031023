@@ -7,6 +7,7 @@ import {
     Radio,
     RadioGroup,
     TextField,
+    Tooltip,
 } from "@mui/material";
 import { CompactPicker } from "react-color";
 import axios from "axios";
@@ -240,7 +241,7 @@ export default function CalendarSettings({
                         </div>
                     </div>
                     <FormControl>
-                        <b>Calendar height</b>
+                        <b>Column height</b>
                         <RadioGroup
                             row
                             value={columnHeight}
@@ -339,15 +340,20 @@ export default function CalendarSettings({
                         >
                             Save Calendar settings
                         </Button>
-                        <Button
-                            disabled={!user}
-                            onClick={resetColors}
-                            variant="outlined"
-                            color={"secondary"}
-                            size={"small"}
+                        <Tooltip
+                            title={"Reset all colors to default values"}
+                            placement={"bottom"}
                         >
-                            Set to default colors
-                        </Button>
+                            <Button
+                                disabled={!user}
+                                onClick={resetColors}
+                                variant="outlined"
+                                color={"secondary"}
+                                size={"small"}
+                            >
+                                Set to default colors
+                            </Button>
+                        </Tooltip>
                     </div>
                 </div>
                 <AlertDialog
