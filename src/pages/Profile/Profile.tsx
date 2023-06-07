@@ -238,15 +238,29 @@ export default function Profile() {
                                                                 styles.listItem
                                                             }
                                                         >
-                                                            {vacation.start.slice(
-                                                                0,
-                                                                10
-                                                            ) +
+                                                            {new Date(
+                                                                vacation.start
+                                                            ).getDate() +
+                                                                "." +
+                                                                new Date(
+                                                                    vacation.start
+                                                                ).getMonth() +
+                                                                "." +
+                                                                new Date(
+                                                                    vacation.start
+                                                                ).getFullYear() +
                                                                 " - " +
-                                                                vacation.end.slice(
-                                                                    0,
-                                                                    10
-                                                                )}
+                                                                new Date(
+                                                                    vacation.end
+                                                                ).getDate() +
+                                                                "." +
+                                                                new Date(
+                                                                    vacation.end
+                                                                ).getMonth() +
+                                                                "." +
+                                                                new Date(
+                                                                    vacation.end
+                                                                ).getFullYear()}
                                                         </div>
                                                     ) : (
                                                         <div
@@ -254,15 +268,29 @@ export default function Profile() {
                                                                 styles.listItemGreyed
                                                             }
                                                         >
-                                                            {vacation.start.slice(
-                                                                0,
-                                                                10
-                                                            ) +
+                                                            {new Date(
+                                                                vacation.start
+                                                            ).getDate() +
+                                                                "." +
+                                                                new Date(
+                                                                    vacation.start
+                                                                ).getMonth() +
+                                                                "." +
+                                                                new Date(
+                                                                    vacation.start
+                                                                ).getFullYear() +
                                                                 " - " +
-                                                                vacation.end.slice(
-                                                                    0,
-                                                                    10
-                                                                )}
+                                                                new Date(
+                                                                    vacation.end
+                                                                ).getDate() +
+                                                                "." +
+                                                                new Date(
+                                                                    vacation.end
+                                                                ).getMonth() +
+                                                                "." +
+                                                                new Date(
+                                                                    vacation.end
+                                                                ).getFullYear()}
                                                         </div>
                                                     )}
                                                 </ListItem>
