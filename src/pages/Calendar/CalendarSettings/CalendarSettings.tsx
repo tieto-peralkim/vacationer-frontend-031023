@@ -241,7 +241,7 @@ export default function CalendarSettings({
                         </div>
                     </div>
                     <FormControl>
-                        <b>Column height</b>
+                        <b>Row height</b>
                         <RadioGroup
                             row
                             value={columnHeight}
