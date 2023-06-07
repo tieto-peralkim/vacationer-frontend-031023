@@ -28,6 +28,10 @@
     justify-content: center;
 }
 
+#nonScrollableBox {
+    padding-bottom: 20px !important;
+}
+
 #scrollableBox, #nonScrollableBox{
     padding: 0;
 }
