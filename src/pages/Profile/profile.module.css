@@ -1,23 +1,132 @@
 .content {
     display: flex;
     justify-content: center;
+    height: 45vh;
+    padding-top: 30px;
 }
 
 .borderedBoxProfile {
     border: solid 1px blue;
     border-radius: 1em;
     padding: 0 1em 1em 1em;
-    margin: 2em 1em 2em 2em;
-    height: max-content;
+    height: 100%;
+    width: -webkit-fill-available;
+    margin: 30px;
+    margin-top: 0;
+    margin-bottom: 0;
 }
+
+#scrollableBox > h3, #nonScrollableBox > h3 {
+    background-color: #1976d2;
+    color: white;
+    margin: 0;
+    height: 10%;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#scrollableBox, #nonScrollableBox{
+    padding: 0;
+}
+
 .nameSelectBox {
     min-width: 15em;
     margin-bottom: 2em;
 }
+
 .changeNameButton {
-    margin-top: 2em;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.changeNameButton > button {
+    margin-top: 30%;
+    width: 90%;
+    height: 50px;
+    box-shadow: 3px 4px 5px black;
 }
 .alertAPI {
     justify-content: center;
     width: 100%;
+}
+
+.listItem {
+    background-color: #aed7ff;
+    color: black;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: 3px solid rgb(144, 199, 255);
+}
+
+.listItemGreyed {
+    background-color: #d6d6d6;
+    color: black;
+    width: 100%;
+    height: 40px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: 3px solid #909090;
+}
+
+.listItem:hover {
+    background-color: #70b8ff;
+    transition: 800ms;
+    color: black;
+    border: 3px solid #5aacff;
+    cursor: pointer;
+}
+
+li {
+    font-size: larger;
+}
+
+.scrollableList {
+    overflow-y: scroll !important;
+    overflow: hidden;
+    height: 90%;
+    width: -webkit-fill-available;
+}
+
+.viewDivider{
+    display: flex;
+    flex-direction: column;
+    height: 85vh;
+}
+.profileStats {
+    display: flex;
+    /* justify-content: center;
+    align-items: center; */
+    height: 100%;
+    font-size: larger;
+}
+
+.profileStats > div {
+    padding: 0 1em 1em 1em;
+    height: 100%;
+    width: -webkit-fill-available;
+    margin: 30px;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+}
+
+#holidayStats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }

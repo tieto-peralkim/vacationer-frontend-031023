@@ -1,11 +1,4 @@
-import {
-    Button,
-    List,
-    ListItem,
-    ListItemIcon,
-    TextField,
-    Tooltip,
-} from "@mui/material";
+import { Button, List, ListItem, ListItemIcon, Tooltip } from "@mui/material";
 import styles from "./profile.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
 import axios from "axios";
@@ -15,7 +8,6 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import SecurityIcon from "@mui/icons-material/Security";
 import UpdateIcon from "@mui/icons-material/Update";
-import { CompactPicker } from "react-color";
 import { useOutletVariables } from "../../NavigationBar";
 
 export default function Profile() {
@@ -29,6 +21,26 @@ export default function Profile() {
     const [userNameError, setUserNameError] = useState(false);
     const [openModifyUserAlert, setOpenModifyUserAlert] = useState(false);
     const [userUpdatedAt, setUserUpdatedAt] = useState("");
+    const [teams, setTeams] = useState([]);
+    const [upcomingHolidays, setUpcomingHolidays] = useState(0);
+    const [pastHolidays, setPastHolidays] = useState(0);
+
+    useEffect(() => {
+        axios
+            .get(`${process.env.REACT_APP_ADDRESS}/teams`, {
+                withCredentials: true,
+            })
+            .then((response) => {
+                setTeams(
+                    response.data.filter((x) =>
+                        x.members.some((c) => c.name == user.name)
+                    )
+                );
+            })
+            .catch((error) => {
+                console.error("There was a teams get error:", error);
+            });
+    }, [user]);
 
     useEffect(() => {
         updateUser(!newUserState);
@@ -96,76 +108,181 @@ export default function Profile() {
             });
     };
 
+    useEffect(() => {
+        let upcoming = 0;
+        if (user != undefined) {
+            user.vacations.forEach((vacation) => {
+                if (new Date(vacation.start) >= new Date()) {
+                    upcoming++;
+                }
+            });
+            setUpcomingHolidays(upcoming);
+            setPastHolidays(user.vacations.length - upcoming);
+        }
+    }, [user]);
+
     return (
         <>
-            <div className={styles.content}>
-                {user && user.name && (
-                    <>
-                        <div className={styles.borderedBoxProfile}>
-                            <h3>Profile</h3>
-                            <List>
-                                <Tooltip title={"Name"} placement={"top-start"}>
-                                    <ListItem>
-                                        <ListItemIcon>
-                                            <BadgeIcon />
-                                        </ListItemIcon>
-                                        {user.name}
-                                    </ListItem>
-                                </Tooltip>
-                                <Tooltip
-                                    title={"Github account"}
-                                    placement={"top-start"}
-                                >
-                                    <ListItem>
-                                        <ListItemIcon>
-                                            <GitHubIcon />
-                                        </ListItemIcon>
-                                        {user.nameId}
-                                    </ListItem>
-                                </Tooltip>
-                                <Tooltip
-                                    title={"User status"}
-                                    placement={"top-start"}
-                                >
-                                    <ListItem>
-                                        <ListItemIcon>
-                                            <SecurityIcon />
-                                        </ListItemIcon>
-                                        {user.admin ? "Admin" : "User"}
-                                    </ListItem>
-                                </Tooltip>
-                                <Tooltip
-                                    title={"User updated"}
-                                    placement={"top-start"}
-                                >
-                                    <ListItem>
-                                        <ListItemIcon>
-                                            <UpdateIcon />
-                                        </ListItemIcon>
-                                        {userUpdatedAt}
-                                    </ListItem>
-                                </Tooltip>
-                            </List>
-                            <div className={styles.changeNameButton}>
-                                <Button
-                                    onClick={() => {
-                                        setOpenModifyUserAlert(true);
-                                    }}
-                                    variant={"contained"}
-                                >
-                                    Change name
-                                </Button>
+            <div className={styles.viewDivider}>
+                <div className={styles.content}>
+                    {user && user.name && (
+                        <>
+                            <div
+                                className={styles.borderedBoxProfile}
+                                id={styles.nonScrollableBox}
+                            >
+                                <h3>Profile</h3>
+                                <List>
+                                    <Tooltip
+                                        title={"Name"}
+                                        placement={"top-start"}
+                                    >
+                                        <ListItem id={styles.infoItem}>
+                                            <ListItemIcon>
+                                                <BadgeIcon />
+                                            </ListItemIcon>
+                                            {user.name}
+                                        </ListItem>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title={"Github account"}
+                                        placement={"top-start"}
+                                    >
+                                        <ListItem>
+                                            <ListItemIcon>
+                                                <GitHubIcon />
+                                            </ListItemIcon>
+                                            {user.nameId}
+                                        </ListItem>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title={"User status"}
+                                        placement={"top-start"}
+                                    >
+                                        <ListItem>
+                                            <ListItemIcon>
+                                                <SecurityIcon />
+                                            </ListItemIcon>
+                                            {user.admin ? "Admin" : "User"}
+                                        </ListItem>
+                                    </Tooltip>
+                                    <Tooltip
+                                        title={"User updated"}
+                                        placement={"top-start"}
+                                    >
+                                        <ListItem>
+                                            <ListItemIcon>
+                                                <UpdateIcon />
+                                            </ListItemIcon>
+                                            {userUpdatedAt}
+                                        </ListItem>
+                                    </Tooltip>
+                                </List>
+
+                                <div className={styles.changeNameButton}>
+                                    <Button
+                                        onClick={() => {
+                                            setOpenModifyUserAlert(true);
+                                        }}
+                                        variant={"contained"}
+                                    >
+                                        Change name
+                                    </Button>
+                                </div>
+                                {/*For revoking Github permissions*/}
+                                {/*<a*/}
+                                {/*    href={`${process.env.REACT_APP_ADDRESS}/checkAuthorization`}*/}
+                                {/*    target={"_blank"}*/}
+                                {/*>*/}
+                                {/*    Github permissions of the app*/}
+                                {/*</a>*/}
                             </div>
-                            {/*For revoking Github permissions*/}
-                            {/*<a*/}
-                            {/*    href={`${process.env.REACT_APP_ADDRESS}/checkAuthorization`}*/}
-                            {/*    target={"_blank"}*/}
-                            {/*>*/}
-                            {/*    Github permissions of the app*/}
-                            {/*</a>*/}
-                        </div>
-                    </>
-                )}
+
+                            <div
+                                className={styles.borderedBoxProfile}
+                                id={styles.scrollableBox}
+                            >
+                                <h3>My Teams</h3>
+                                <div className={styles.scrollableList}>
+                                    <List>
+                                        {teams.map((team) => (
+                                            <ListItem>
+                                                <div
+                                                    className={styles.listItem}
+                                                >
+                                                    {team.title}
+                                                </div>
+                                            </ListItem>
+                                        ))}
+                                    </List>
+                                </div>
+                            </div>
+
+                            <div
+                                className={styles.borderedBoxProfile}
+                                id={styles.scrollableBox}
+                            >
+                                <h3>Holiday History</h3>
+                                <div className={styles.scrollableList}>
+                                    <List>
+                                        {user.vacations
+                                            .sort((a, b) =>
+                                                a.start < b.start ? 1 : -1
+                                            )
+                                            .map((vacation) => (
+                                                <ListItem>
+                                                    {new Date(vacation.start) >=
+                                                    new Date() ? (
+                                                        <div
+                                                            className={
+                                                                styles.listItem
+                                                            }
+                                                        >
+                                                            {vacation.start.slice(
+                                                                0,
+                                                                10
+                                                            ) +
+                                                                " - " +
+                                                                vacation.end.slice(
+                                                                    0,
+                                                                    10
+                                                                )}
+                                                        </div>
+                                                    ) : (
+                                                        <div
+                                                            className={
+                                                                styles.listItemGreyed
+                                                            }
+                                                        >
+                                                            {vacation.start.slice(
+                                                                0,
+                                                                10
+                                                            ) +
+                                                                " - " +
+                                                                vacation.end.slice(
+                                                                    0,
+                                                                    10
+                                                                )}
+                                                        </div>
+                                                    )}
+                                                </ListItem>
+                                            ))}
+                                    </List>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+                <div className={styles.profileStats}>
+                    <div></div>
+                    <div>
+                        <p>Teams: {teams.length}</p>
+                    </div>
+                    <div id={styles.holidayStats}>
+                        <p>Upcoming: {upcomingHolidays}</p>
+                        <p>Past: {pastHolidays}</p>
+                    </div>
+                </div>
             </div>
             <ModifyDialog
                 openAlert={openModifyUserAlert}
