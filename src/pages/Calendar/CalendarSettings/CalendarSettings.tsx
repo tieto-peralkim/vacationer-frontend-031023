@@ -9,7 +9,7 @@ import {
     TextField,
     Tooltip,
 } from "@mui/material";
-import { CompactPicker } from "react-color";
+import { CompactPicker, SliderPicker } from "react-color";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useOutletVariables } from "../../../NavigationBar";
@@ -240,66 +240,73 @@ export default function CalendarSettings({
                             />
                         </div>
                     </div>
-                    <FormControl>
-                        <b>Column height</b>
-                        <RadioGroup
-                            row
-                            value={columnHeight}
-                            onChange={changeCalendarHeight}
-                        >
-                            <FormControlLabel
-                                value="1"
-                                control={
-                                    <Radio
-                                        sx={{
-                                            "& .MuiSvgIcon-root": {
-                                                fontSize: 16,
-                                            },
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <Typography sx={{ fontSize: "16px" }}>
-                                        Low
-                                    </Typography>
-                                }
-                            />
-                            <FormControlLabel
-                                value="2"
-                                control={
-                                    <Radio
-                                        sx={{
-                                            "& .MuiSvgIcon-root": {
-                                                fontSize: 16,
-                                            },
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <Typography sx={{ fontSize: "16px" }}>
-                                        Normal
-                                    </Typography>
-                                }
-                            />
-                            <FormControlLabel
-                                value="3"
-                                control={
-                                    <Radio
-                                        sx={{
-                                            "& .MuiSvgIcon-root": {
-                                                fontSize: 16,
-                                            },
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <Typography sx={{ fontSize: "16px" }}>
-                                        High
-                                    </Typography>
-                                }
-                            />
-                        </RadioGroup>
-                    </FormControl>
+                    <div>
+                        <FormControl>
+                            <b>Column height</b>
+                            <RadioGroup
+                                row
+                                value={columnHeight}
+                                onChange={changeCalendarHeight}
+                            >
+                                <FormControlLabel
+                                    value="1"
+                                    control={
+                                        <Radio
+                                            sx={{
+                                                "& .MuiSvgIcon-root": {
+                                                    fontSize: 16,
+                                                },
+                                            }}
+                                        />
+                                    }
+                                    label={
+                                        <Typography sx={{ fontSize: "16px" }}>
+                                            Low
+                                        </Typography>
+                                    }
+                                />
+                                <FormControlLabel
+                                    value="2"
+                                    control={
+                                        <Radio
+                                            sx={{
+                                                "& .MuiSvgIcon-root": {
+                                                    fontSize: 16,
+                                                },
+                                            }}
+                                        />
+                                    }
+                                    label={
+                                        <Typography sx={{ fontSize: "16px" }}>
+                                            Normal
+                                        </Typography>
+                                    }
+                                />
+                                <FormControlLabel
+                                    value="3"
+                                    control={
+                                        <Radio
+                                            sx={{
+                                                "& .MuiSvgIcon-root": {
+                                                    fontSize: 16,
+                                                },
+                                            }}
+                                        />
+                                    }
+                                    label={
+                                        <Typography sx={{ fontSize: "16px" }}>
+                                            High
+                                        </Typography>
+                                    }
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                        <div>Text color</div>
+                        <SliderPicker
+                            color={colorToPick as string}
+                            onChangeComplete={doColorChange}
+                        />
+                    </div>
                 </div>
                 <div>
                     <div className={styles.lowRow}>

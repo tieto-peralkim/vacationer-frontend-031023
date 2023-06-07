@@ -64,6 +64,7 @@ export default function Calendar({ allVacationers, save }) {
     const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
     const [weekendColor, setWeekendColor] = useState("");
     const [weekendHolidayColor, setWeekendHolidayColor] = useState("");
+    const [symbolFontColor, setSymbolFontColor] = useState("");
 
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
@@ -170,6 +171,9 @@ export default function Calendar({ allVacationers, save }) {
             setUnconfirmedHolidaySymbol(
                 user.calendarSettings[0].unConfirmedHolidaySymbol
             );
+            if (user.calendarSettings[0].symbolFontColor) {
+                setSymbolFontColor(user.calendarSettings[0].symbolFontColor);
+            }
         }
     }, [user]);
 
@@ -1283,6 +1287,7 @@ export default function Calendar({ allVacationers, save }) {
                                                             border: setColumnStyle(
                                                                 cell.column
                                                             ),
+                                                            color: symbolFontColor,
                                                             backgroundColor:
                                                                 isCommonHoliday(
                                                                     cell.value,

@@ -49,6 +49,7 @@ export interface Vacationer {
             weekendHolidayColor: string;
             holidaySymbol: string;
             unConfirmedHolidaySymbol: string;
+            symbolFontColor: string;
         }
     ];
     createdAt: Date;
