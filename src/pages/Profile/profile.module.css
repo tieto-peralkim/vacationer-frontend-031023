@@ -84,7 +84,7 @@
     transition: 800ms;
     color: black;
     border: 3px solid #5aacff;
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
 li {
@@ -105,8 +105,6 @@ li {
 }
 .profileStats {
     display: flex;
-    /* justify-content: center;
-    align-items: center; */
     height: 100%;
     font-size: larger;
 }
