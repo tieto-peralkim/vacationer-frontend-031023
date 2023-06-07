@@ -44,7 +44,6 @@
 }
 
 .changeNameButton > button {
-    margin-top: 30%;
     width: 90%;
     height: 50px;
     box-shadow: 3px 4px 5px black;
@@ -129,4 +128,37 @@ li {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+}
+
+#teamsStats, #holidayStats {
+    border: 1px solid black;
+    height: 70px !important;
+    margin-top: 20px;
+    border: solid 1px blue;
+    border-radius: 1em;
+}
+
+@media only screen and (max-width: 930px) {
+    .content {
+        display: flex;
+        justify-content: center;
+        height: 100%;
+        padding-top: 30px;
+        flex-direction: column;
+    }
+
+    .borderedBoxProfile {
+        margin: 50px;
+    }
+
+    .viewDivider{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #teamsStats, #holidayStats {
+        visibility: hidden;
+    }
+
 }

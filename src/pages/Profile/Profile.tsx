@@ -275,7 +275,7 @@ export default function Profile() {
                 </div>
                 <div className={styles.profileStats}>
                     <div></div>
-                    <div>
+                    <div id={styles.teamsStats}>
                         <p>Teams: {teams.length}</p>
                     </div>
                     <div id={styles.holidayStats}>
