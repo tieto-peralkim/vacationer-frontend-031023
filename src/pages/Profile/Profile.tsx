@@ -206,7 +206,7 @@ export default function Profile() {
                                 <div className={styles.scrollableList}>
                                     <List>
                                         {teams.map((team) => (
-                                            <ListItem>
+                                            <ListItem key={team.id}>
                                                 <div
                                                     className={styles.listItem}
                                                 >
@@ -230,7 +230,7 @@ export default function Profile() {
                                                 a.start < b.start ? 1 : -1
                                             )
                                             .map((vacation) => (
-                                                <ListItem>
+                                                <ListItem key={vacation.start}>
                                                     {new Date(vacation.start) >=
                                                     new Date() ? (
                                                         <div
