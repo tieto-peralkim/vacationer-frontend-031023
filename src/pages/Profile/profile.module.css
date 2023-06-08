@@ -83,14 +83,6 @@
     border: 3px solid #909090;
 }
 
-.listItem:hover {
-    background-color: #70b8ff;
-    transition: 800ms;
-    color: black;
-    border: 3px solid #5aacff;
-    /* cursor: pointer; */
-}
-
 li {
     font-size: larger;
 }
