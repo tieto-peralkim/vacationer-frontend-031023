@@ -446,11 +446,11 @@ export default function Picker({ save, setSave, allVacationers }) {
                                 calculatePerDay={calculatePerDay}
                             />
                         </form>
-                        <div className={styles.rightSide}>
+                        <div>
                             <Grid
                                 container
                                 rowSpacing={0.7}
-                                columnSpacing={0.5}
+                                columnSpacing={0.1}
                                 direction="row"
                                 justifyContent="flex-start"
                             >
@@ -467,7 +467,7 @@ export default function Picker({ save, setSave, allVacationers }) {
                                             key={holiday.id}
                                         >
                                             <ButtonGroup
-                                                size="medium"
+                                                size="small"
                                                 key={holiday.id}
                                             >
                                                 <Tooltip title={"Edit holiday"}>

@@ -50,6 +50,7 @@ export interface Vacationer {
             holidaySymbol: string;
             unConfirmedHolidaySymbol: string;
             symbolFontColor: string;
+            rowHeight: number;
         }
     ];
     createdAt: Date;

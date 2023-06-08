@@ -233,12 +233,8 @@ export default function PickerModal({
 
     return (
         <>
-            <Modal
-                className={styles.modal}
-                open={openCalendar}
-                onClose={handleCloseCalendar}
-            >
-                <Box className={styles.box}>
+            <Modal open={openCalendar} onClose={handleCloseCalendar}>
+                <Box className={styles.pickerModalBox}>
                     <div>
                         <Stack spacing={1} direction="row">
                             {!tooManyWarning ? (

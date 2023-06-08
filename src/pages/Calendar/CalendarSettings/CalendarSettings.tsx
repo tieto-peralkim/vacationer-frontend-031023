@@ -1,17 +1,19 @@
 import styles from "./calendarsettings.module.css";
 import {
+    Box,
     Button,
     FormControl,
     FormControlLabel,
     NativeSelect,
     Radio,
     RadioGroup,
+    Slider,
     TextField,
     Tooltip,
 } from "@mui/material";
-import { CompactPicker, SliderPicker } from "react-color";
+import { CompactPicker } from "react-color";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useOutletVariables } from "../../../NavigationBar";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import CloseIcon from "@mui/icons-material/Close";
@@ -22,8 +24,8 @@ export default function CalendarSettings({
     changesDoneWarning,
     setChangesDoneWarning,
     setSettingsOpen,
-    columnHeight,
-    setColumnHeight,
+    rowHeight,
+    setRowHeight,
     holidaySymbol,
     setHolidaySymbol,
     unconfirmedHolidaySymbol,
@@ -39,6 +41,7 @@ export default function CalendarSettings({
     symbolFontColor,
     setSymbolFontColor,
     defaultColors,
+    defaultRowHeight,
 }) {
     const { user, APIError, setAPIError, newUserState, updateUser } =
         useOutletVariables();
@@ -71,8 +74,35 @@ export default function CalendarSettings({
         setSymbolFontColor(defaultColors["symbolFontColor"]);
     };
 
-    // TODO: add logic for changes in new fields (symbol color and column height), also separate Name column values from symbol color
     useEffect(() => {
+        if (
+            user.calendarSettings[0].symbolFontColor &&
+            symbolFontColor !== user.calendarSettings[0].symbolFontColor
+        ) {
+            setChangesDoneWarning(true);
+            return;
+        } else if (
+            !user.calendarSettings[0].symbolFontColor &&
+            symbolFontColor !== defaultColors["symbolFontColor"]
+        ) {
+            setChangesDoneWarning(true);
+            return;
+        }
+
+        if (
+            user.calendarSettings[0].rowHeight &&
+            rowHeight !== user.calendarSettings[0].rowHeight
+        ) {
+            setChangesDoneWarning(true);
+            return;
+        } else if (
+            !user.calendarSettings[0].rowHeight &&
+            rowHeight !== defaultRowHeight
+        ) {
+            setChangesDoneWarning(true);
+            return;
+        }
+
         if (
             holidaySymbol !== user.calendarSettings[0].holidaySymbol ||
             unconfirmedHolidaySymbol !==
@@ -84,9 +114,10 @@ export default function CalendarSettings({
             weekendHolidayColor !== user.calendarSettings[0].weekendHolidayColor
         ) {
             setChangesDoneWarning(true);
-        } else {
-            setChangesDoneWarning(false);
+            return;
         }
+        setChangesDoneWarning(false);
+        return;
     }, [
         holidaySymbol,
         unconfirmedHolidaySymbol,
@@ -94,10 +125,12 @@ export default function CalendarSettings({
         unConfirmedHolidayColor,
         weekendColor,
         weekendHolidayColor,
+        symbolFontColor,
+        rowHeight,
     ]);
 
     const changeCalendarHeight = (e: any) => {
-        setColumnHeight(e.target.value);
+        setRowHeight(e.target.value);
     };
 
     const selectColorPalette = (event) => {
@@ -151,6 +184,8 @@ export default function CalendarSettings({
                 unConfirmedHolidayColor: unConfirmedHolidayColor,
                 weekendColor: weekendColor,
                 weekendHolidayColor: weekendHolidayColor,
+                symbolFontColor: symbolFontColor,
+                rowHeight: rowHeight,
             };
             // Todo: For creation of multiple calendar settings
             // let newCalendarSettings = {
@@ -201,6 +236,8 @@ export default function CalendarSettings({
         );
         setWeekendColor(user.calendarSettings[0].weekendColor);
         setWeekendHolidayColor(user.calendarSettings[0].weekendHolidayColor);
+        setSymbolFontColor(user.calendarSettings[0].symbolFontColor);
+        setRowHeight(user.calendarSettings[0].rowHeight);
     };
 
     return (
@@ -252,66 +289,18 @@ export default function CalendarSettings({
                             />
                         </div>
                     </div>
-                    <FormControl>
-                        <b>Row height</b>
-                        <RadioGroup
-                            row
-                            value={columnHeight}
+                    <Box className={styles.rowHeightBox}>
+                        <b>Row height: {rowHeight}</b>
+                        <Slider
+                            size={"medium"}
+                            value={rowHeight}
+                            step={1}
+                            marks
+                            min={1}
+                            max={3}
                             onChange={changeCalendarHeight}
-                        >
-                            <FormControlLabel
-                                value="1"
-                                control={
-                                    <Radio
-                                        sx={{
-                                            "& .MuiSvgIcon-root": {
-                                                fontSize: 16,
-                                            },
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <Typography sx={{ fontSize: "16px" }}>
-                                        Low
-                                    </Typography>
-                                }
-                            />
-                            <FormControlLabel
-                                value="2"
-                                control={
-                                    <Radio
-                                        sx={{
-                                            "& .MuiSvgIcon-root": {
-                                                fontSize: 16,
-                                            },
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <Typography sx={{ fontSize: "16px" }}>
-                                        Normal
-                                    </Typography>
-                                }
-                            />
-                            <FormControlLabel
-                                value="3"
-                                control={
-                                    <Radio
-                                        sx={{
-                                            "& .MuiSvgIcon-root": {
-                                                fontSize: 16,
-                                            },
-                                        }}
-                                    />
-                                }
-                                label={
-                                    <Typography sx={{ fontSize: "16px" }}>
-                                        High
-                                    </Typography>
-                                }
-                            />
-                        </RadioGroup>
-                    </FormControl>
+                        />
+                    </Box>
                 </div>
                 <div>
                     <div className={styles.lowRow}>
@@ -335,7 +324,7 @@ export default function CalendarSettings({
                                     Holiday on weekend / public holiday
                                 </option>
                                 <option key={4} value={paletteNames[4]}>
-                                    Symbols
+                                    Holiday symbol font
                                 </option>
                             </NativeSelect>
                         </FormControl>
