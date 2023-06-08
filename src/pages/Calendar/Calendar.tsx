@@ -56,15 +56,32 @@ export default function Calendar({ allVacationers, save }) {
     const headerColor = "black";
     const headerBackgroundColor = "lightgrey";
 
+    const defaultColors: { [id: string]: string } = {};
+    defaultColors["holidayColor"] = "#73D8FF";
+    defaultColors["unConfirmedHolidayColor"] = "#68CCCA";
+    defaultColors["weekendColor"] = "#808080";
+    defaultColors["weekendHolidayColor"] = "#CCCCCC";
+    defaultColors["symbolFontColor"] = "#000000";
+
     // HolidaySymbol can not be a number!
     const [holidaySymbol, setHolidaySymbol] = useState("");
     const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
         useState("");
-    const [holidayColor, setHolidayColor] = useState("");
-    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
-    const [weekendColor, setWeekendColor] = useState("");
-    const [weekendHolidayColor, setWeekendHolidayColor] = useState("");
-    const [symbolFontColor, setSymbolFontColor] = useState("");
+    const [holidayColor, setHolidayColor] = useState(
+        defaultColors["holidayColor"]
+    );
+    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState(
+        defaultColors["unConfirmedHolidayColor"]
+    );
+    const [weekendColor, setWeekendColor] = useState(
+        defaultColors["weekendColor"]
+    );
+    const [weekendHolidayColor, setWeekendHolidayColor] = useState(
+        defaultColors["weekendHolidayColor"]
+    );
+    const [symbolFontColor, setSymbolFontColor] = useState(
+        defaultColors["symbolFontColor"]
+    );
 
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
@@ -1180,6 +1197,11 @@ export default function Calendar({ allVacationers, save }) {
                                             setWeekendHolidayColor={
                                                 setWeekendHolidayColor
                                             }
+                                            symbolFontColor={symbolFontColor}
+                                            setSymbolFontColor={
+                                                setSymbolFontColor
+                                            }
+                                            defaultColors={defaultColors}
                                         />
                                     </Box>
                                 </Popper>

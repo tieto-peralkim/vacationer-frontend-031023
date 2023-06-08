@@ -36,6 +36,9 @@ export default function CalendarSettings({
     setWeekendColor,
     weekendHolidayColor,
     setWeekendHolidayColor,
+    symbolFontColor,
+    setSymbolFontColor,
+    defaultColors,
 }) {
     const { user, APIError, setAPIError, newUserState, updateUser } =
         useOutletVariables();
@@ -48,6 +51,7 @@ export default function CalendarSettings({
         "unconfirmed-holiday",
         "weekend",
         "weekend-holiday",
+        "symbol-color",
     ];
     const [colorPalette, setColorPalette] = useState(paletteNames[0]);
     const [colorToPick, setColorToPick] = useState(holidayColor);
@@ -58,14 +62,16 @@ export default function CalendarSettings({
         !isNaN(Number(unconfirmedHolidaySymbol));
 
     const resetColors = () => {
-        setColorToPick("#73D8FF");
+        setColorToPick(defaultColors["holidayColor"]);
         setColorPalette(paletteNames[0]);
-        setHolidayColor("#73D8FF");
-        setUnConfirmedHolidayColor("#68CCCA");
-        setWeekendColor("#808080");
-        setWeekendHolidayColor("#CCCCCC");
+        setHolidayColor(defaultColors["holidayColor"]);
+        setUnConfirmedHolidayColor(defaultColors["unConfirmedHolidayColor"]);
+        setWeekendColor(defaultColors["weekendColor"]);
+        setWeekendHolidayColor(defaultColors["weekendHolidayColor"]);
+        setSymbolFontColor(defaultColors["symbolFontColor"]);
     };
 
+    // TODO: add logic for changes in new fields (symbol color and column height), also separate Name column values from symbol color
     useEffect(() => {
         if (
             holidaySymbol !== user.calendarSettings[0].holidaySymbol ||
@@ -109,6 +115,9 @@ export default function CalendarSettings({
             case paletteNames[3]:
                 setColorToPick(weekendHolidayColor);
                 break;
+            case paletteNames[4]:
+                setColorToPick(symbolFontColor);
+                break;
         }
     };
 
@@ -126,6 +135,9 @@ export default function CalendarSettings({
                 break;
             case paletteNames[3]:
                 setWeekendHolidayColor(color.hex);
+                break;
+            case paletteNames[4]:
+                setSymbolFontColor(color.hex);
                 break;
         }
     };
@@ -240,78 +252,71 @@ export default function CalendarSettings({
                             />
                         </div>
                     </div>
-                    <div>
-                        <FormControl>
-                            <b>Column height</b>
-                            <RadioGroup
-                                row
-                                value={columnHeight}
-                                onChange={changeCalendarHeight}
-                            >
-                                <FormControlLabel
-                                    value="1"
-                                    control={
-                                        <Radio
-                                            sx={{
-                                                "& .MuiSvgIcon-root": {
-                                                    fontSize: 16,
-                                                },
-                                            }}
-                                        />
-                                    }
-                                    label={
-                                        <Typography sx={{ fontSize: "16px" }}>
-                                            Low
-                                        </Typography>
-                                    }
-                                />
-                                <FormControlLabel
-                                    value="2"
-                                    control={
-                                        <Radio
-                                            sx={{
-                                                "& .MuiSvgIcon-root": {
-                                                    fontSize: 16,
-                                                },
-                                            }}
-                                        />
-                                    }
-                                    label={
-                                        <Typography sx={{ fontSize: "16px" }}>
-                                            Normal
-                                        </Typography>
-                                    }
-                                />
-                                <FormControlLabel
-                                    value="3"
-                                    control={
-                                        <Radio
-                                            sx={{
-                                                "& .MuiSvgIcon-root": {
-                                                    fontSize: 16,
-                                                },
-                                            }}
-                                        />
-                                    }
-                                    label={
-                                        <Typography sx={{ fontSize: "16px" }}>
-                                            High
-                                        </Typography>
-                                    }
-                                />
-                            </RadioGroup>
-                        </FormControl>
-                        <div>Text color</div>
-                        <SliderPicker
-                            color={colorToPick as string}
-                            onChangeComplete={doColorChange}
-                        />
-                    </div>
+                    <FormControl>
+                        <b>Column height</b>
+                        <RadioGroup
+                            row
+                            value={columnHeight}
+                            onChange={changeCalendarHeight}
+                        >
+                            <FormControlLabel
+                                value="1"
+                                control={
+                                    <Radio
+                                        sx={{
+                                            "& .MuiSvgIcon-root": {
+                                                fontSize: 16,
+                                            },
+                                        }}
+                                    />
+                                }
+                                label={
+                                    <Typography sx={{ fontSize: "16px" }}>
+                                        Low
+                                    </Typography>
+                                }
+                            />
+                            <FormControlLabel
+                                value="2"
+                                control={
+                                    <Radio
+                                        sx={{
+                                            "& .MuiSvgIcon-root": {
+                                                fontSize: 16,
+                                            },
+                                        }}
+                                    />
+                                }
+                                label={
+                                    <Typography sx={{ fontSize: "16px" }}>
+                                        Normal
+                                    </Typography>
+                                }
+                            />
+                            <FormControlLabel
+                                value="3"
+                                control={
+                                    <Radio
+                                        sx={{
+                                            "& .MuiSvgIcon-root": {
+                                                fontSize: 16,
+                                            },
+                                        }}
+                                    />
+                                }
+                                label={
+                                    <Typography sx={{ fontSize: "16px" }}>
+                                        High
+                                    </Typography>
+                                }
+                            />
+                        </RadioGroup>
+                    </FormControl>
                 </div>
                 <div>
                     <div className={styles.lowRow}>
                         <FormControl>
-                            <b>Holiday colors</b>
+                            <b>Colors</b>
                             <NativeSelect
                                 value={colorPalette as ""}
                                 onChange={selectColorPalette}
@@ -328,6 +333,9 @@ export default function CalendarSettings({
                                 </option>
                                 <option key={3} value={paletteNames[3]}>
                                     Holiday on weekend / public holiday
+                                </option>
+                                <option key={4} value={paletteNames[4]}>
+                                    Symbols
                                 </option>
                             </NativeSelect>
                         </FormControl>

@@ -54,6 +54,7 @@
 .nameColumn {
     display: flex;
     justify-content: left;
+    color: black;
 }
 .popperBox {
     border: solid 2px rgb(56, 116, 203);
