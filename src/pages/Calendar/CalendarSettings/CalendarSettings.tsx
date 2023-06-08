@@ -3,21 +3,17 @@ import {
     Box,
     Button,
     FormControl,
-    FormControlLabel,
     NativeSelect,
-    Radio,
-    RadioGroup,
     Slider,
     TextField,
     Tooltip,
 } from "@mui/material";
 import { CompactPicker } from "react-color";
 import axios from "axios";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useOutletVariables } from "../../../NavigationBar";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import CloseIcon from "@mui/icons-material/Close";
-import Typography from "@mui/material/Typography";
 import * as React from "react";
 
 export default function CalendarSettings({
