@@ -56,19 +56,39 @@ export default function Calendar({ allVacationers, save }) {
     const headerColor = "black";
     const headerBackgroundColor = "lightgrey";
 
+    const defaultRowHeight = 1;
+    const [rowHeight, setRowHeight] = useState(defaultRowHeight);
+
+    const defaultColors: { [id: string]: string } = {};
+    defaultColors["holidayColor"] = "#73D8FF";
+    defaultColors["unConfirmedHolidayColor"] = "#68CCCA";
+    defaultColors["weekendColor"] = "#808080";
+    defaultColors["weekendHolidayColor"] = "#CCCCCC";
+    defaultColors["symbolFontColor"] = "#000000";
+
     // HolidaySymbol can not be a number!
     const [holidaySymbol, setHolidaySymbol] = useState("");
     const [unconfirmedHolidaySymbol, setUnconfirmedHolidaySymbol] =
         useState("");
-    const [holidayColor, setHolidayColor] = useState("");
-    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState("");
-    const [weekendColor, setWeekendColor] = useState("");
-    const [weekendHolidayColor, setWeekendHolidayColor] = useState("");
+    const [holidayColor, setHolidayColor] = useState(
+        defaultColors["holidayColor"]
+    );
+    const [unConfirmedHolidayColor, setUnConfirmedHolidayColor] = useState(
+        defaultColors["unConfirmedHolidayColor"]
+    );
+    const [weekendColor, setWeekendColor] = useState(
+        defaultColors["weekendColor"]
+    );
+    const [weekendHolidayColor, setWeekendHolidayColor] = useState(
+        defaultColors["weekendHolidayColor"]
+    );
+    const [symbolFontColor, setSymbolFontColor] = useState(
+        defaultColors["symbolFontColor"]
+    );
 
     const [showSpinner, setShowSpinner] = useState(false);
     const [showAllVacationers, setShowAllVacationers] = useState(true);
 
-    const [columnHeight, setColumnHeight] = useState(1);
     const [selectedDate, setSelectedDate] = useState(thisMonthFirst);
     const [selectedYear, setSelectedYear] = useState(
         thisMonthFirst.getFullYear()
@@ -157,6 +177,7 @@ export default function Calendar({ allVacationers, save }) {
 
     // Setting calendar settings of selected user
     useEffect(() => {
+        console.log("user", user);
         if (user && user.calendarSettings) {
             setHolidayColor(user.calendarSettings[0].holidayColor);
             setUnConfirmedHolidayColor(
@@ -170,6 +191,12 @@ export default function Calendar({ allVacationers, save }) {
             setUnconfirmedHolidaySymbol(
                 user.calendarSettings[0].unConfirmedHolidaySymbol
             );
+            if (user.calendarSettings[0].symbolFontColor) {
+                setSymbolFontColor(user.calendarSettings[0].symbolFontColor);
+            }
+            if (user.calendarSettings[0].rowHeight) {
+                setRowHeight(user.calendarSettings[0].rowHeight);
+            }
         }
     }, [user]);
 
@@ -1123,7 +1150,7 @@ export default function Calendar({ allVacationers, save }) {
                                     holiday
                                 </div>
                                 <Tooltip
-                                    title={"Edit colors, symbols or size"}
+                                    title={"Edit colors, symbols or row height"}
                                     placement={"bottom"}
                                 >
                                     <Button
@@ -1150,8 +1177,8 @@ export default function Calendar({ allVacationers, save }) {
                                                 setChangesDoneWarning
                                             }
                                             setSettingsOpen={setSettingsOpen}
-                                            columnHeight={columnHeight}
-                                            setColumnHeight={setColumnHeight}
+                                            rowHeight={rowHeight}
+                                            setRowHeight={setRowHeight}
                                             holidaySymbol={holidaySymbol}
                                             setHolidaySymbol={setHolidaySymbol}
                                             unconfirmedHolidaySymbol={
@@ -1176,6 +1203,12 @@ export default function Calendar({ allVacationers, save }) {
                                             setWeekendHolidayColor={
                                                 setWeekendHolidayColor
                                             }
+                                            symbolFontColor={symbolFontColor}
+                                            setSymbolFontColor={
+                                                setSymbolFontColor
+                                            }
+                                            defaultColors={defaultColors}
+                                            defaultRowHeight={defaultRowHeight}
                                         />
                                     </Box>
                                 </Popper>
@@ -1279,10 +1312,11 @@ export default function Calendar({ allVacationers, save }) {
                                                             fontWeight: setBold(
                                                                 cell.value
                                                             ),
-                                                            height: `${columnHeight}em`,
+                                                            height: `${rowHeight}em`,
                                                             border: setColumnStyle(
                                                                 cell.column
                                                             ),
+                                                            color: symbolFontColor,
                                                             backgroundColor:
                                                                 isCommonHoliday(
                                                                     cell.value,

@@ -5,11 +5,13 @@ import {
     AppBar,
     Box,
     CircularProgress,
+    createTheme,
     Drawer,
     IconButton,
     List,
     ListItem,
     ListItemIcon,
+    ThemeProvider,
     Tooltip,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
@@ -49,11 +51,21 @@ export interface Vacationer {
             weekendHolidayColor: string;
             holidaySymbol: string;
             unConfirmedHolidaySymbol: string;
+            symbolFontColor: string;
+            rowHeight: number;
         }
     ];
     createdAt: Date;
     updatedAt: Date;
 }
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#ffffff",
+        },
+    },
+});
 
 type ContextType = {
     user: Vacationer | null;
@@ -145,7 +157,9 @@ function NavigationBar() {
                         <Tooltip
                             title={"Profile settings, create and edit teams"}
                         >
-                            <MenuIcon />
+                            <ThemeProvider theme={theme}>
+                                <MenuIcon color={"primary"} />
+                            </ThemeProvider>
                         </Tooltip>
                     </IconButton>
                     <>

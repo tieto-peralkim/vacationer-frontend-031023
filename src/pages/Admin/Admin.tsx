@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import axios from "axios";
 import {
     Accordion,
@@ -331,7 +331,9 @@ export default function Admin() {
                                 nameError &&
                                 `Name must be ${minNameLength}-${maxNameLength} characters`
                             }
-                            onChange={(e) => setNewUser(e.target.value)}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                                setNewUser(e.target.value)
+                            }
                         />
                         <div>
                             <Button
@@ -351,8 +353,10 @@ export default function Admin() {
                                 disabled={APIError}
                                 className={styles.nameSelectBox}
                                 displayEmpty={true}
-                                value={selectedUser}
-                                onChange={(e: any) => {
+                                value={selectedUser ? selectedUser : ""}
+                                onChange={(
+                                    e: ChangeEvent<HTMLInputElement>
+                                ) => {
                                     setSelectedUser(e.target.value);
                                 }}
                                 MenuProps={{
@@ -380,7 +384,9 @@ export default function Admin() {
                                                     ? selectedUser.admin
                                                     : false
                                             }
-                                            onChange={(e) => {
+                                            onChange={(
+                                                e: ChangeEvent<HTMLInputElement>
+                                            ) => {
                                                 setAdminStatus(
                                                     e.target.checked
                                                 );
@@ -413,6 +419,11 @@ export default function Admin() {
                             <Select
                                 className={styles.nameSelectBox}
                                 displayEmpty={true}
+                                value={
+                                    selectedDeletedUser
+                                        ? selectedDeletedUser
+                                        : ""
+                                }
                                 disabled={APIError}
                                 onChange={(e: any) => {
                                     setSelectedDeletedUser(e.target.value);
@@ -469,6 +480,11 @@ export default function Admin() {
                                 onChange={(e: any) => {
                                     setSelectedDeletedTeam(e.target.value);
                                 }}
+                                value={
+                                    selectedDeletedTeam
+                                        ? selectedDeletedTeam
+                                        : ""
+                                }
                                 MenuProps={{
                                     sx: {
                                         height: 300,

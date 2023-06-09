@@ -9,6 +9,11 @@
 .changesDoneWarning {
     color: red;
 }
+.rowHeightBox {
+    width: 15em;
+    padding-left: 2em;
+    padding-right: 2em;
+}
 
 @media only screen and (min-width: 930px) {
     .lowRow {

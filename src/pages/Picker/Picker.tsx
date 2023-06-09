@@ -72,32 +72,8 @@ export default function Picker({ save, setSave, allVacationers }) {
     const [holidays, setHolidays] = useState([]);
     const [adminSpace, setAdminSpace] = useState(false);
     const [calendarDaysExcluded, setCalendarDaysExcluded] = useState([]);
-    const [chosenVacationer, setChosenVacationer] = useState<Vacationer>({
-        id: "",
-        name: "",
-        nameId: "",
-        vacations: [
-            {
-                start: "",
-                end: "",
-                comment: "",
-                confirmed: false,
-            },
-        ],
-        admin: false,
-        calendarSettings: [
-            {
-                holidayColor: "",
-                unConfirmedHolidayColor: "",
-                weekendColor: "",
-                weekendHolidayColor: "",
-                holidaySymbol: "",
-                unConfirmedHolidaySymbol: "",
-            },
-        ],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-    });
+    const [chosenVacationer, setChosenVacationer] =
+        useState<Vacationer | null>();
 
     const handleOpenCalendar = () => {
         setOpenCalendar(true);
@@ -411,15 +387,8 @@ export default function Picker({ save, setSave, allVacationers }) {
                                             <FormControl>
                                                 <Select
                                                     className={styles.selectBox}
-                                                    defaultValue={
-                                                        chosenVacationer.name
-                                                            ? chosenVacationer.name
-                                                            : ""
-                                                    }
                                                     value={
-                                                        chosenVacationer.name
-                                                            ? chosenVacationer.name
-                                                            : ""
+                                                        chosenVacationer.name as ""
                                                     }
                                                     onChange={(e) =>
                                                         selectVacationer(
@@ -477,11 +446,11 @@ export default function Picker({ save, setSave, allVacationers }) {
                                 calculatePerDay={calculatePerDay}
                             />
                         </form>
-                        <div className={styles.rightSide}>
+                        <div>
                             <Grid
                                 container
                                 rowSpacing={0.7}
-                                columnSpacing={0.5}
+                                columnSpacing={0.1}
                                 direction="row"
                                 justifyContent="flex-start"
                             >
@@ -498,7 +467,7 @@ export default function Picker({ save, setSave, allVacationers }) {
                                             key={holiday.id}
                                         >
                                             <ButtonGroup
-                                                size="medium"
+                                                size="small"
                                                 key={holiday.id}
                                             >
                                                 <Tooltip title={"Edit holiday"}>
