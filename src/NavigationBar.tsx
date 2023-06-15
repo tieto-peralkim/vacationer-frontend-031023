@@ -153,15 +153,13 @@ function NavigationBar() {
         <div className={styles.wholePage}>
             <AppBar position="sticky">
                 <Toolbar>
-                    <IconButton onClick={() => setIsOpen(!isOpen)}>
-                        <Tooltip
-                            title={"Profile settings, create and edit teams"}
-                        >
+                    <Tooltip title={"Profile settings, create and edit teams"}>
+                        <IconButton onClick={() => setIsOpen(!isOpen)}>
                             <ThemeProvider theme={theme}>
                                 <MenuIcon color={"primary"} />
                             </ThemeProvider>
-                        </Tooltip>
-                    </IconButton>
+                        </IconButton>
+                    </Tooltip>
                     <>
                         <Tooltip title={"Profile settings"}>
                             <Typography

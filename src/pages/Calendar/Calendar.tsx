@@ -177,7 +177,6 @@ export default function Calendar({ allVacationers, save }) {
 
     // Setting calendar settings of selected user
     useEffect(() => {
-        console.log("user", user);
         if (user && user.calendarSettings) {
             setHolidayColor(user.calendarSettings[0].holidayColor);
             setUnConfirmedHolidayColor(
@@ -1215,7 +1214,6 @@ export default function Calendar({ allVacationers, save }) {
                             </div>
                         )}
                     </div>
-                    {/*)}*/}
                     <Tooltip title={"Select displayed month"} placement={"top"}>
                         <Box className={styles.monthSelectionButtons}>
                             <Button
