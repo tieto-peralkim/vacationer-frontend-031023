@@ -16,29 +16,30 @@ import AlertDialog from "../../Dialogs/AlertDialog";
 import CloseIcon from "@mui/icons-material/Close";
 import * as React from "react";
 
-export default function CalendarSettings({
-    changesDoneWarning,
-    setChangesDoneWarning,
-    setSettingsOpen,
-    rowHeight,
-    setRowHeight,
-    holidaySymbol,
-    setHolidaySymbol,
-    unconfirmedHolidaySymbol,
-    setUnconfirmedHolidaySymbol,
-    holidayColor,
-    setHolidayColor,
-    unConfirmedHolidayColor,
-    setUnConfirmedHolidayColor,
-    weekendColor,
-    setWeekendColor,
-    weekendHolidayColor,
-    setWeekendHolidayColor,
-    symbolFontColor,
-    setSymbolFontColor,
-    defaultColors,
-    defaultRowHeight,
-}) {
+export default function CalendarSettings(props) {
+    const {
+        changesDoneWarning,
+        setChangesDoneWarning,
+        setSettingsOpen,
+        rowHeight,
+        setRowHeight,
+        holidaySymbol,
+        setHolidaySymbol,
+        unconfirmedHolidaySymbol,
+        setUnconfirmedHolidaySymbol,
+        holidayColor,
+        setHolidayColor,
+        unConfirmedHolidayColor,
+        setUnConfirmedHolidayColor,
+        weekendColor,
+        setWeekendColor,
+        weekendHolidayColor,
+        setWeekendHolidayColor,
+        symbolFontColor,
+        setSymbolFontColor,
+        defaultColors,
+        defaultRowHeight,
+    } = props;
     const { user, APIError, setAPIError, newUserState, updateUser } =
         useOutletVariables();
     const [openSettingsSave, setOpenSettingsSave] = useState(false);
@@ -204,7 +205,7 @@ export default function CalendarSettings({
                 //     newCalendarSettings,
                 //     { withCredentials: true }
                 // )
-                .then((response) => {
+                .then(() => {
                     updateUser(!newUserState);
                     setOpenSettingsSave(true);
                     setChangesDoneWarning(false);

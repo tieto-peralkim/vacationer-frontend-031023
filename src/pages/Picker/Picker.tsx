@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 import styles from "./picker.module.css";
@@ -24,6 +24,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import AlertDialog from "../Dialogs/AlertDialog";
 import PickerModal from "./Components/PickerModal";
 import { ExpandCircleDown } from "@mui/icons-material";
+import PropTypes from "prop-types";
 
 export interface Holiday {
     id: string;
@@ -32,7 +33,8 @@ export interface Holiday {
     comment: string;
     confirmed: boolean;
 }
-export default function Picker({ save, setSave, allVacationers }) {
+
+function Picker({ save, setSave, allVacationers }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
     const NUMBER_OF_SHOWN_DEFAULT = 2;
@@ -209,16 +211,16 @@ export default function Picker({ save, setSave, allVacationers }) {
 
     // UI Method for adding the extra day before holiday. Because Datepicker exclusion does not include the 1st day of date range
     const updateExcludedDates = (id) => {
-        let copyHolidays = JSON.parse(JSON.stringify(holidays));
+        const copyHolidays = JSON.parse(JSON.stringify(holidays));
 
         for (let i = 0; i < copyHolidays.length; i++) {
-            let previousDate = new Date(copyHolidays[i].start);
+            const previousDate = new Date(copyHolidays[i].start);
             previousDate.setDate(previousDate.getDate() - 1);
             copyHolidays[i].start = previousDate;
             copyHolidays[i].end = new Date(copyHolidays[i].end);
         }
         if (id !== 0) {
-            let filteredHolidays = copyHolidays.filter(
+            const filteredHolidays = copyHolidays.filter(
                 (holidays) => holidays.id !== id
             );
             setCalendarDaysExcluded(filteredHolidays);
@@ -229,9 +231,9 @@ export default function Picker({ save, setSave, allVacationers }) {
 
     // Method for converting the date Strings to Dates
     const setExcludedDates = (vacations) => {
-        let pureVacations = [];
+        const pureVacations = [];
         for (let i = 0; i < vacations.length; i++) {
-            let holidayObject = {
+            const holidayObject = {
                 start: new Date(vacations[i].start),
                 end: new Date(vacations[i].end),
                 comment: vacations[i].comment,
@@ -292,8 +294,8 @@ export default function Picker({ save, setSave, allVacationers }) {
     };
 
     const daysInDateRange = (firstDate, secondDate) => {
-        let millisecondsDay = 24 * 60 * 60 * 1000;
-        let daysInRange =
+        const millisecondsDay = 24 * 60 * 60 * 1000;
+        const daysInRange =
             Math.round(Math.abs((firstDate - secondDate) / millisecondsDay)) +
             1;
         return daysInRange;
@@ -546,3 +548,11 @@ export default function Picker({ save, setSave, allVacationers }) {
         </Accordion>
     );
 }
+
+Picker.propTypes = {
+    save: PropTypes.bool,
+    setSave: PropTypes.func,
+    allVacationers: PropTypes.array,
+};
+
+export default Picker;

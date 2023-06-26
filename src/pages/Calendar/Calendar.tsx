@@ -1,4 +1,4 @@
-import {
+import React, {
     forwardRef,
     MouseEventHandler,
     useEffect,
@@ -19,7 +19,7 @@ import {
     ToggleButtonGroup,
     Tooltip,
 } from "@mui/material";
-
+import PropTypes from "prop-types";
 import MuiToggleButton from "@mui/material/ToggleButton";
 import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -31,7 +31,7 @@ import { useOutletVariables } from "../../NavigationBar";
 import Typography from "@mui/material/Typography";
 import CalendarSettings from "./CalendarSettings/CalendarSettings";
 
-export default function Calendar({ allVacationers, save }) {
+function Calendar({ allVacationers, save }) {
     interface ButtonProps {
         onClick?: MouseEventHandler<HTMLButtonElement>;
     }
@@ -132,7 +132,7 @@ export default function Calendar({ allVacationers, save }) {
     }, [selectedYear]);
 
     useEffect(() => {
-        let membersToChoose = [];
+        const membersToChoose = [];
         // Add members of selectedteams without duplicates
         if (selectedTeams && selectedTeams.length !== 0) {
             selectedTeams.forEach(function (team) {
@@ -219,7 +219,7 @@ export default function Calendar({ allVacationers, save }) {
         if (selectedDate.getFullYear() !== selectedYear) {
             setSelectedYear(selectedDate.getFullYear());
         }
-        let publicMonthsHolidays = [];
+        const publicMonthsHolidays = [];
         // This could be more effective
         for (let i = 0; i < publicHolidays.length; i++) {
             if (publicHolidays[i].month === selectedDate.getMonth() + 1) {
@@ -268,7 +268,7 @@ export default function Calendar({ allVacationers, save }) {
     // Creates the employee rows, vacationingEmployees is the list of employees with holidays,
     // allEmployees is the list of all users of selected scope (selected team or all users)
     const setMonthsHolidays = (vacationingEmployees, allEmployees) => {
-        let pureVacations = [];
+        const pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
             let holidayObject = {
                 name: vacationingEmployees[i].name,
@@ -278,8 +278,7 @@ export default function Calendar({ allVacationers, save }) {
                 id: vacationingEmployees[i].vacations._id,
             };
 
-            let repeatingHolidayer;
-            repeatingHolidayer = pureVacations.find(
+            const repeatingHolidayer = pureVacations.find(
                 (holiday) => holiday.name === holidayObject.name
             );
 
@@ -310,12 +309,12 @@ export default function Calendar({ allVacationers, save }) {
 
         // If showing all vacationers, filter the employees without holidays and set only the name for those rows
         if (allEmployees !== null) {
-            let employeesWithNoHolidays = allEmployees.filter(
+            const employeesWithNoHolidays = allEmployees.filter(
                 (o1) => !vacationingEmployees.some((o2) => o1.name === o2.name)
             );
 
             for (let i = 0; i < employeesWithNoHolidays.length; i++) {
-                let holidayObject = {
+                const holidayObject = {
                     name: employeesWithNoHolidays[i].name,
                 };
 
@@ -534,7 +533,7 @@ export default function Calendar({ allVacationers, save }) {
                 peopleOnHoliday += 1;
             }
         }
-        let peopleWorking = info.rows.length - peopleOnHoliday;
+        const peopleWorking = info.rows.length - peopleOnHoliday;
 
         const noWorkersInTeam = peopleWorking === 0 && peopleOnHoliday !== 0;
 
@@ -934,7 +933,7 @@ export default function Calendar({ allVacationers, save }) {
             newMonth = selectedDate.getMonth() - 1;
         }
 
-        let newDate = new Date(selectedDate.getFullYear(), newMonth, 1, 15);
+        const newDate = new Date(selectedDate.getFullYear(), newMonth, 1, 15);
         newDate.setUTCHours(0, 0, 0, 0);
         setSelectedDate(newDate);
     };
@@ -949,7 +948,7 @@ export default function Calendar({ allVacationers, save }) {
             } else if (value === unconfirmedHolidaySymbol) {
                 colorToAdd = unConfirmedHolidayColor;
             }
-            let dateToCheck = new Date(
+            const dateToCheck = new Date(
                 selectedDate.getFullYear(),
                 selectedDate.getMonth(),
                 index
@@ -1357,3 +1356,10 @@ export default function Calendar({ allVacationers, save }) {
         </>
     );
 }
+
+Calendar.propTypes = {
+    allVacationers: PropTypes.array,
+    save: PropTypes.bool,
+};
+
+export default Calendar;

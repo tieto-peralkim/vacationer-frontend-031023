@@ -1,3 +1,4 @@
+import React from "react";
 import Picker from "../Picker/Picker";
 import Calendar from "../Calendar/Calendar";
 import styles from "./combo.module.css";
@@ -7,8 +8,7 @@ import { useOutletVariables } from "../../NavigationBar";
 
 export default function Combo() {
     const [save, setSave] = useState(false);
-    const { user, APIError, setAPIError, newUserState, updateUser } =
-        useOutletVariables();
+    const { setAPIError, newUserState, updateUser } = useOutletVariables();
     const [allVacationers, setAllVacationers] = useState([]);
 
     // When data has changed, update simple list of vacationers & update user

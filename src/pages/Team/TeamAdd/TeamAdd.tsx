@@ -11,18 +11,18 @@ import axios from "axios";
 import { useState } from "react";
 import styles from "../team.module.css";
 import { useOutletVariables } from "../../../NavigationBar";
+import PropTypes from "prop-types";
 
-export default function TeamAdd({
+function TeamAdd({
     open,
     setOpenTeamAdd,
-    teams,
     completedAction,
     setCompletedAction,
     openAPIError,
     minNameLength,
     maxNameLength,
 }) {
-    const { user, APIError, setAPIError } = useOutletVariables();
+    const { user, APIError } = useOutletVariables();
     const [newTeam, setNewTeam] = useState("");
 
     const [teamNameError, setTeamNameError] = useState(false);
@@ -43,7 +43,7 @@ export default function TeamAdd({
         if (nameError) {
             setTeamNameError(true);
         } else {
-            let firstUser = { name: user.name, vacationerId: user.id };
+            const firstUser = { name: user.name, vacationerId: user.id };
             // Set the user as a member of the new team
             const teamToAdd = {
                 title: newTeam.trim(),
@@ -126,3 +126,14 @@ export default function TeamAdd({
         </Dialog>
     );
 }
+TeamAdd.propTypes = {
+    open: PropTypes.bool,
+    setOpenTeamAdd: PropTypes.func,
+    completedAction: PropTypes.bool,
+    setCompletedAction: PropTypes.func,
+    openAPIError: PropTypes.func,
+    minNameLength: PropTypes.number,
+    maxNameLength: PropTypes.number,
+};
+
+export default TeamAdd;

@@ -12,12 +12,13 @@ import {
 } from "@mui/material";
 import LimitSetter from "./LimitSetter";
 import DatePicker from "react-datepicker";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import { useOutletVariables } from "../../../NavigationBar";
+import PropTypes from "prop-types";
 
-export default function PickerModal({
+function PickerModal({
     resetForm,
     openCalendar,
     chosenUser,
@@ -50,7 +51,7 @@ export default function PickerModal({
     setSave,
     calculatePerDay,
 }) {
-    const { user, APIError, setAPIError } = useOutletVariables();
+    const { setAPIError } = useOutletVariables();
     const [alertingDates, setAlertingDates] = useState([]);
     const [openEditAlert, setOpenEditAlert] = useState(false);
     const [openAddAlert, setOpenAddAlert] = useState(false);
@@ -143,7 +144,7 @@ export default function PickerModal({
 
     const addHoliday = () => {
         if (!overlapErrorMessage) {
-            let newHoliday = {
+            const newHoliday = {
                 start: startDate,
                 end: endDate,
                 comment: comment.trim(),
@@ -205,7 +206,7 @@ export default function PickerModal({
     };
 
     const handleEdit = () => {
-        let editedHoliday = {
+        const editedHoliday = {
             start: startDate,
             end: endDate,
             comment: comment.trim(),
@@ -466,3 +467,38 @@ export default function PickerModal({
         </>
     );
 }
+
+PickerModal.propTypes = {
+    resetForm: PropTypes.func,
+    openCalendar: PropTypes.bool,
+    chosenUser: PropTypes.object,
+    startDate: PropTypes.object,
+    setStartDate: PropTypes.func,
+    endDate: PropTypes.object,
+    setEndDate: PropTypes.func,
+    daysInDateRange: PropTypes.func,
+    holidayToEdit: PropTypes.object,
+    holidays: PropTypes.array,
+    workerLimit: PropTypes.number,
+    dailyVacationers: PropTypes.array,
+    setDailyVacationers: PropTypes.func,
+    calendarDaysExcluded: PropTypes.array,
+    editingSpace: PropTypes.bool,
+    setEditingSpace: PropTypes.func,
+    changingStartedSpace: PropTypes.bool,
+    today: PropTypes.object,
+    startDateErrorMessage: PropTypes.bool,
+    endDateErrorMessage: PropTypes.bool,
+    comment: PropTypes.string,
+    setComment: PropTypes.func,
+    confirmed: PropTypes.bool,
+    setConfirmed: PropTypes.func,
+    idToEdit: PropTypes.string,
+    setChangingStartedSpace: PropTypes.func,
+    setOpenCalendar: PropTypes.func,
+    resetDates: PropTypes.func,
+    save: PropTypes.bool,
+    setSave: PropTypes.func,
+    calculatePerDay: PropTypes.func,
+};
+export default PickerModal;
