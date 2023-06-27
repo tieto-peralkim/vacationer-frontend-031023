@@ -53,7 +53,7 @@ function TeamAdd({
                 .post(`${process.env.REACT_APP_ADDRESS}/teams`, teamToAdd, {
                     withCredentials: true,
                 })
-                .then((response) => {
+                .then(() => {
                     setCompletedAction(!completedAction);
                     setNewTeam("");
                 })

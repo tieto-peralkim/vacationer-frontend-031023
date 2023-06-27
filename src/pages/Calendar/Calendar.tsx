@@ -19,7 +19,6 @@ import {
     ToggleButtonGroup,
     Tooltip,
 } from "@mui/material";
-import PropTypes from "prop-types";
 import MuiToggleButton from "@mui/material/ToggleButton";
 import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -30,6 +29,7 @@ import { Team } from "../Team/TeamPage/TeamPage";
 import { useOutletVariables } from "../../NavigationBar";
 import Typography from "@mui/material/Typography";
 import CalendarSettings from "./CalendarSettings/CalendarSettings";
+import PropTypes from "prop-types";
 
 function Calendar({ allVacationers, save }) {
     interface ButtonProps {
@@ -270,7 +270,7 @@ function Calendar({ allVacationers, save }) {
     const setMonthsHolidays = (vacationingEmployees, allEmployees) => {
         const pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
-            let holidayObject = {
+            const holidayObject = {
                 name: vacationingEmployees[i].name,
                 start: vacationingEmployees[i].vacations.start,
                 end: vacationingEmployees[i].vacations.end,
@@ -290,7 +290,7 @@ function Calendar({ allVacationers, save }) {
                     new Date(vacationingEmployees[i].vacations.end),
                     vacationingEmployees[i].vacations.confirmed
                 );
-                let index = pureVacations.findIndex(
+                const index = pureVacations.findIndex(
                     (holiday) => holiday.name === holidayObject.name
                 );
                 pureVacations[index] = repeatingHolidayer;
@@ -495,7 +495,7 @@ function Calendar({ allVacationers, save }) {
             }
         }
 
-        let nextMonth = new Date(
+        const nextMonth = new Date(
             selectedDate.getFullYear(),
             selectedDate.getMonth() + 1,
             1
@@ -552,6 +552,11 @@ function Calendar({ allVacationers, save }) {
             </div>
         );
     }
+
+    CalculateFootersValues.propTypes = {
+        info: PropTypes.object,
+        selectedColumn: PropTypes.string,
+    };
 
     const sortItems = (prev, curr, columnId) => {
         if (
@@ -1030,6 +1035,8 @@ function Calendar({ allVacationers, save }) {
         }
     );
 
+    ButtonCustomInput.displayName = "ButtonCustomInput";
+
     const handleSettingsClick = (e) => {
         setSettingsOpen(true);
         setAnchorEl(e.currentTarget);
@@ -1249,10 +1256,14 @@ function Calendar({ allVacationers, save }) {
                         >
                             <thead>
                                 {headerGroups.map((headerGroup) => (
-                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                    <tr
+                                        key={headerGroup.id}
+                                        {...headerGroup.getHeaderGroupProps()}
+                                    >
                                         {headerGroup.headers.map(
                                             (column: any) => (
                                                 <th
+                                                    key={column.id}
                                                     {...column.getHeaderProps(
                                                         column.getSortByToggleProps(
                                                             {
@@ -1298,7 +1309,7 @@ function Calendar({ allVacationers, save }) {
                                 {rows.map((row) => {
                                     prepareRow(row);
                                     return (
-                                        <tr {...row.getRowProps()}>
+                                        <tr key={row.id} {...row.getRowProps()}>
                                             {row.cells.map((cell, index) => {
                                                 return (
                                                     <td
@@ -1332,9 +1343,13 @@ function Calendar({ allVacationers, save }) {
                             </tbody>
                             <tfoot>
                                 {footerGroups.map((group) => (
-                                    <tr {...group.getFooterGroupProps()}>
+                                    <tr
+                                        key={group.id}
+                                        {...group.getFooterGroupProps()}
+                                    >
                                         {group.headers.map((column) => (
                                             <td
+                                                key={column.id}
                                                 {...column.getFooterProps()}
                                                 style={{
                                                     border: setColumnStyle(

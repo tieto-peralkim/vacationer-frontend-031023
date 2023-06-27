@@ -161,7 +161,7 @@ function TeamModify({
                 {},
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setCompletedAction(!completedAction);
                 setOpenDeleteTeamAlert(false);
                 handleClose();

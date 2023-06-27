@@ -37,7 +37,6 @@ export interface Holiday {
 function Picker({ save, setSave, allVacationers }) {
     // Max number of workers on holiday in a day
     const WORKER_LIMIT_DEFAULT = 100;
-    const NUMBER_OF_SHOWN_DEFAULT = 2;
     //  Dates are in UTC time
     const today = new Date();
     today.setUTCHours(0, 0, 0);
@@ -52,8 +51,7 @@ function Picker({ save, setSave, allVacationers }) {
     const [startDateErrorMessage, setStartDateErrorMessage] = useState(false);
     const [endDateErrorMessage, setEndDateErrorMessage] = useState(false);
     const [dailyVacationers, setDailyVacationers] = useState([]);
-    const [showHolidays, setShowHolidays] = useState(2);
-    const [workerLimit, setWorkerLimit] = useState(WORKER_LIMIT_DEFAULT);
+    const workerLimit = WORKER_LIMIT_DEFAULT;
 
     const [openCalendar, setOpenCalendar] = useState(false);
     const [openDeletionAlert, setOpenDeletionAlert] = useState(false);
@@ -250,21 +248,6 @@ function Picker({ save, setSave, allVacationers }) {
         setHolidays(pureVacations);
     };
 
-    const calculateUpcomingHolidays = () => {
-        let numberOfUpcomingHolidays = 0;
-        let numberOfDays = 0;
-        for (let i = 0; i < holidays.length; i++) {
-            if (holidays[i].upcoming) {
-                numberOfUpcomingHolidays++;
-                numberOfDays += daysInDateRange(
-                    holidays[i].start,
-                    holidays[i].end
-                );
-            }
-        }
-        return [numberOfUpcomingHolidays, numberOfDays];
-    };
-
     const selectVacationer = (name) => {
         if (allVacationers) {
             let vacationerFound;
@@ -291,14 +274,6 @@ function Picker({ save, setSave, allVacationers }) {
                     setAPIError(true);
                 });
         }
-    };
-
-    const daysInDateRange = (firstDate, secondDate) => {
-        const millisecondsDay = 24 * 60 * 60 * 1000;
-        const daysInRange =
-            Math.round(Math.abs((firstDate - secondDate) / millisecondsDay)) +
-            1;
-        return daysInRange;
     };
 
     const calculatePerDay = (date1, date2) => {
@@ -420,7 +395,6 @@ function Picker({ save, setSave, allVacationers }) {
                                 setStartDate={setStartDate}
                                 endDate={endDate}
                                 setEndDate={setEndDate}
-                                daysInDateRange={daysInDateRange}
                                 holidayToEdit={holidayToEdit}
                                 holidays={holidays}
                                 workerLimit={workerLimit}

@@ -26,7 +26,6 @@ function PickerModal({
     setStartDate,
     endDate,
     setEndDate,
-    daysInDateRange,
     holidayToEdit,
     holidays,
     workerLimit,
@@ -88,6 +87,14 @@ function PickerModal({
     };
     const handleCloseEditAlert = () => {
         setOpenEditAlert(false);
+    };
+
+    const daysInDateRange = (firstDate, secondDate) => {
+        const millisecondsDay = 24 * 60 * 60 * 1000;
+        const daysInRange =
+            Math.round(Math.abs((firstDate - secondDate) / millisecondsDay)) +
+            1;
+        return daysInRange;
     };
 
     const calendarDatesOverlap = () => {
@@ -219,7 +226,7 @@ function PickerModal({
                 editedHoliday,
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 resetDates();
                 handleCloseEditAlert();
                 handleCloseCalendar();
@@ -393,7 +400,7 @@ function PickerModal({
                             <FormControlLabel
                                 checked={confirmed}
                                 disabled={disabledConditions}
-                                onChange={(e) => {
+                                onChange={() => {
                                     setConfirmed(!confirmed);
                                 }}
                                 control={<Checkbox color="success" />}
@@ -476,7 +483,6 @@ PickerModal.propTypes = {
     setStartDate: PropTypes.func,
     endDate: PropTypes.object,
     setEndDate: PropTypes.func,
-    daysInDateRange: PropTypes.func,
     holidayToEdit: PropTypes.object,
     holidays: PropTypes.array,
     workerLimit: PropTypes.number,

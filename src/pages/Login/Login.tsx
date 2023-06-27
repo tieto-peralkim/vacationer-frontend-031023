@@ -63,6 +63,7 @@ export default function Login() {
                                                 <a
                                                     href={"https://github.com/"}
                                                     target={"_blank"}
+                                                    rel="noreferrer"
                                                 >
                                                     Github
                                                 </a>{" "}

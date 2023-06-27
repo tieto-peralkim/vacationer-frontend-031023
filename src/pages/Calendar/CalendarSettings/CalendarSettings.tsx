@@ -15,31 +15,31 @@ import { useOutletVariables } from "../../../NavigationBar";
 import AlertDialog from "../../Dialogs/AlertDialog";
 import CloseIcon from "@mui/icons-material/Close";
 import * as React from "react";
+import PropTypes from "prop-types";
 
-export default function CalendarSettings(props) {
-    const {
-        changesDoneWarning,
-        setChangesDoneWarning,
-        setSettingsOpen,
-        rowHeight,
-        setRowHeight,
-        holidaySymbol,
-        setHolidaySymbol,
-        unconfirmedHolidaySymbol,
-        setUnconfirmedHolidaySymbol,
-        holidayColor,
-        setHolidayColor,
-        unConfirmedHolidayColor,
-        setUnConfirmedHolidayColor,
-        weekendColor,
-        setWeekendColor,
-        weekendHolidayColor,
-        setWeekendHolidayColor,
-        symbolFontColor,
-        setSymbolFontColor,
-        defaultColors,
-        defaultRowHeight,
-    } = props;
+function CalendarSettings({
+    changesDoneWarning,
+    setChangesDoneWarning,
+    setSettingsOpen,
+    rowHeight,
+    setRowHeight,
+    holidaySymbol,
+    setHolidaySymbol,
+    unconfirmedHolidaySymbol,
+    setUnconfirmedHolidaySymbol,
+    holidayColor,
+    setHolidayColor,
+    unConfirmedHolidayColor,
+    setUnConfirmedHolidayColor,
+    weekendColor,
+    setWeekendColor,
+    weekendHolidayColor,
+    setWeekendHolidayColor,
+    symbolFontColor,
+    setSymbolFontColor,
+    defaultColors,
+    defaultRowHeight,
+}) {
     const { user, APIError, setAPIError, newUserState, updateUser } =
         useOutletVariables();
     const [openSettingsSave, setOpenSettingsSave] = useState(false);
@@ -174,7 +174,7 @@ export default function CalendarSettings(props) {
 
     const updateCalendarSettings = () => {
         if (!symbolNumberError && !unconfirmedSymbolError) {
-            let changedCalendarSettings = {
+            const changedCalendarSettings = {
                 holidaySymbol: holidaySymbol,
                 unConfirmedHolidaySymbol: unconfirmedHolidaySymbol,
                 holidayColor: holidayColor,
@@ -398,3 +398,29 @@ export default function CalendarSettings(props) {
         </div>
     );
 }
+
+CalendarSettings.propTypes = {
+    changesDoneWarning: PropTypes.bool,
+    setChangesDoneWarning: PropTypes.func,
+    setSettingsOpen: PropTypes.func,
+    rowHeight: PropTypes.number,
+    setRowHeight: PropTypes.func,
+    holidaySymbol: PropTypes.string,
+    setHolidaySymbol: PropTypes.func,
+    unconfirmedHolidaySymbol: PropTypes.string,
+    setUnconfirmedHolidaySymbol: PropTypes.func,
+    holidayColor: PropTypes.string,
+    setHolidayColor: PropTypes.func,
+    unConfirmedHolidayColor: PropTypes.string,
+    setUnConfirmedHolidayColor: PropTypes.func,
+    weekendColor: PropTypes.string,
+    setWeekendColor: PropTypes.func,
+    weekendHolidayColor: PropTypes.string,
+    setWeekendHolidayColor: PropTypes.func,
+    symbolFontColor: PropTypes.string,
+    setSymbolFontColor: PropTypes.func,
+    defaultColors: PropTypes.object,
+    defaultRowHeight: PropTypes.number,
+};
+
+export default CalendarSettings;
