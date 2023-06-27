@@ -2,6 +2,7 @@ module.exports = {
     env: {
         browser: true,
         es2021: true,
+        node: true,
     },
     extends: [
         "eslint:recommended",
@@ -18,5 +19,10 @@ module.exports = {
     rules: {
         indent: ["off"],
         "prettier/prettier": ["error"],
+    },
+    settings: {
+        react: {
+            version: "detect",
+        },
     },
 };
