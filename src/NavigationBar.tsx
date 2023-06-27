@@ -102,7 +102,6 @@ function NavigationBar() {
     }, []);
 
     useEffect(() => {
-        console.log("Testilisäys");
         // Get username from base64 value of the cookie
         if (Cookies.get("payload")) {
             const userJSON = JSON.parse(Cookies.get("payload").substring(2));
