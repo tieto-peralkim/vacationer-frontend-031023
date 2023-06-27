@@ -296,10 +296,7 @@ export default function Admin() {
                     <p>On this page you can:</p>
                     <ul>
                         <li>Add users (only on QA and local)</li>
-                        <li>
-                            Delete users = add user to `&quot;`deleted
-                            list`&quot;`.
-                        </li>
+                        <li>Delete users = add user to deleted list.</li>
                         <li>Add and remove users admin rights</li>
                         <li>Return users and teams from deleted lists</li>
                         <li>
