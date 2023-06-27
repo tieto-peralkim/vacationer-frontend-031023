@@ -9,17 +9,6 @@ module.exports = {
         "plugin:react/recommended",
         "prettier",
     ],
-    overrides: [
-        {
-            env: {
-                node: true,
-            },
-            files: [".eslintrc.{js,cjs}"],
-            parserOptions: {
-                sourceType: "script",
-            },
-        },
-    ],
     parser: "@typescript-eslint/parser",
     parserOptions: {
         ecmaVersion: "latest",
@@ -28,9 +17,6 @@ module.exports = {
     plugins: ["@typescript-eslint", "react", "prettier"],
     rules: {
         indent: ["off"],
-        "linebreak-style": ["error", "unix"],
-        quotes: ["error", "double"],
-        semi: ["error", "always"],
         "prettier/prettier": ["error"],
     },
 };
