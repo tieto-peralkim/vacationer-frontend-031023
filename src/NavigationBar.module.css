@@ -1,119 +1,119 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .App-logo {
-  height: 40vmin;
-  pointer-events: none;
+    height: 40vmin;
+    pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
 }
 
 .App-link {
-  color: #61dafb;
+    color: #61dafb;
 }
 
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-.wholePage{
-  min-height: 100%;
-  margin-bottom: 3em;
+.wholePage {
+    min-height: 100%;
+    margin-bottom: 3em;
 }
 
 .outlet {
-  margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 
 .appName {
-  color: #3383e7;
+    color: #3383e7;
 }
 .navigation {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .navigationText {
-  padding: 2em;
-  color: #3383e7;
+    padding: 2em;
+    color: #3383e7;
 }
-.profileTitle{
-  position: absolute;
-  left: 15%;
+.profileTitle {
+    position: absolute;
+    left: 15%;
 }
 .vacationerTitle {
-  text-decoration: none;
-  color: white;
-  display: flex;
-  align-items: center;
-  position: fixed;
-  left: 45%;
-  top: 0.6em;
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    left: 45%;
+    top: 0.6em;
 }
-.signInTitle{
-  position: absolute;
-  right: 5%;
+.signInTitle {
+    position: absolute;
+    right: 5%;
 }
-.linkTitle{
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  color: white;
+.linkTitle {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    color: white;
 }
 .userIcon {
-  margin-right: 0.3em;
+    margin-right: 0.3em;
 }
 .newOrDeletedIcon {
-  margin-left: 0.2em;
+    margin-left: 0.2em;
 }
 .helpIcon:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 .footer {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background-color: rgb(56, 116, 203);
-  color: white;
-  height: 3em;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgb(56, 116, 203);
+    color: white;
+    height: 3em;
 }
 .footerElements {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0.5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.5em;
 }
 .footerHelp {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 .footerRight {
-  font-size: small;
-  text-decoration: none;
-  color: white;
+    font-size: small;
+    text-decoration: none;
+    color: white;
 }
 .bugLink {
-  text-decoration: none;
-  color: white;
+    text-decoration: none;
+    color: white;
 }
