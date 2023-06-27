@@ -102,6 +102,7 @@ function NavigationBar() {
     }, []);
 
     useEffect(() => {
+        console.log("testing pre-commit prettier");
         // Get username from base64 value of the cookie
         if (Cookies.get("payload")) {
             const userJSON = JSON.parse(Cookies.get("payload").substring(2));
