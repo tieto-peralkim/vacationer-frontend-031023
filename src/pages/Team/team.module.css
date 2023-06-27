@@ -20,8 +20,7 @@
 .nameSelectBox {
     min-width: 15em;
     margin-bottom: 20px;
-    margin-top: 0.6em
-
+    margin-top: 0.6em;
 }
 
 .allButtons {
@@ -39,7 +38,7 @@
     justify-content: center;
     width: 100%;
 }
-.membersToAdd{
+.membersToAdd {
     min-height: 4em;
 }
 .addButton {
@@ -141,7 +140,7 @@ p {
     min-height: 3em;
 }
 
-.ultimateWarning > *{
+.ultimateWarning > * {
     color: red;
 }
 
@@ -152,4 +151,3 @@ p {
 .chipCont {
     text-align: center;
 }
-
