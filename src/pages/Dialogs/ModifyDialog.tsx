@@ -7,9 +7,10 @@ import {
     InputLabel,
     TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 
-export default function ModifyDialog({
+function ModifyDialog({
     openAlert,
     handleAction,
     handleCloseAlert,
@@ -52,3 +53,16 @@ export default function ModifyDialog({
         </Dialog>
     );
 }
+
+ModifyDialog.propTypes = {
+    openAlert: PropTypes.bool,
+    handleAction: PropTypes.func,
+    handleCloseAlert: PropTypes.func,
+    dialogTitle: PropTypes.string,
+    dialogContent: PropTypes.string,
+    inputContent: PropTypes.string,
+    cancel: PropTypes.string,
+    confirm: PropTypes.string,
+};
+
+export default ModifyDialog;

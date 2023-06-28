@@ -22,7 +22,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import SettingsIcon from "@mui/icons-material/Settings";
 import GroupsIcon from "@mui/icons-material/Groups";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { PersonPin } from "@mui/icons-material";
@@ -104,8 +104,8 @@ function NavigationBar() {
     useEffect(() => {
         // Get username from base64 value of the cookie
         if (Cookies.get("payload")) {
-            let userJSON = JSON.parse(Cookies.get("payload").substring(2));
-            let userToSearch = JSON.parse(
+            const userJSON = JSON.parse(Cookies.get("payload").substring(2));
+            const userToSearch = JSON.parse(
                 Buffer.from(userJSON.payload, "base64").toString()
             ).username;
             setUserName(userToSearch);
@@ -120,11 +120,11 @@ function NavigationBar() {
                 .then((response) => {
                     setAPIError(false);
                     if (response.data) {
-                        let fetchedUser = response.data[0];
+                        const fetchedUser = response.data[0];
                         setUser(fetchedUser);
-                        let creationTime = new Date(fetchedUser.createdAt);
+                        const creationTime = new Date(fetchedUser.createdAt);
 
-                        let yesterday = new Date();
+                        const yesterday = new Date();
                         yesterday.setDate(yesterday.getDate() - 1);
 
                         if (creationTime > yesterday) {
@@ -326,6 +326,7 @@ function NavigationBar() {
                                 "https://github.com/orgs/tieto-cem/projects/2/views/1"
                             }
                             target={"_blank"}
+                            rel="noreferrer"
                         >
                             Report bugs / ideas
                         </a>

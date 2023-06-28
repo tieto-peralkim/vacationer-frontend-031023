@@ -1,4 +1,4 @@
-import {
+import React, {
     forwardRef,
     MouseEventHandler,
     useEffect,
@@ -19,7 +19,6 @@ import {
     ToggleButtonGroup,
     Tooltip,
 } from "@mui/material";
-
 import MuiToggleButton from "@mui/material/ToggleButton";
 import { styled } from "@mui/material/styles";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
@@ -30,8 +29,9 @@ import { Team } from "../Team/TeamPage/TeamPage";
 import { useOutletVariables } from "../../NavigationBar";
 import Typography from "@mui/material/Typography";
 import CalendarSettings from "./CalendarSettings/CalendarSettings";
+import PropTypes from "prop-types";
 
-export default function Calendar({ allVacationers, save }) {
+function Calendar({ allVacationers, save }) {
     interface ButtonProps {
         onClick?: MouseEventHandler<HTMLButtonElement>;
     }
@@ -132,7 +132,7 @@ export default function Calendar({ allVacationers, save }) {
     }, [selectedYear]);
 
     useEffect(() => {
-        let membersToChoose = [];
+        const membersToChoose = [];
         // Add members of selectedteams without duplicates
         if (selectedTeams && selectedTeams.length !== 0) {
             selectedTeams.forEach(function (team) {
@@ -219,7 +219,7 @@ export default function Calendar({ allVacationers, save }) {
         if (selectedDate.getFullYear() !== selectedYear) {
             setSelectedYear(selectedDate.getFullYear());
         }
-        let publicMonthsHolidays = [];
+        const publicMonthsHolidays = [];
         // This could be more effective
         for (let i = 0; i < publicHolidays.length; i++) {
             if (publicHolidays[i].month === selectedDate.getMonth() + 1) {
@@ -268,9 +268,9 @@ export default function Calendar({ allVacationers, save }) {
     // Creates the employee rows, vacationingEmployees is the list of employees with holidays,
     // allEmployees is the list of all users of selected scope (selected team or all users)
     const setMonthsHolidays = (vacationingEmployees, allEmployees) => {
-        let pureVacations = [];
+        const pureVacations = [];
         for (let i = 0; i < vacationingEmployees.length; i++) {
-            let holidayObject = {
+            const holidayObject = {
                 name: vacationingEmployees[i].name,
                 start: vacationingEmployees[i].vacations.start,
                 end: vacationingEmployees[i].vacations.end,
@@ -278,8 +278,7 @@ export default function Calendar({ allVacationers, save }) {
                 id: vacationingEmployees[i].vacations._id,
             };
 
-            let repeatingHolidayer;
-            repeatingHolidayer = pureVacations.find(
+            const repeatingHolidayer = pureVacations.find(
                 (holiday) => holiday.name === holidayObject.name
             );
 
@@ -291,7 +290,7 @@ export default function Calendar({ allVacationers, save }) {
                     new Date(vacationingEmployees[i].vacations.end),
                     vacationingEmployees[i].vacations.confirmed
                 );
-                let index = pureVacations.findIndex(
+                const index = pureVacations.findIndex(
                     (holiday) => holiday.name === holidayObject.name
                 );
                 pureVacations[index] = repeatingHolidayer;
@@ -310,12 +309,12 @@ export default function Calendar({ allVacationers, save }) {
 
         // If showing all vacationers, filter the employees without holidays and set only the name for those rows
         if (allEmployees !== null) {
-            let employeesWithNoHolidays = allEmployees.filter(
+            const employeesWithNoHolidays = allEmployees.filter(
                 (o1) => !vacationingEmployees.some((o2) => o1.name === o2.name)
             );
 
             for (let i = 0; i < employeesWithNoHolidays.length; i++) {
-                let holidayObject = {
+                const holidayObject = {
                     name: employeesWithNoHolidays[i].name,
                 };
 
@@ -496,7 +495,7 @@ export default function Calendar({ allVacationers, save }) {
             }
         }
 
-        let nextMonth = new Date(
+        const nextMonth = new Date(
             selectedDate.getFullYear(),
             selectedDate.getMonth() + 1,
             1
@@ -534,7 +533,7 @@ export default function Calendar({ allVacationers, save }) {
                 peopleOnHoliday += 1;
             }
         }
-        let peopleWorking = info.rows.length - peopleOnHoliday;
+        const peopleWorking = info.rows.length - peopleOnHoliday;
 
         const noWorkersInTeam = peopleWorking === 0 && peopleOnHoliday !== 0;
 
@@ -553,6 +552,11 @@ export default function Calendar({ allVacationers, save }) {
             </div>
         );
     }
+
+    CalculateFootersValues.propTypes = {
+        info: PropTypes.object,
+        selectedColumn: PropTypes.string,
+    };
 
     const sortItems = (prev, curr, columnId) => {
         if (
@@ -934,7 +938,7 @@ export default function Calendar({ allVacationers, save }) {
             newMonth = selectedDate.getMonth() - 1;
         }
 
-        let newDate = new Date(selectedDate.getFullYear(), newMonth, 1, 15);
+        const newDate = new Date(selectedDate.getFullYear(), newMonth, 1, 15);
         newDate.setUTCHours(0, 0, 0, 0);
         setSelectedDate(newDate);
     };
@@ -949,7 +953,7 @@ export default function Calendar({ allVacationers, save }) {
             } else if (value === unconfirmedHolidaySymbol) {
                 colorToAdd = unConfirmedHolidayColor;
             }
-            let dateToCheck = new Date(
+            const dateToCheck = new Date(
                 selectedDate.getFullYear(),
                 selectedDate.getMonth(),
                 index
@@ -1030,6 +1034,8 @@ export default function Calendar({ allVacationers, save }) {
             );
         }
     );
+
+    ButtonCustomInput.displayName = "ButtonCustomInput";
 
     const handleSettingsClick = (e) => {
         setSettingsOpen(true);
@@ -1250,10 +1256,14 @@ export default function Calendar({ allVacationers, save }) {
                         >
                             <thead>
                                 {headerGroups.map((headerGroup) => (
-                                    <tr {...headerGroup.getHeaderGroupProps()}>
+                                    <tr
+                                        key={headerGroup.id}
+                                        {...headerGroup.getHeaderGroupProps()}
+                                    >
                                         {headerGroup.headers.map(
                                             (column: any) => (
                                                 <th
+                                                    key={column.id}
                                                     {...column.getHeaderProps(
                                                         column.getSortByToggleProps(
                                                             {
@@ -1299,7 +1309,7 @@ export default function Calendar({ allVacationers, save }) {
                                 {rows.map((row) => {
                                     prepareRow(row);
                                     return (
-                                        <tr {...row.getRowProps()}>
+                                        <tr key={row.id} {...row.getRowProps()}>
                                             {row.cells.map((cell, index) => {
                                                 return (
                                                     <td
@@ -1333,9 +1343,13 @@ export default function Calendar({ allVacationers, save }) {
                             </tbody>
                             <tfoot>
                                 {footerGroups.map((group) => (
-                                    <tr {...group.getFooterGroupProps()}>
+                                    <tr
+                                        key={group.id}
+                                        {...group.getFooterGroupProps()}
+                                    >
                                         {group.headers.map((column) => (
                                             <td
+                                                key={column.id}
                                                 {...column.getFooterProps()}
                                                 style={{
                                                     border: setColumnStyle(
@@ -1357,3 +1371,10 @@ export default function Calendar({ allVacationers, save }) {
         </>
     );
 }
+
+Calendar.propTypes = {
+    allVacationers: PropTypes.array,
+    save: PropTypes.bool,
+};
+
+export default Calendar;

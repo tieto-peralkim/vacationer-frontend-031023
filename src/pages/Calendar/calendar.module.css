@@ -100,9 +100,9 @@
         justify-content: center;
         color: white;
     }
-    .calendarSettingsBox{
+    .calendarSettingsBox {
         font-size: small;
-        border: 0.1em solid #2A55E7;
+        border: 0.1em solid #2a55e7;
         border-radius: 12px;
         padding: 0.3em;
         margin-left: 0.3em;
@@ -111,7 +111,6 @@
         border-color: rgb(56, 116, 203);
         max-height: 3.5em;
     }
-
 }
 @media only screen and (max-width: 930px) {
     .cellStyle {
@@ -158,9 +157,9 @@
         color: white;
         font-size: xx-small;
     }
-    .calendarSettingsBox{
+    .calendarSettingsBox {
         font-size: x-small;
-        border: 0.1em solid #2A55E7;
+        border: 0.1em solid #2a55e7;
         border-radius: 12px;
         padding: 0.3em;
         margin-left: 0.3em;

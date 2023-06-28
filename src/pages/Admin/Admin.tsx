@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import axios from "axios";
 import {
     Accordion,
@@ -112,7 +112,7 @@ export default function Admin() {
                 {},
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setOpenReturnUserAlert(false);
                 setCompletedAction(!completedAction);
             })
@@ -164,7 +164,7 @@ export default function Admin() {
                 `${process.env.REACT_APP_ADDRESS}/teams/${selectedDeletedTeam.id}`,
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setOpenFinalDeleteTeamAlert(false);
                 setCompletedAction(!completedAction);
             })
@@ -202,7 +202,7 @@ export default function Admin() {
                     newVacationer,
                     { withCredentials: true }
                 )
-                .then((response) => {
+                .then(() => {
                     setUserCreated(true);
                     setCompletedAction(!completedAction);
                     setNewUser("");
@@ -229,7 +229,7 @@ export default function Admin() {
                 {},
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setOpenDeleteUserAlert(false);
                 removeUserFromTeams(selectedUser);
             })
@@ -288,20 +288,20 @@ export default function Admin() {
                 </AccordionSummary>
                 <AccordionDetails>
                     <p>
-                        Once user or team is deleted, they are moved to "deleted
-                        lists". Deleted lists can be seen on this page in User
+                        Once user or team is deleted, they are moved to deleted
+                        lists. Deleted lists can be seen on this page in User
                         and Team box. One month from deletion they are removed
                         automatically from the database.
                     </p>
                     <p>On this page you can:</p>
                     <ul>
                         <li>Add users (only on QA and local)</li>
-                        <li>Delete users = add user to "deleted list".</li>
+                        <li>Delete users = add user to deleted list.</li>
                         <li>Add and remove users admin rights</li>
-                        <li>Return users and teams from "deleted lists"</li>
+                        <li>Return users and teams from deleted lists</li>
                         <li>
                             Remove users and teams from database = removing from
-                            "deleted lists"
+                            deleted lists
                         </li>
                         <li>Send Slack test messages on QA and local.</li>
                     </ul>
@@ -533,10 +533,8 @@ export default function Admin() {
                         Slack test message
                     </AccordionSummary>
                     <AccordionDetails>
-                        <p>
-                            Sends a test message to Slack channel 'vacationer'.
-                        </p>
-                        <p>Use only if needed, DON'T spam!</p>
+                        <p>Sends a test message to vacationer Slack channel.</p>
+                        <p>Use only if needed, DO NOT spam!</p>
                         <Button
                             onClick={() => setOpenSendSlackAlert(true)}
                             variant={"contained"}
@@ -651,7 +649,9 @@ export default function Admin() {
                 handleCloseAlert={() => setOpenSendSlackAlert(false)}
                 handleAction={sendSlackMessage}
                 dialogTitle={"Slack test message"}
-                dialogContent={`Are you sure you want to send a Slack test message?`}
+                dialogContent={
+                    "Are you sure you want to send a Slack test message?"
+                }
                 cancel={"No"}
                 confirm={"Yes"}
             />

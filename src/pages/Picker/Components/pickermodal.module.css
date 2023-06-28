@@ -6,7 +6,7 @@
 .comment {
     background-color: blanchedalmond;
 }
-.buttonStyle{
+.buttonStyle {
     margin-top: 0.5em;
     margin-bottom: 1em;
 }
@@ -26,7 +26,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: gainsboro;
-        border: 0.2em solid rgb(56, 116, 203);;
+        border: 0.2em solid rgb(56, 116, 203);
         height: 80%;
         padding: 0.5em;
         overflow: auto;
@@ -58,7 +58,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         background-color: gainsboro;
-        border: 0.2em solid rgb(56, 116, 203);;
+        border: 0.2em solid rgb(56, 116, 203);
         height: 75%;
         width: max-content;
         padding: 1em;

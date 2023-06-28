@@ -22,7 +22,7 @@
         justify-content: space-between;
         font-size: small;
     }
-    .topRow{
+    .topRow {
         display: flex;
         justify-content: space-between;
         margin-top: 1em;
@@ -52,7 +52,7 @@
         gap: 1em;
         font-size: small;
     }
-    .topRow{
+    .topRow {
         display: flex;
         flex-direction: column;
         font-size: small;

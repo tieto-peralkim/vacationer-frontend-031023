@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "./login.module.css";
 import {
     Accordion,
@@ -13,7 +14,7 @@ export default function Login() {
         loginFailed: string;
     }
     const location = useLocation().state as LocationState;
-    let loginFailed = location ? location.loginFailed : false;
+    const loginFailed = location ? location.loginFailed : false;
 
     const handleClick = () => {
         window.location.replace(`${process.env.REACT_APP_ADDRESS}/login`);
@@ -62,6 +63,7 @@ export default function Login() {
                                                 <a
                                                     href={"https://github.com/"}
                                                     target={"_blank"}
+                                                    rel="noreferrer"
                                                 >
                                                     Github
                                                 </a>{" "}
@@ -69,7 +71,7 @@ export default function Login() {
                                                 first. Then retry.
                                             </li>
                                             <li>
-                                                If login link doesn't connect,
+                                                If login link does not connect,
                                                 API might be down. Please inform
                                                 the admins.
                                             </li>

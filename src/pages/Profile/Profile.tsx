@@ -1,21 +1,13 @@
-import {
-    Button,
-    List,
-    ListItem,
-    ListItemIcon,
-    TextField,
-    Tooltip,
-} from "@mui/material";
+import { Button, List, ListItem, ListItemIcon, Tooltip } from "@mui/material";
 import styles from "./profile.module.css";
 import AlertDialog from "../Dialogs/AlertDialog";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ModifyDialog from "../Dialogs/ModifyDialog";
 import BadgeIcon from "@mui/icons-material/Badge";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import SecurityIcon from "@mui/icons-material/Security";
 import UpdateIcon from "@mui/icons-material/Update";
-import { CompactPicker } from "react-color";
 import { useOutletVariables } from "../../NavigationBar";
 
 export default function Profile() {
@@ -36,8 +28,8 @@ export default function Profile() {
 
     useEffect(() => {
         if (user && user.updatedAt) {
-            let date = new Date(user.updatedAt);
-            let updateDate =
+            const date = new Date(user.updatedAt);
+            const updateDate =
                 date.toLocaleDateString("fi-FI") +
                 " " +
                 date.toLocaleTimeString("fi-FI");

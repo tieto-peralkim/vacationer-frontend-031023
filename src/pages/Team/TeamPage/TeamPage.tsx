@@ -32,7 +32,7 @@ export default function TeamPage() {
     const minNameLength = 3;
     const maxNameLength = 20;
     const [teams, setTeams] = useState([]);
-    const { user, APIError, setAPIError } = useOutletVariables();
+    const { user, setAPIError } = useOutletVariables();
     const [vacationers, setVacationers] = useState([]);
     const [openTeamAdd, setOpenTeamAdd] = useState(false);
     const [openTeamModify, setOpenTeamModify] = useState(false);
@@ -95,7 +95,6 @@ export default function TeamPage() {
             <TeamAdd
                 open={openTeamAdd}
                 setOpenTeamAdd={setOpenTeamAdd}
-                teams={teams}
                 completedAction={completedAction}
                 setCompletedAction={setCompletedAction}
                 openAPIError={openAPIError}
@@ -107,7 +106,6 @@ export default function TeamPage() {
                 setOpenTeamModify={setOpenTeamModify}
                 selectedTeam={selectedTeam}
                 vacationers={vacationers}
-                teams={teams}
                 completedAction={completedAction}
                 setCompletedAction={setCompletedAction}
                 openAPIError={openAPIError}

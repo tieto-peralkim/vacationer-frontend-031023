@@ -1,69 +1,69 @@
 .redText {
-  color: red;
+    color: red;
 }
 .averageNumber {
-  color: red;
-  font-size: medium;
+    color: red;
+    font-size: medium;
 }
 .averageText {
-  margin-top: 0.5em;
+    margin-top: 0.5em;
 }
 .marginTop {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 .accordionDivider {
-  background-color: #2A55E7;
+    background-color: #2a55e7;
 }
 ul {
-  list-style-type: none;
+    list-style-type: none;
 }
 .form {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 .leftSide {
-  width: max-content;
+    width: max-content;
 }
 .content {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 .selectSection {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 .selectBox {
-  height: 2em;
+    height: 2em;
 }
 .buttonStyle {
-  width: 14em;
-  height: 3em;
-  text-align: left;
+    width: 14em;
+    height: 3em;
+    text-align: left;
 }
 .accordion {
-  border: 0.1em solid rgb(56, 116, 203);
+    border: 0.1em solid rgb(56, 116, 203);
 }
 .accordionSummaryElements {
-  display: flex;
-  align-items: center;
-  gap: 1em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
 }
 .dropdown {
-  background-color: aliceblue;
+    background-color: aliceblue;
 }
-.confirmedBox{
-  border-radius: 4px;
-  width: max-content;
-  color: white;
-  background-color: #1876d2;
-  border: 0.1em solid #1876d2;
-  padding: 0.2em;
+.confirmedBox {
+    border-radius: 4px;
+    width: max-content;
+    color: white;
+    background-color: #1876d2;
+    border: 0.1em solid #1876d2;
+    padding: 0.2em;
 }
-.unconfirmedBox{
-  border-radius: 4px;
-  width: max-content;
-  color: #1876d2;
-  border: 0.1em solid #1876d2;
-  padding: 0.2em;
+.unconfirmedBox {
+    border-radius: 4px;
+    width: max-content;
+    color: #1876d2;
+    border: 0.1em solid #1876d2;
+    padding: 0.2em;
 }

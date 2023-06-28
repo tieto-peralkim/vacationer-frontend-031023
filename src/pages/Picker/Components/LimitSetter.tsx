@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../picker.module.css";
+import PropTypes from "prop-types";
 
-export default function LimitSetter({
+function LimitSetter({
     endDate,
     setAlertingDates,
     workerLimit,
@@ -23,7 +24,7 @@ export default function LimitSetter({
     }, [dailyVacationers, endDate]);
 
     useEffect(() => {
-        let tooManyVacationers = [];
+        const tooManyVacationers = [];
         for (let i = 0; i < dailyVacationers.length; i++) {
             if (dailyVacationers[i][1] >= workerLimit) {
                 tooManyVacationers.push(dailyVacationers[i]);
@@ -50,3 +51,11 @@ export default function LimitSetter({
         </>
     );
 }
+
+LimitSetter.propTypes = {
+    endDate: PropTypes.object,
+    setAlertingDates: PropTypes.func,
+    workerLimit: PropTypes.number,
+    dailyVacationers: PropTypes.array,
+};
+export default LimitSetter;

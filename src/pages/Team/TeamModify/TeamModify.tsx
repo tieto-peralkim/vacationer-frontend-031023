@@ -10,6 +10,7 @@ import AlertDialog from "../../Dialogs/AlertDialog";
 import axios from "axios";
 import { useState } from "react";
 import styles from "../team.module.css";
+import PropTypes from "prop-types";
 
 import {
     Alert,
@@ -30,19 +31,18 @@ export interface Member {
     id: "";
 }
 
-export default function TeamModify({
+function TeamModify({
     open,
     setOpenTeamModify,
     selectedTeam,
     vacationers,
-    teams,
     completedAction,
     setCompletedAction,
     openAPIError,
     minNameLength,
     maxNameLength,
 }) {
-    const { user, APIError, setAPIError } = useOutletVariables();
+    const { user } = useOutletVariables();
     const [newTeam, setNewTeam] = useState("");
 
     const [selectedMembers, setSelectedMembers] = useState<Member[]>([]);
@@ -161,7 +161,7 @@ export default function TeamModify({
                 {},
                 { withCredentials: true }
             )
-            .then((response) => {
+            .then(() => {
                 setCompletedAction(!completedAction);
                 setOpenDeleteTeamAlert(false);
                 handleClose();
@@ -369,7 +369,7 @@ export default function TeamModify({
                 }
                 dialogContent={
                     deletableMember &&
-                    `Are you sure? You will lose ALL rights to the team?`
+                    "Are you sure? You will lose ALL rights to the team?"
                 }
                 cancel={"No"}
                 confirm={"Yes delete"}
@@ -412,3 +412,17 @@ export default function TeamModify({
         </Dialog>
     );
 }
+
+TeamModify.propTypes = {
+    open: PropTypes.bool,
+    setOpenTeamModify: PropTypes.func,
+    selectedTeam: PropTypes.object,
+    vacationers: PropTypes.array,
+    completedAction: PropTypes.bool,
+    setCompletedAction: PropTypes.func,
+    openAPIError: PropTypes.func,
+    minNameLength: PropTypes.number,
+    maxNameLength: PropTypes.number,
+};
+
+export default TeamModify;
