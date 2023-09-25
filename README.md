@@ -1,4 +1,4 @@
-# Vacation app frontend
+# Vacationer frontend
 
 ## Environment setup
 1. Clone the repo.
@@ -9,19 +9,10 @@
 npm install
 ```
 
-## Run local version:
-1. Start the frontend with
+## Run locally:
+1. Start the frontend to port 3000 with
 ```
 npm start
-```
-2. Start the backend 
-3. Go to http://localhost:3000
-
-## Admin rights
-After your first log in to the local Vacationer, add admin rights to your user in your local database:
-```
-use <db name>
-db.vacationers.updateOne({nameId: <your Github user name>},{$set: {admin: true}})
 ```
 
 ## Development instructions
@@ -38,7 +29,4 @@ db.vacationers.updateOne({nameId: <your Github user name>},{$set: {admin: true}}
 * Move resolved issue(s) to "Test on Qa" column in Kanban. If feature branch was created from Github issue, this should happen automatically.
 * Test PR change on QA environment.
 * If testing is ok, move ticket to "Done" column. If not, move ticket to "In progress" column and add a new commit for PR.
-
-## PROD deployments
 * After completing ticket, inform the team about it. With team members decide when next PROD deployment will be.
-* How to: https://tietoevry-experience.atlassian.net/wiki/spaces/SUP/pages/3824844801/Vacationer+Lomasovellus#How-to-deploy
