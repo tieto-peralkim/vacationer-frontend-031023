@@ -29,9 +29,6 @@ import { PersonPin } from "@mui/icons-material";
 import Login from "./pages/Login/Login";
 import CustomAlert from "./components/CustomAlert";
 import { Buffer } from "buffer";
-const isQaOrProdVersion =
-    process.env.REACT_APP_ENVIRONMENT === "QA" ||
-    process.env.REACT_APP_ENVIRONMENT === "PROD";
 
 export interface Vacationer {
     id: string;
@@ -334,13 +331,7 @@ function NavigationBar() {
                             Report bugs / ideas
                         </a>
                     </div>
-                    <div>
-                        Version:{" "}
-                        {isQaOrProdVersion
-                            ? process.env.REACT_APP_VERSION
-                            : process.env.REACT_APP_ENVIRONMENT}
-                    </div>
-
+                    <div>Version: {process.env.REACT_APP_VERSION}</div>
                     <div className={styles.footerRight}>
                         Built by Tietoevry Cloud Digital Operations
                     </div>
