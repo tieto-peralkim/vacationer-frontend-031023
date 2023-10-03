@@ -332,7 +332,6 @@ function NavigationBar() {
                         </a>
                     </div>
                     <div>Version: {process.env.REACT_APP_VERSION}</div>
-
                     <div className={styles.footerRight}>
                         Built by Tietoevry Cloud Digital Operations
                     </div>
