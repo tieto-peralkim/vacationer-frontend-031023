@@ -34,7 +34,7 @@ export default function Admin() {
     const [openChangeAdminAlert, setOpenChangeAdminAlert] = useState(false);
     const [adminStatus, setAdminStatus] = useState(false);
 
-    const isProdVersion = process.env.REACT_APP_ENVIRONMENT === "PROD";
+    const isProdVersion = process.env.REACT_APP_ENVIRONMENT === "production";
     const [deletedVacationers, setDeletedVacationers] = useState<any>();
     const [deletedTeams, setDeletedTeams] = useState<any>();
     const [selectedUser, setSelectedUser] = useState<any>();

@@ -340,10 +340,10 @@ function Picker({ save, setSave, allVacationers }) {
                                 {user && user.admin && (
                                     <div className={styles.selectSection}>
                                         {(process.env.REACT_APP_ENVIRONMENT ===
-                                            "LOCAL" ||
+                                            "local" ||
                                             process.env
                                                 .REACT_APP_ENVIRONMENT ===
-                                                "QA") && (
+                                                "qa") && (
                                             <FormControl>
                                                 <FormControlLabel
                                                     control={
