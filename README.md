@@ -1,5 +1,25 @@
 # Vacationer frontend
 ![Untitled](https://github.com/user-attachments/assets/247ace3d-b3ff-4b0c-a6d4-db75d37a64b3)
+![Untitled2](https://github.com/user-attachments/assets/c6ff72fa-f06f-4257-bdd7-0f63d2b86ba6)
+
+## Overview
+- Vacationer is work holiday pre-planning tool. The application serves as a planning, monitoring and coordinating tool for staff holidays.
+
+- Monthly calendar view of holidays, includes filtering of all users / only users with holidays.
+
+- CRUD operations for vacations, users, teams. Recoverable deletion for users and teams.
+
+- Workers can be added to customer or project teams which can be used as a filter in holiday calendar.
+
+- Anyone can create teams. Only team members can edit and delete team
+
+- Sends weekly Slack notifications of workers who are on vacation on the following weeks. Example messages:
+<img width="337" alt="Screenshot 2025-06-13 at 16 48 35" src="https://github.com/user-attachments/assets/bd790a83-9eae-42f4-80d5-6b2c6db655d4" />
+<img width="1200" alt="Screenshot 2025-06-13 at 16 49 16" src="https://github.com/user-attachments/assets/dd4b28d3-9947-4b53-82fb-e2fd9fedea8e" />
+
+- Calendar settings for user (colors, holiday symbols with “short” emojis accepted).
+
+- Admin features:  add users, edit admin rights for users, delete users and teams from database, send Slack test messages, edit all teams
 
 ## Environment setup
 1. Clone the repo.
@@ -10,13 +30,13 @@
 npm install
 ```
 
-## Run locally:
+### Run locally:
 1. Start the frontend to port 3000 with
 ```
 npm start
 ```
 
-## Development instructions
+### Development instructions
 * Kanban board with Github issues: https://github.com/orgs/tieto-cem/projects/2/views/1
 * When you start working on an issue, mark it on your name and move to "In progress" column in Kanban.
 * Git branching strategy is Github Flow: all feature branches are created from and merged to main branch.
