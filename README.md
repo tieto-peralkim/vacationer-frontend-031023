@@ -1,4 +1,5 @@
 # Vacationer frontend
+![Untitled](https://github.com/user-attachments/assets/247ace3d-b3ff-4b0c-a6d4-db75d37a64b3)
 
 ## Environment setup
 1. Clone the repo.
