@@ -1,5 +1,7 @@
 # Vacationer frontend
+UI example 1 front page:
 ![Untitled](https://github.com/user-attachments/assets/247ace3d-b3ff-4b0c-a6d4-db75d37a64b3)
+UI example 2 adding a holiday:
 ![Untitled2](https://github.com/user-attachments/assets/c6ff72fa-f06f-4257-bdd7-0f63d2b86ba6)
 
 ## Overview
@@ -14,7 +16,9 @@
 - Anyone can create teams. Only team members can edit and delete team
 
 - Sends weekly Slack notifications of workers who are on vacation on the following weeks. Example messages:
+Slack message example 1, public holidays and one user on holiday:
 <img width="337" alt="Screenshot 2025-06-13 at 16 48 35" src="https://github.com/user-attachments/assets/bd790a83-9eae-42f4-80d5-6b2c6db655d4" />
+Slack message example 2, multiple users on holiday.
 <img width="1200" alt="Screenshot 2025-06-13 at 16 49 16" src="https://github.com/user-attachments/assets/dd4b28d3-9947-4b53-82fb-e2fd9fedea8e" />
 
 - Calendar settings for user (colors, holiday symbols with “short” emojis accepted).
