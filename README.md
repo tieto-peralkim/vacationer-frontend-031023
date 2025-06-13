@@ -22,6 +22,7 @@ UI example 3 and 4, popup window for adding holiday and its dates:
 - Anyone can create teams. Only team members can edit and delete team
 
 - Sends weekly Slack notifications of workers who are on vacation on the following weeks. Example messages:
+
 Slack message example 1, public holidays and one user on holiday:
 
 <img width="337" alt="Screenshot 2025-06-13 at 16 48 35" src="https://github.com/user-attachments/assets/bd790a83-9eae-42f4-80d5-6b2c6db655d4" />
