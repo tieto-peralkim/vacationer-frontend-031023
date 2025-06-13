@@ -23,11 +23,11 @@ UI example 3 and 4, popup window for adding holiday and its dates:
 
 - Sends weekly Slack notifications of workers who are on vacation on the following weeks. Example messages:
 
-Slack message example 1, public holidays and one user on holiday:
+  - Slack message example 1, public holidays and one user on holiday:
 
 <img width="337" alt="Screenshot 2025-06-13 at 16 48 35" src="https://github.com/user-attachments/assets/bd790a83-9eae-42f4-80d5-6b2c6db655d4" />
 
-Slack message example 2, multiple users on holiday.
+  - Slack message example 2, multiple users on holiday.
 <img width="1200" alt="Screenshot 2025-06-13 at 16 49 16" src="https://github.com/user-attachments/assets/dd4b28d3-9947-4b53-82fb-e2fd9fedea8e" />
 
 - Calendar settings for user (colors, holiday symbols with “short” emojis accepted).
