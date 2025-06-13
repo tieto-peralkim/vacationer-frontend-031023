@@ -1,8 +1,11 @@
 # Vacationer frontend
-UI example 1 front page:
+UI example 1, front page:
 ![Untitled](https://github.com/user-attachments/assets/247ace3d-b3ff-4b0c-a6d4-db75d37a64b3)
-UI example 2 adding a holiday:
+UI example 2, viewing own holidays:
 ![Untitled2](https://github.com/user-attachments/assets/c6ff72fa-f06f-4257-bdd7-0f63d2b86ba6)
+UI example 3 and 4, adding holiday dates:
+![Screenshot 2025-06-13 at 16 55 57](https://github.com/user-attachments/assets/6626a3dc-7104-4595-80d3-1512dc7565e2)
+![Screenshot 2025-06-13 at 16 55 18](https://github.com/user-attachments/assets/03cc30c8-6c5a-4665-953a-d471cbab6100)
 
 ## Overview
 - Vacationer is work holiday pre-planning tool. The application serves as a planning, monitoring and coordinating tool for staff holidays.
